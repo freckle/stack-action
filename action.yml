@@ -1,0 +1,39 @@
+name: Stack
+description: Build, test, and lint a stack-based Haskell project
+inputs: {}
+outputs: {}
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.stack
+          ./.stack-work
+        key: ${{ runner.os }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('*.cabal') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ hashFiles('stack.yaml') }}-
+          ${{ runner.os }}-
+
+    - name: Setup
+      run: |
+          stack setup
+          stack install --copy-compiler-tool hlint weeder
+
+    - name: Dependencies
+      run: |
+          stack --no-terminal build --dependencies-only --test --no-run-tests
+
+    - name: Build
+      run: |
+          stack --no-terminal build --fast --pedantic --test --no-run-tests
+
+    - name: Test
+      run: |
+          stack --no-terminal build --fast --pedantic --test
+
+    - name: Lint
+      run: |
+          stack exec hlint src app test
+          stack exec weeder
