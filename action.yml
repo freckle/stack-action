@@ -5,35 +5,29 @@ outputs: {}
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      with:
-        path: |
-          ~/.stack
-          ./.stack-work
-        key: ${{ runner.os }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('*.cabal') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ hashFiles('stack.yaml') }}-
-          ${{ runner.os }}-
-
     - name: Setup
+      shell: bash
       run: |
           stack setup
           stack install --copy-compiler-tool hlint weeder
 
     - name: Dependencies
+      shell: bash
       run: |
           stack --no-terminal build --dependencies-only --test --no-run-tests
 
     - name: Build
+      shell: bash
       run: |
           stack --no-terminal build --fast --pedantic --test --no-run-tests
 
     - name: Test
+      shell: bash
       run: |
           stack --no-terminal build --fast --pedantic --test
 
     - name: Lint
+      shell: bash
       run: |
-          stack exec hlint src app test
+          stack exec hlint .
           stack exec weeder
