@@ -1,33 +1,46 @@
 name: Stack
 description: Build, test, and lint a stack-based Haskell project
-inputs: {}
+inputs:
+  shell:
+    description: "Shell for run commands"
+    required: true
+    default: bash
+  working-directory:
+    description: "Working directory for run commands"
+    required: true
+    default: .
 outputs: {}
 runs:
   using: composite
   steps:
     - name: Setup
-      shell: bash
+      shell: ${{ inputs.shell }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
           stack setup
           stack install --copy-compiler-tool hlint weeder
 
     - name: Dependencies
-      shell: bash
+      shell: ${{ inputs.shell }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
           stack --no-terminal build --dependencies-only --test --no-run-tests
 
     - name: Build
-      shell: bash
+      shell: ${{ inputs.shell }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
           stack --no-terminal build --fast --pedantic --test --no-run-tests
 
     - name: Test
-      shell: bash
+      shell: ${{ inputs.shell }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
           stack --no-terminal build --fast --pedantic --test
 
     - name: Lint
-      shell: bash
+      shell: ${{ inputs.shell }}
+      working-directory: ${{ inputs.working-directory }}
       run: |
           stack exec hlint .
           stack exec weeder
