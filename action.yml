@@ -5,6 +5,10 @@ inputs:
     description: "Working directory for run commands"
     required: true
     default: .
+  stack-yaml:
+    description: "Override stack.yaml"
+    required: true
+    default: stack.yaml
 outputs: {}
 runs:
   using: composite
@@ -20,19 +24,22 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-          stack --no-terminal build --dependencies-only --test --no-run-tests
+          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+            build --dependencies-only --test --no-run-tests
 
     - name: Build
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-          stack --no-terminal build --fast --pedantic --test --no-run-tests
+          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+            build --fast --pedantic --test --no-run-tests
 
     - name: Test
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-          stack --no-terminal build --fast --pedantic --test
+          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+            build --fast --pedantic --test
 
     - name: Lint
       shell: bash

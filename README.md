@@ -19,6 +19,8 @@ jobs:
 
   Useful for a multi-project repository.
 
+- `stack-yaml`: path to use instead of `stack.yaml`.
+
 ---
 
 [LICENSE](./LICENSE)
