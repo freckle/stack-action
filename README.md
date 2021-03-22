@@ -21,6 +21,12 @@ jobs:
 
 - `stack-yaml`: path to use instead of `stack.yaml`.
 
+- `stack-arguments`: additional arguments for stack invocation.
+
+- `hlint`: whether to run `hlint` (default to `true`)
+
+- `weeder`: whether to run `weeder` (default to `true`)
+
 ---
 
 [LICENSE](./LICENSE)
