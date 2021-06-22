@@ -30,7 +30,14 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
           stack setup
-          stack install --copy-compiler-tool hlint weeder
+
+          if ${{ inputs.hlint }}; then
+            stack install --copy-compiler-tool hlint
+          fi
+
+          if ${{ inputs.weeder }}; then
+            stack install --copy-compiler-tool weeder
+          fi
 
     - name: Dependencies
       shell: bash
