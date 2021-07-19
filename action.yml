@@ -6,7 +6,7 @@ inputs:
     required: true
     default: .
   stack-yaml:
-    description: "Override stack.yaml"
+    description: "Override stack.yaml, relative to working-directory"
     required: true
     default: stack.yaml
   stack-arguments:

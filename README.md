@@ -21,6 +21,8 @@ jobs:
 
 - `stack-yaml`: path to use instead of `stack.yaml`.
 
+  Expected to be relative to `working-directory`.
+
 - `stack-arguments`: additional arguments for stack invocation.
 
 - `hlint`: whether to run `hlint` (default to `true`)
