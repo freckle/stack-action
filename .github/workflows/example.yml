@@ -1,0 +1,20 @@
+name: Example
+
+on:
+  pull_request:
+  push:
+    branches: main
+
+defaults:
+  run:
+    working-directory: example
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          working-directory: example
+          weeder: false
