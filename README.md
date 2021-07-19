@@ -29,9 +29,9 @@ jobs:
 
 - `stack-arguments`: additional arguments for stack invocation.
 
-- `hlint`: whether to run `hlint` (default to `true`)
+- `hlint`: whether to run install and `hlint` (default `true`)
 
-- `weeder`: whether to run `weeder` (default to `true`)
+- `weeder`: whether to run install and `weeder` (default `true`)
 
 ---
 
