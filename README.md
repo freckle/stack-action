@@ -23,6 +23,10 @@ jobs:
 
   Expected to be relative to `working-directory`.
 
+- `fast`: pass `--fast` to stack build/test (default `true`).
+
+- `pedantic`: pass `--pedantic` to stack build/test (default `true`).
+
 - `stack-arguments`: additional arguments for stack invocation.
 
 - `hlint`: whether to run `hlint` (default to `true`)

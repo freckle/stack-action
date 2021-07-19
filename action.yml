@@ -9,6 +9,14 @@ inputs:
     description: "Override stack.yaml, relative to working-directory"
     required: true
     default: stack.yaml
+  fast:
+    description: "Pass --fast in build/test"
+    required: true
+    default: true
+  pedantic:
+    description: "Pass --pedantic in build/test"
+    required: true
+    default: true
   stack-arguments:
     description: "Additional arguments for stack invocations"
     required: true
@@ -25,7 +33,8 @@ outputs: {}
 runs:
   using: composite
   steps:
-    - name: Setup
+    - id: setup
+      name: Setup
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -38,6 +47,18 @@ runs:
           if ${{ inputs.weeder }}; then
             stack install --copy-compiler-tool weeder
           fi
+
+          stack_arguments=()
+
+          if ${{ inputs.fast }}; then
+            stack_arguments+=( --fast )
+          fi
+
+          if ${{ inputs.pedantic }}; then
+            stack_arguments+=( --pedantic )
+          fi
+
+          echo "::set-output name=stack-arguments::${stack_arguments[*]}"
 
     - name: Dependencies
       shell: bash
@@ -52,7 +73,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
           stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-            build --fast --pedantic --test --no-run-tests \
+            build ${{ steps.setup.outputs.stack-arguments }} \
             ${{ inputs.stack-arguments }}
 
     - name: Test
@@ -60,7 +81,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
           stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-            build --fast --pedantic --test \
+            build ${{ steps.setup.outputs.stack-arguments }} --test \
             ${{ inputs.stack-arguments }}
 
     - name: Lint
