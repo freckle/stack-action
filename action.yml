@@ -20,7 +20,7 @@ inputs:
   stack-arguments:
     description: "Additional arguments for stack invocations"
     required: true
-    default: ''
+    default: ""
   hlint:
     description: "Run HLint"
     required: true
@@ -38,60 +38,60 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-          stack setup
+        stack setup
 
-          if ${{ inputs.hlint }}; then
-            stack install --copy-compiler-tool hlint
-          fi
+        if ${{ inputs.hlint }}; then
+          stack install --copy-compiler-tool hlint
+        fi
 
-          if ${{ inputs.weeder }}; then
-            stack install --copy-compiler-tool weeder
-          fi
+        if ${{ inputs.weeder }}; then
+          stack install --copy-compiler-tool weeder
+        fi
 
-          stack_arguments=()
+        stack_arguments=()
 
-          if ${{ inputs.fast }}; then
-            stack_arguments+=( --fast )
-          fi
+        if ${{ inputs.fast }}; then
+          stack_arguments+=( --fast )
+        fi
 
-          if ${{ inputs.pedantic }}; then
-            stack_arguments+=( --pedantic )
-          fi
+        if ${{ inputs.pedantic }}; then
+          stack_arguments+=( --pedantic )
+        fi
 
-          echo "::set-output name=stack-arguments::${stack_arguments[*]}"
+        echo "::set-output name=stack-arguments::${stack_arguments[*]}"
 
     - name: Dependencies
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-            build --dependencies-only --test --no-run-tests \
-            ${{ inputs.stack-arguments }}
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          build --dependencies-only --test --no-run-tests \
+          ${{ inputs.stack-arguments }}
 
     - name: Build
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-            build ${{ steps.setup.outputs.stack-arguments }} \
-            ${{ inputs.stack-arguments }}
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          build ${{ steps.setup.outputs.stack-arguments }} \
+          ${{ inputs.stack-arguments }}
 
     - name: Test
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-            build ${{ steps.setup.outputs.stack-arguments }} --test \
-            ${{ inputs.stack-arguments }}
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          build ${{ steps.setup.outputs.stack-arguments }} --test \
+          ${{ inputs.stack-arguments }}
 
     - name: Lint
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-          if ${{ inputs.hlint }}; then
-            stack exec hlint .
-          fi
+        if ${{ inputs.hlint }}; then
+          stack exec hlint .
+        fi
 
-          if ${{ inputs.weeder }}; then
-            stack exec weeder
-          fi
+        if ${{ inputs.weeder }}; then
+          stack exec weeder
+        fi
