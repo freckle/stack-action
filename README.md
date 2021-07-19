@@ -25,6 +25,15 @@ jobs:
 
 - `fast`: pass `--fast` to stack build/test (default `true`).
 
+  You probably want to disable `--fast` if building executables for
+  deployment. Assuming that happens on your default branch, you could
+  do:
+  
+  ```yaml
+  with:
+    fast: ${{ github.ref != 'refs/heads/main' }}
+  ```
+
 - `pedantic`: pass `--pedantic` to stack build/test (default `true`).
 
 - `stack-arguments`: additional arguments for stack invocation.
