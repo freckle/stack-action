@@ -31,7 +31,11 @@ jobs:
 
 - `hlint`: whether to run install and `hlint` (default `true`)
 
+- `hlint-arguments`: arguments to pass to `hlint` (default `.`)
+
 - `weeder`: whether to run install and `weeder` (default `true`)
+
+- `weeder-arguments`: arguments to pass to `weeder` (default none)
 
 ---
 

@@ -25,10 +25,18 @@ inputs:
     description: "Run HLint"
     required: true
     default: true
+  hlint-arguments:
+    description: "Arguments to pass to HLint"
+    required: true
+    default: "."
   weeder:
     description: "Run Weeder"
     required: true
     default: true
+  weeder-arguments:
+    description: "Arguments to pass to Weeder"
+    required: true
+    default: ""
 outputs: {}
 runs:
   using: composite
@@ -89,9 +97,9 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         if ${{ inputs.hlint }}; then
-          stack exec hlint .
+          stack exec hlint -- ${{ inputs.hlint-arguments }}
         fi
 
         if ${{ inputs.weeder }}; then
-          stack exec weeder
+          stack exec weeder -- ${{ inputs.weeder-arguments }}
         fi
