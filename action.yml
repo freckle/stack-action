@@ -46,14 +46,14 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        stack setup
+        stack --no-terminal setup
 
         if ${{ inputs.hlint }}; then
-          stack install --copy-compiler-tool hlint
+          stack --no-terminal install --copy-compiler-tool hlint
         fi
 
         if ${{ inputs.weeder }}; then
-          stack install --copy-compiler-tool weeder
+          stack --no-terminal install --copy-compiler-tool weeder
         fi
 
         stack_arguments=()
