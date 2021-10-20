@@ -40,9 +40,13 @@ jobs:
 
 - `hlint`: whether to run install and `hlint` (default `true`)
 
+- `hlint-version`: install a specific version of HLint (default latest)
+
 - `hlint-arguments`: arguments to pass to `hlint` (default `.`)
 
 - `weeder`: whether to run install and `weeder` (default `true`)
+
+- `weeder-version`: install a specific version of Weeder (default latest)
 
 - `weeder-arguments`: arguments to pass to `weeder` (default none)
 

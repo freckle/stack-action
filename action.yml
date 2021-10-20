@@ -25,6 +25,10 @@ inputs:
     description: "Run HLint"
     required: true
     default: true
+  hlint-version:
+    description: "Install a specific version of HLint"
+    required: true
+    default: ""
   hlint-arguments:
     description: "Arguments to pass to HLint"
     required: true
@@ -33,6 +37,10 @@ inputs:
     description: "Run Weeder"
     required: true
     default: true
+  weeder-version:
+    description: "Install a specific version of Weeder"
+    required: true
+    default: ""
   weeder-arguments:
     description: "Arguments to pass to Weeder"
     required: true
@@ -49,11 +57,19 @@ runs:
         stack --no-terminal setup
 
         if ${{ inputs.hlint }}; then
-          stack --no-terminal install --copy-compiler-tool hlint
+          if [[ -n "${{ inputs.hlint-version }}" ]]; then
+            stack --no-terminal install --copy-compiler-tool hlint-${{ inputs.hlint-version }}
+          else
+            stack --no-terminal install --copy-compiler-tool hlint
+          fi
         fi
 
         if ${{ inputs.weeder }}; then
-          stack --no-terminal install --copy-compiler-tool weeder
+          if [[ -n "${{ inputs.weeder-version }}" ]]; then
+            stack --no-terminal install --copy-compiler-tool weeder-${{ inputs.weeder-version }}
+          else
+            stack --no-terminal install --copy-compiler-tool weeder
+          fi
         fi
 
         stack_arguments=()
