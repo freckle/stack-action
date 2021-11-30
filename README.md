@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: freckle/stack-action@main
+      - uses: freckle/stack-action@v3
 ```
 
 ## Inputs
@@ -38,17 +38,33 @@ jobs:
 
 - `stack-arguments`: additional arguments for stack invocation.
 
-- `hlint`: whether to run install and `hlint` (default `true`)
+## HLint & Weeder
 
-- `hlint-version`: install a specific version of HLint (default latest)
+Previous versions of this Action ran HLint and Weeder for you. We recommend
+doing that as separate actions now, so those options have been removed.
 
-- `hlint-arguments`: arguments to pass to `hlint` (default `.`)
+Here is an example of running separate Actions:
 
-- `weeder`: whether to run install and `weeder` (default `true`)
+```yaml
+jobs:
+  test:
+    # ...
+    steps:
+      - uses: actions/checkout@v2
+      - uses: freckle/stack-cache-action@v1
+      - uses: freckle/stack-action@v3
 
-- `weeder-version`: install a specific version of Weeder (default latest)
+      # Weeder needs compilation artifacts, so it must still be the same Job
+      - uses: freckle/weeder-action@v1
 
-- `weeder-arguments`: arguments to pass to `weeder` (default none)
+  # But HLint can be a distinct Job, which affords more flexibility
+  hlint:
+    # ...
+    steps:
+      - uses: actions/checkout@v2
+      - uses: rwe/actions-hlint-setup@v1
+      - uses: rwe/actions-hlint-run@v2
+```
 
 ---
 
