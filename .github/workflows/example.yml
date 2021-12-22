@@ -35,8 +35,8 @@ jobs:
           [[ -n "${{ steps.stack.outputs.local-bin }}" ]]
 
           # Actually blank in default setup
-          [[ -n "${{ steps.stack.outputs.extra-include-dirs }}" ]]
-          [[ -n "${{ steps.stack.outputs.extra-library-dirs }}" ]]
+          # [[ -n "${{ steps.stack.outputs.extra-include-dirs }}" ]]
+          # [[ -n "${{ steps.stack.outputs.extra-library-dirs }}" ]]
 
           [[ -n "${{ steps.stack.outputs.snapshot-pkg-db }}" ]]
           [[ -n "${{ steps.stack.outputs.local-pkg-db }}" ]]
