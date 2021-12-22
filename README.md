@@ -38,6 +38,28 @@ jobs:
 
 - `stack-arguments`: additional arguments for stack invocation.
 
+## Outputs
+
+Every value from `stack path` is set as an output. This can be useful, for
+example, to upload executables or coverage reports:
+
+```yaml
+- id: stack
+  uses: freckle/stack-action@v3
+  with:
+    stack-arguments: --copy-bins --coverage
+
+- uses: actions/upload-artifact@v2
+  with:
+    name: executable
+    path: ${{ steps.stack.outputs.local-bin-path }}/my-exe
+
+- uses: actions/upload-artifact@v2
+  with:
+    name: coverage-report
+    path: ${{ steps.stack.outputs.local-hpc-root }}/index.html
+```
+
 ## HLint & Weeder
 
 Previous versions of this Action ran HLint and Weeder for you. We recommend
