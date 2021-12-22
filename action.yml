@@ -21,7 +21,79 @@ inputs:
     description: "Additional arguments for stack invocations"
     required: true
     default: ""
-outputs: {}
+outputs:
+  snapshot-doc-root:
+    description: "snapshot-doc-root value from stack path"
+    value: ${{ steps.stack-path.outputs.snapshot-doc-root }}
+  local-doc-root:
+    description: "local-doc-root value from stack path"
+    value: ${{ steps.stack-path.outputs.local-doc-root }}
+  local-hoogle-root:
+    description: "local-hoogle-root value from stack path"
+    value: ${{ steps.stack-path.outputs.local-hoogle-root }}
+  stack-root:
+    description: "stack-root value from stack path"
+    value: ${{ steps.stack-path.outputs.stack-root }}
+  project-root:
+    description: "project-root value from stack path"
+    value: ${{ steps.stack-path.outputs.project-root }}
+  config-location:
+    description: "config-location value from stack path"
+    value: ${{ steps.stack-path.outputs.config-location }}
+  bin-path:
+    description: "bin-path value from stack path"
+    value: ${{ steps.stack-path.outputs.bin-path }}
+  programs:
+    description: "programs value from stack path"
+    value: ${{ steps.stack-path.outputs.programs }}
+  compiler-exe:
+    description: "compiler-exe value from stack path"
+    value: ${{ steps.stack-path.outputs.compiler-exe }}
+  compiler-bin:
+    description: "compiler-bin value from stack path"
+    value: ${{ steps.stack-path.outputs.compiler-bin }}
+  compiler-tools-bin:
+    description: "compiler-tools-bin value from stack path"
+    value: ${{ steps.stack-path.outputs.compiler-tools-bin }}
+  local-bin:
+    description: "local-bin value from stack path"
+    value: ${{ steps.stack-path.outputs.local-bin }}
+  extra-include-dirs:
+    description: "extra-include-dirs value from stack path"
+    value: ${{ steps.stack-path.outputs.extra-include-dirs }}
+  extra-library-dirs:
+    description: "extra-library-dirs value from stack path"
+    value: ${{ steps.stack-path.outputs.extra-library-dirs }}
+  snapshot-pkg-db:
+    description: "snapshot-pkg-db value from stack path"
+    value: ${{ steps.stack-path.outputs.snapshot-pkg-db }}
+  local-pkg-db:
+    description: "local-pkg-db value from stack path"
+    value: ${{ steps.stack-path.outputs.local-pkg-db }}
+  global-pkg-db:
+    description: "global-pkg-db value from stack path"
+    value: ${{ steps.stack-path.outputs.global-pkg-db }}
+  ghc-package-path:
+    description: "ghc-package-path value from stack path"
+    value: ${{ steps.stack-path.outputs.ghc-package-path }}
+  snapshot-install-root:
+    description: "snapshot-install-root value from stack path"
+    value: ${{ steps.stack-path.outputs.snapshot-install-root }}
+  local-install-root:
+    description: "local-install-root value from stack path"
+    value: ${{ steps.stack-path.outputs.local-install-root }}
+  dist-dir:
+    description: "dist-dir value from stack path"
+    value: ${{ steps.stack-path.outputs.dist-dir }}
+  local-hpc-root:
+    description: "local-hpc-root value from stack path"
+    value: ${{ steps.stack-path.outputs.local-hpc-root }}
+  local-bin-path:
+    description: "local-bin-path value from stack path"
+    value: ${{ steps.stack-path.outputs.local-bin-path }}
+  ghc-paths:
+    description: "ghc-paths value from stack path"
+    value: ${{ steps.stack-path.outputs.ghc-paths }}
 runs:
   using: composite
   steps:
@@ -67,3 +139,12 @@ runs:
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
           build ${{ steps.setup.outputs.stack-arguments }} --test \
           ${{ inputs.stack-arguments }}
+
+    - id: stack-path
+      name: Set stack-path outputs
+      shell: bash
+      run: |
+        stack path | while IFS=:\  read -r name value; do
+          printf '%s: %s\n' "$name" "$value"
+          printf '::set-output name=%s::%s\n' "$name" "$value"
+        done

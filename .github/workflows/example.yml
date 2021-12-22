@@ -14,7 +14,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+      - id: stack
+        uses: ./
         with:
           working-directory: example
           weeder: false
+
+      - run: |
+          # stack path | cut -d: -f1
+          [[ -z "${{ steps.stack.outputs.snapshot-doc-root }}" ]]
+          [[ -z "${{ steps.stack.outputs.local-doc-root }}" ]]
+          [[ -z "${{ steps.stack.outputs.local-hoogle-root }}" ]]
+          [[ -z "${{ steps.stack.outputs.stack-root }}" ]]
+          [[ -z "${{ steps.stack.outputs.project-root }}" ]]
+          [[ -z "${{ steps.stack.outputs.config-location }}" ]]
+          [[ -z "${{ steps.stack.outputs.bin-path }}" ]]
+          [[ -z "${{ steps.stack.outputs.programs }}" ]]
+          [[ -z "${{ steps.stack.outputs.compiler-exe }}" ]]
+          [[ -z "${{ steps.stack.outputs.compiler-bin }}" ]]
+          [[ -z "${{ steps.stack.outputs.compiler-tools-bin }}" ]]
+          [[ -z "${{ steps.stack.outputs.local-bin }}" ]]
+          [[ -z "${{ steps.stack.outputs.extra-include-dirs }}" ]]
+          [[ -z "${{ steps.stack.outputs.extra-library-dirs }}" ]]
+          [[ -z "${{ steps.stack.outputs.snapshot-pkg-db }}" ]]
+          [[ -z "${{ steps.stack.outputs.local-pkg-db }}" ]]
+          [[ -z "${{ steps.stack.outputs.global-pkg-db }}" ]]
+          [[ -z "${{ steps.stack.outputs.ghc-package-path }}" ]]
+          [[ -z "${{ steps.stack.outputs.snapshot-install-root }}" ]]
+          [[ -z "${{ steps.stack.outputs.local-install-root }}" ]]
+          [[ -z "${{ steps.stack.outputs.dist-dir }}" ]]
+          [[ -z "${{ steps.stack.outputs.local-hpc-root }}" ]]
+          [[ -z "${{ steps.stack.outputs.local-bin-path }}" ]]
+          [[ -z "${{ steps.stack.outputs.ghc-paths }}" ]]
