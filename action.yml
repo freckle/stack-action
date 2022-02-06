@@ -102,7 +102,8 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        stack --no-terminal setup
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          setup
 
         stack_arguments=()
 
