@@ -143,6 +143,7 @@ runs:
 
     - id: stack-path
       name: Set stack-path outputs
+      working-directory: ${{ inputs.working-directory }}
       shell: bash
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
