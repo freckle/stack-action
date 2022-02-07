@@ -145,7 +145,8 @@ runs:
       name: Set stack-path outputs
       shell: bash
       run: |
-        stack path | while IFS=:\  read -r name value; do
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          path | while IFS=:\  read -r name value; do
           printf '%s: %s\n' "$name" "$value"
           printf '::set-output name=%s::%s\n' "$name" "$value"
         done
