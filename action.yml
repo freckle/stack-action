@@ -131,6 +131,7 @@ runs:
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
           build ${{ steps.setup.outputs.stack-arguments }} \
+          --test --no-run-tests \
           ${{ inputs.stack-arguments }}
 
     - name: Test
