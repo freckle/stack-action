@@ -52,3 +52,34 @@ jobs:
           [[ -n "${{ steps.stack.outputs.local-hpc-root }}" ]]
           [[ -n "${{ steps.stack.outputs.local-bin-path }}" ]]
           [[ -n "${{ steps.stack.outputs.ghc-paths }}" ]]
+
+  test-nightly1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: freckle/stack-cache-action@v2
+        with:
+          working-directory: example
+          stack-yaml: stack-nightly.yaml
+
+      - id: stack
+        uses: ./
+        with:
+          working-directory: example
+          stack-yaml: stack-nightly.yaml
+
+  test-nightly2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: freckle/stack-cache-action@v2
+        with:
+          working-directory: example
+          stack-yaml: stack-nightly.yaml
+
+      - id: stack
+        uses: ./
+        with:
+          working-directory: example
+          stack-yaml: stack-nightly.yaml
+          stack-arguments: --resolver nightly
