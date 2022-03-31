@@ -53,7 +53,7 @@ jobs:
           [[ -n "${{ steps.stack.outputs.local-bin-path }}" ]]
           [[ -n "${{ steps.stack.outputs.ghc-paths }}" ]]
 
-  test-nightly1:
+  test-auto-nightly:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -68,7 +68,7 @@ jobs:
           working-directory: example
           stack-yaml: stack-nightly.yaml
 
-  test-nightly2:
+  test-auto-nightly-with-explicit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
