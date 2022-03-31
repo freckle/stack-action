@@ -38,6 +38,9 @@ jobs:
 
 - `stack-arguments`: additional arguments for stack invocation.
 
+  Default is none, except if `stack-yaml` is the string `"stack-nightly.yaml"`,
+  in which case `--resolver nightly` will be used.
+
 ## Outputs
 
 Every value from `stack path` is set as an output. This can be useful, for
