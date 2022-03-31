@@ -115,10 +115,14 @@ runs:
           stack_arguments+=( --pedantic )
         fi
 
-        if [[ "${{ inputs.stack-yaml }}" == 'stack-nightly.yaml' ]]; then
-          if [[ "${stack_arguments[*]}" != *'--resolver'* ]]; then
-            stack_arguments+=( --resolver nightly )
-          fi
+        has_resolver() {
+          grep -Fq -- '--resolver' <<'EOM'
+        ${{ inputs.stack-arguments }}
+        EOM
+        }
+
+        if ! has_resolver && [[ "${{ inputs.stack-yaml }}" == 'stack-nightly.yaml' ]]; then
+          stack_arguments+=( --resolver nightly )
         fi
 
         echo "::set-output name=stack-arguments::${stack_arguments[*]}"
