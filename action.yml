@@ -115,6 +115,12 @@ runs:
           stack_arguments+=( --pedantic )
         fi
 
+        if [[ "${{ inputs.stack-yaml }}" == 'stack-nightly.yaml' ]]; then
+          if [[ "${stack_arguments[*]}" != *'--resolver'* ]]; then
+            stack_arguments+=( --resolver nightly )
+          fi
+        fi
+
         echo "::set-output name=stack-arguments::${stack_arguments[*]}"
 
     - name: Dependencies
