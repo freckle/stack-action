@@ -105,6 +105,8 @@ runs:
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
           setup
 
+        resolver_nightly=
+
         # Extra arguments for build and test steps, not the dependencies step
         stack_build_arguments=()
 
@@ -123,9 +125,10 @@ runs:
         }
 
         if ! has_resolver && [[ "${{ inputs.stack-yaml }}" == 'stack-nightly.yaml' ]]; then
-          stack_build_arguments+=( --resolver nightly )
+          resolver_nightly='--resolver nightly'
         fi
 
+        echo "::set-output name=resolver-nightly::$resolver_nightly"
         echo "::set-output name=stack-build-arguments::${stack_build_arguments[*]}"
 
     - name: Dependencies
@@ -133,6 +136,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          ${{ steps.setup.outputs.resolver-nightly } \
           build --dependencies-only --test --no-run-tests \
           ${{ inputs.stack-arguments }}
 
@@ -141,6 +145,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          ${{ steps.setup.outputs.resolver-nightly } \
           build ${{ steps.setup.outputs.stack-build-arguments }} \
           --test --no-run-tests \
           ${{ inputs.stack-arguments }}
@@ -150,6 +155,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          ${{ steps.setup.outputs.resolver-nightly } \
           build ${{ steps.setup.outputs.stack-build-arguments }} --test \
           ${{ inputs.stack-arguments }}
 
@@ -159,6 +165,7 @@ runs:
       shell: bash
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          ${{ steps.setup.outputs.resolver-nightly } \
           path | while IFS=:\  read -r name value; do
           printf '%s: %s\n' "$name" "$value"
           printf '::set-output name=%s::%s\n' "$name" "$value"
