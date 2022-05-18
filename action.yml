@@ -105,14 +105,15 @@ runs:
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
           setup
 
-        stack_arguments=()
+        # Extra arguments for build and test steps, not the dependencies step
+        stack_build_arguments=()
 
         if ${{ inputs.fast }}; then
-          stack_arguments+=( --fast )
+          stack_build_arguments+=( --fast )
         fi
 
         if ${{ inputs.pedantic }}; then
-          stack_arguments+=( --pedantic )
+          stack_build_arguments+=( --pedantic )
         fi
 
         has_resolver() {
@@ -122,10 +123,10 @@ runs:
         }
 
         if ! has_resolver && [[ "${{ inputs.stack-yaml }}" == 'stack-nightly.yaml' ]]; then
-          stack_arguments+=( --resolver nightly )
+          stack_build_arguments+=( --resolver nightly )
         fi
 
-        echo "::set-output name=stack-arguments::${stack_arguments[*]}"
+        echo "::set-output name=stack-build-arguments::${stack_build_arguments[*]}"
 
     - name: Dependencies
       shell: bash
@@ -140,7 +141,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          build ${{ steps.setup.outputs.stack-arguments }} \
+          build ${{ steps.setup.outputs.stack-build-arguments }} \
           --test --no-run-tests \
           ${{ inputs.stack-arguments }}
 
@@ -149,7 +150,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          build ${{ steps.setup.outputs.stack-arguments }} --test \
+          build ${{ steps.setup.outputs.stack-build-arguments }} --test \
           ${{ inputs.stack-arguments }}
 
     - id: stack-path
