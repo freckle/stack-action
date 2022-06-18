@@ -155,7 +155,7 @@ runs:
           ${{ inputs.stack-arguments }}
 
     - name: Test
-      if: ${{ inputs.test }}
+      if: ${{ inputs.test }} == 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
