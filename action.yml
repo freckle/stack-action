@@ -17,6 +17,10 @@ inputs:
     description: "Pass --pedantic in build/test"
     required: true
     default: true
+  test:
+    description: Whether to run tests
+    required: false
+    default: true
   stack-arguments:
     description: "Additional arguments for stack invocations"
     required: true
@@ -151,6 +155,7 @@ runs:
           ${{ inputs.stack-arguments }}
 
     - name: Test
+      if: ${{ inputs.test == 'true' }}
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |

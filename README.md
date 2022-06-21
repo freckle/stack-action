@@ -36,6 +36,8 @@ jobs:
 
 - `pedantic`: pass `--pedantic` to stack build/test (default `true`).
 
+- `test`: whether tests should be executed (default `true`).
+
 - `stack-arguments`: additional arguments for stack invocation.
 
   Default is none, except if `stack-yaml` is the string `"stack-nightly.yaml"`,
