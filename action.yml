@@ -132,8 +132,8 @@ runs:
           resolver_nightly='--resolver nightly'
         fi
 
-        echo "::set-output name=resolver-nightly::$resolver_nightly"
-        echo "::set-output name=stack-build-arguments::${stack_build_arguments[*]}"
+        echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
+        echo "stack-build-arguments=${stack_build_arguments[*]}" >>"$GITHUB_OUTPUT"
 
     - name: Dependencies
       shell: bash
@@ -173,5 +173,5 @@ runs:
           ${{ steps.setup.outputs.resolver-nightly }} \
           path | while IFS=:\  read -r name value; do
           printf '%s: %s\n' "$name" "$value"
-          printf '::set-output name=%s::%s\n' "$name" "$value"
+          printf '%s=%s\n' "$name" "$value" >>"$GITHUB_OUTPUT"
         done
