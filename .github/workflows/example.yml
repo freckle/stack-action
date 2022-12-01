@@ -14,16 +14,13 @@ jobs:
     strategy:
       matrix:
         runner:
-          # Conflicting reports which is "-latest" right now
-          # - ubuntu-latest
-          - ubuntu-20.04
-          - ubuntu-22.04
-
+          - ubuntu-latest
           - macOS-latest
           - windows-latest
 
         resolver:
-          - nightly   # ghc-9.4
+          - nightly   # ghc-9.4 (as of writing)
+          - lts       # ghc-9.2 (as of writing)
           - lts-20.2  # ghc-9.2
           - lts-19.33 # ghc-9.0
           - lts-18.28 # ghc-8.10
