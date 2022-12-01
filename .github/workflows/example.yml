@@ -46,7 +46,8 @@ jobs:
           working-directory: example
           stack-arguments: --resolver ${{ matrix.resolver }}
 
-      - run: |
+      - if: ${{ runner.os != 'windows' }}
+        run: |
           # stack path | cut -d: -f1
           [[ -n "${{ steps.stack.outputs.snapshot-doc-root }}" ]]
           [[ -n "${{ steps.stack.outputs.local-doc-root }}" ]]
