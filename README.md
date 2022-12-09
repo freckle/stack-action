@@ -45,8 +45,20 @@ jobs:
 
 ## Outputs
 
-Every value from `stack path` is set as an output. This can be useful, for
-example, to upload executables or coverage reports:
+`compiler` (e.g. `ghc-9.2.5`) and `compiler-version` (e.g. `9.2.5`) are set from
+the output of `stack query compiler actual`. This can be useful when downstream
+actions depend on it:
+
+```yaml
+- id: stack
+  uses: freckle/stack-action@v3
+- uses: freckle/weeder-action@v2
+  with:
+    ghc-version: ${{ steps.stack.outputs.compiler-version }}
+```
+
+Every value from `stack path` is set as itself as an output. This can be useful,
+for example, to upload executables or coverage reports:
 
 ```yaml
 - id: stack
@@ -77,20 +89,21 @@ jobs:
   test:
     # ...
     steps:
-      - uses: actions/checkout@v2
-      - uses: freckle/stack-cache-action@v1
-      - uses: freckle/stack-action@v3
-
-      # Weeder needs compilation artifacts, so it must still be the same Job
-      - uses: freckle/weeder-action@v1
+      - uses: actions/checkout@v3
+      - uses: freckle/stack-cache-action@v2
+      - id: stack
+        uses: freckle/stack-action@v3
+      - uses: freckle/weeder-action@v2
+        with:
+          ghc-version: ${{ steps.stack.outputs.compiler-version }}
 
   # But HLint can be a distinct Job, which affords more flexibility
   hlint:
     # ...
     steps:
-      - uses: actions/checkout@v2
-      - uses: rwe/actions-hlint-setup@v1
-      - uses: rwe/actions-hlint-run@v2
+      - uses: actions/checkout@v3
+      - uses: haskell/actions/hlint-setup@v1
+      - uses: haskell/actions/hlint-run@v2
 ```
 
 ---
