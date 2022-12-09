@@ -93,11 +93,13 @@ jobs:
       - uses: freckle/stack-cache-action@v2
       - id: stack
         uses: freckle/stack-action@v3
+        
+      # Weeder requires running in the same Job (to access .hie artifacts)
       - uses: freckle/weeder-action@v2
         with:
           ghc-version: ${{ steps.stack.outputs.compiler-version }}
 
-  # But HLint can be a distinct Job, which affords more flexibility
+  # HLint can be a distinct Job, possibly limited to changed files
   hlint:
     # ...
     steps:
