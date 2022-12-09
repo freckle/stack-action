@@ -26,6 +26,12 @@ inputs:
     required: true
     default: ""
 outputs:
+  compiler:
+    description: "compiler.actual value from stack query"
+    value: ${{ steps.stack-query.outputs.compiler }}
+  compiler-version:
+    description: "The GHC version part of compiler"
+    value: ${{ steps.stack-query.outputs.compiler-version }}
   snapshot-doc-root:
     description: "snapshot-doc-root value from stack path"
     value: ${{ steps.stack-path.outputs.snapshot-doc-root }}
@@ -163,6 +169,21 @@ runs:
           ${{ steps.setup.outputs.resolver-nightly }} \
           build ${{ steps.setup.outputs.stack-build-arguments }} --test \
           ${{ inputs.stack-arguments }}
+
+    - id: stack-query
+      name: Set stack-query outputs
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      run: |
+        tmp=$(mktemp)
+        trap 'rm -r "$tmp"' EXIT
+
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          ${{ steps.setup.outputs.resolver-nightly }} \
+          query compiler | tee "$tmp"
+
+        sed '/^actual: \(.*\)$/!d; s//compiler=\1/' "$tmp" >>"$GITHUB_OUTPUT"
+        sed '/^actual: ghc-\(.*\)$/!d; s//compiler-version=\1/' "$tmp" >>"$GITHUB_OUTPUT"
 
     - id: stack-path
       name: Set stack-path outputs
