@@ -195,7 +195,7 @@ runs:
         path: |
           ~/.stack
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.setup.outputs.package-hash )) }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.setup.outputs.package-hash }}
 
     - name: Restore build cache
       id: restore-build
