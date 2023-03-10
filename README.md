@@ -92,7 +92,7 @@ jobs:
       - uses: actions/checkout@v3
       - id: stack
         uses: freckle/stack-action@v3
-        
+
       # Weeder requires running in the same Job (to access .hie artifacts)
       - uses: freckle/weeder-action@v2
         with:
