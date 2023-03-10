@@ -113,9 +113,10 @@ runs:
     - id: setup
       name: Setup
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
-        cd '${{ inputs.working-directory }}' &&
-          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} setup
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          setup
 
         resolver_nightly=
 
@@ -130,6 +131,8 @@ runs:
           stack_build_arguments+=( --pedantic )
         fi
 
+        echo "stack-build-arguments=${stack_build_arguments[*]}" >>"$GITHUB_OUTPUT"
+
         has_resolver() {
           grep -Fq -- '--resolver' <<'EOM'
         ${{ inputs.stack-arguments }}
@@ -140,28 +143,20 @@ runs:
           resolver_nightly='--resolver nightly'
         fi
 
-        package_hash=${{ hashFiles(inputs.stack-yaml, format('{0}/**/package.yaml', inputs.working-directory), format('{0}/**/*.cabal', inputs.working-directory)) }}
-        sources_hash=${{ hashFiles(format('{0}/**', inputs.working-directory), '!**/.stack-work') }}
+        echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
+        echo "stack-build-arguments=${stack_build_arguments[*]}" >>"$GITHUB_OUTPUT"
 
-        echo "CHECKING"
-        echo '${{ fromJSON(toJSON(inputs.working-directory)) }}'
-        echo "/CHECKING"
+        echo "package-hash=${{ hashFiles(inputs.stack-yaml, '**/package.yaml', '**/*.cabal') }}" >>"$GITHUB_OUTPUT"
+        echo "sources-hash=${{ hashFiles('**', '!**/.stack-work') }}" >>"$GITHUB_OUTPUT"
 
         {
-          echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
-          echo "stack-build-arguments=${stack_build_arguments[*]}"
-
-          echo "package-hash=$package"
-          echo "sources-hash=$sources_hash"
-
-          shopt -s nullglob globstar
-          echo 'stack-works<<EOSTACKWORKS'
-          for x in "${{ inputs.working-directory }}"/**/package.yaml "${{ inputs.working-directory }}"/**/*.cabal"; do
-            echo "$(dirname "$x")/.stack-work"
+          echo 'stack-works<<EOM'
+          shopt -s globstar nullglob
+          for x in **/package.yaml **/*.cabal; do
+            echo "${{ inputs.working-directory }}/$(dirname "$x")/.stack-work"
           done | sort -u
-          echo 'EOSTACKWORKS'
-
-        } | tee -a GITHUB_OUTPUT"
+          echo 'EOM'
+        } >>"$GITHUB_OUTPUT"
 
     - name: Restore dependencies cache
       id: restore-deps
