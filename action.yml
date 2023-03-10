@@ -140,8 +140,12 @@ runs:
           resolver_nightly='--resolver nightly'
         fi
 
-        package_hash=${{ hashFiles(inputs.stack-yaml, format('{}/**/package.yaml', inputs.working-directory), format('{}/**/*.cabal', inputs.working-directory)) }}
-        sources_hash=${{ hashFiles(format('{}/**', inputs.working-directory), '!**/.stack-work') }}
+        package_hash=${{ hashFiles(inputs.stack-yaml, format('{0}/**/package.yaml', inputs.working-directory), format('{0}/**/*.cabal', inputs.working-directory)) }}
+        sources_hash=${{ hashFiles(format('{0}/**', inputs.working-directory), '!**/.stack-work') }}
+
+        echo "CHECKING"
+        echo '${{ fromJSON(toJSON(inputs.working-directory)) }}'
+        echo "/CHECKING"
 
         {
           echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
@@ -158,14 +162,6 @@ runs:
           echo 'EOSTACKWORKS'
 
         } | tee -a GITHUB_OUTPUT"
-
-    - name: TESTING
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: |
-        echo '${{ steps.setup.outputs.package }}'
-        echo '${{ fromJSON(steps.setup.outputs.package) }}'
-        echo '${{ hashFiles(fromJSON(steps.setup.outputs.package)) }}'
 
     - name: Restore dependencies cache
       id: restore-deps
