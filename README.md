@@ -90,7 +90,6 @@ jobs:
     # ...
     steps:
       - uses: actions/checkout@v3
-      - uses: freckle/stack-cache-action@v2
       - id: stack
         uses: freckle/stack-action@v3
         

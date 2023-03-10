@@ -144,11 +144,14 @@ runs:
         echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
         echo "stack-build-arguments=${stack_build_arguments[*]}" >>"$GITHUB_OUTPUT"
 
-        mapfile -t manifests < <(find -type f -name 'package.yaml' -o -name '*.cabal')
+        # Can't use mapfile on OSX
+        IFS=$'\n' manifests=( $(find -type f -name 'package.yaml' -o -name '*.cabal') )
 
         {
           echo 'lockfiles<<EOLOCKFILES'
-          printf '%s\n' '${{ inputs.stack-yaml }}' "${manifests[@]}"
+          echo '["${{ inputs.stack-yaml }}"'
+          printf ',"%s"' "${manifests[@]}"
+          echo ']'
           echo 'EOLOCKFILES'
 
           echo 'stack-works<<EOSTACKWORKS'
@@ -165,7 +168,7 @@ runs:
         path: |
           ~/.stack
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ hashFiles(steps.setup.outputs.lockfiles) }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}
         restore-keys: |
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-
 
@@ -186,16 +189,16 @@ runs:
         path: |
           ~/.stack
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ hashFiles(steps.setup.outputs.lockfiles) }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}
 
     - name: Restore build cache
       id: restore-build
       uses: actions/cache/restore@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-${{ hashFiles('**') }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}-${{ hashFiles('**') }}
         restore-keys: |
-          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-
+          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}-
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-
 
     - name: Build
