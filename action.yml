@@ -153,8 +153,8 @@ runs:
           echo 'stack-works<<EOM'
           echo "${{ inputs.working-directory }}/.stack-work"
 
-          shopt -s globstar nullglob
-          for x in **/package.yaml **/*.cabal; do
+          # lots of simpler ways to do this, but only this works on OSX too
+          find . -regex '.*/\(package\.yaml\|.*\.cabal\)$' | while IFS=$'\n' read -r x; do
             y=$(dirname "$x" | sed 's%^\./%%')
             echo "${{ inputs.working-directory }}/$y/.stack-work"
           done | sort -u
