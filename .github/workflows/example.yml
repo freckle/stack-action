@@ -5,6 +5,10 @@ on:
   push:
     branches: main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     working-directory: example
@@ -33,16 +37,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: freckle/stack-cache-action@v2
-        with:
-          prefix: ${{ matrix.runner }}/${{ matrix.resolver }}/
-          working-directory: example
-
       - id: stack
         uses: ./
         with:
           working-directory: example
           stack-arguments: --resolver ${{ matrix.resolver }}
+          cache-prefix: ${{ matrix.resolver }}/
 
       - if: ${{ runner.os != 'windows' }}
         run: |
@@ -82,29 +82,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: freckle/stack-cache-action@v2
-        with:
-          working-directory: example
-          stack-yaml: stack-nightly.yaml
-
       - id: stack
         uses: ./
         with:
           working-directory: example
           stack-yaml: stack-nightly.yaml
+          cache-prefix: auto-nightly/
 
   test-auto-nightly-with-explicit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: freckle/stack-cache-action@v2
-        with:
-          working-directory: example
-          stack-yaml: stack-nightly.yaml
-
       - id: stack
         uses: ./
         with:
           working-directory: example
           stack-yaml: stack-nightly.yaml
           stack-arguments: --resolver nightly
+          cache-prefix: auto-nightly-explicit/

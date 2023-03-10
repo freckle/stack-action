@@ -25,6 +25,9 @@ inputs:
     description: "Additional arguments for stack invocations"
     required: true
     default: ""
+  cache-prefix:
+    required: true
+    default: ""
 outputs:
   compiler:
     description: "compiler.actual value from stack query"
@@ -112,9 +115,6 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          setup
-
         resolver_nightly=
 
         # Extra arguments for build and test steps, not the dependencies step
@@ -141,16 +141,74 @@ runs:
         echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
         echo "stack-build-arguments=${stack_build_arguments[*]}" >>"$GITHUB_OUTPUT"
 
+        echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
+        # We can't just list out '**/.stack-work' because the files may not
+        # exist at the time of restoring (we want to restore them after all), so
+        # we look for the package manifests and assume there should be a
+        # .stack-work alongside each. There are lots of simpler ways to do this,
+        # but only find-regex works on a default OSX system. Sigh.
+        find . -regex '.*/\(package\.yaml\|.*\.cabal\)$' |
+          while IFS=$'\n' read -r path; do
+            dir=$(dirname "$path" | sed 's%^\./\?%%')
+
+            if [[ -n "$dir" ]]; then
+              # If dir is empty, that means ./.stack-work. We'll always add
+              # that explicitly and printing it through this loop would produce
+              # "...//.stack-work" anyway, which we don't want.
+              echo "${{ inputs.working-directory }}/$dir/.stack-work"
+            fi
+          done | sort -u >>"$GITHUB_OUTPUT"
+
+        # Always include a top-level .stack-work
+        echo "${{ inputs.working-directory }}/.stack-work" >>"$GITHUB_OUTPUT"
+        echo 'EOM' >>"$GITHUB_OUTPUT"
+
+        echo "package-hash=${{ hashFiles(inputs.stack-yaml, '**/package.yaml', '**/*.cabal') }}" >>"$GITHUB_OUTPUT"
+        echo "sources-hash=${{ hashFiles('**', '!**/.stack-work') }}" >>"$GITHUB_OUTPUT"
+
+    - name: Restore dependencies cache
+      id: restore-deps
+      uses: actions/cache/restore@v3
+      with:
+        path: |
+          ~/.stack
+          ${{ steps.setup.outputs.stack-works }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.setup.outputs.package-hash }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-
+
     - name: Dependencies
+      if: steps.restore-deps.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} setup
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
           ${{ steps.setup.outputs.resolver-nightly }} \
           build --dependencies-only --test --no-run-tests \
           ${{ inputs.stack-arguments }}
 
+    - name: Save dependencies cache
+      if: steps.restore-deps.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: |
+          ~/.stack
+          ${{ steps.setup.outputs.stack-works }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.setup.outputs.package-hash }}
+
+    - name: Restore build cache
+      id: restore-build
+      uses: actions/cache/restore@v3
+      with:
+        path: ${{ steps.setup.outputs.stack-works }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.package-hash }}-
+          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-
+
     - name: Build
+      if: steps.restore-build.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -159,6 +217,13 @@ runs:
           build ${{ steps.setup.outputs.stack-build-arguments }} \
           --test --no-run-tests \
           ${{ inputs.stack-arguments }}
+
+    - name: Save build cache
+      if: steps.restore-build.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: ${{ steps.setup.outputs.stack-works }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
 
     - name: Test
       if: ${{ inputs.test == 'true' }}
