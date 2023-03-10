@@ -167,9 +167,9 @@ runs:
         path: |
           ~/.stack
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ os.runner }}-stack-deps-${{ hashFiles(steps.setup.outputs.lockfiles) }}
+        key: ${{ runner.os }}-stack-deps-${{ hashFiles(steps.setup.outputs.lockfiles) }}
         restore-keys: |
-          ${{ os.runner }}-stack-deps-
+          ${{ runner.os }}-stack-deps-
 
     - name: Install dependencies
       if: steps.restore-deps.outputs.cache-hit != true
@@ -188,17 +188,17 @@ runs:
         path: |
           ~/.stack
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ os.runner }}-stack-deps-${{ hashFiles(steps.setup.outputs.lockfiles) }}
+        key: ${{ runner.os }}-stack-deps-${{ hashFiles(steps.setup.outputs.lockfiles) }}
 
     - name: Restore build cache
       id: restore-build
       uses: actions/cache/restore@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ os.runner }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-${{ hashFiles(steps.setup.outputs.sources) }}
+        key: ${{ runner.os }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-${{ hashFiles(steps.setup.outputs.sources) }}
         restore-keys: |
-          ${{ os.runner }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-
-          ${{ os.runner }}-stack-build-
+          ${{ runner.os }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-
+          ${{ runner.os }}-stack-build-
 
     - name: Build
       if: steps.restore-build.outputs.cache-hit != true
@@ -216,7 +216,7 @@ runs:
       uses: actions/cache/restore@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ os.runner }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-${{ hashFiles(steps.setup.outputs.sources) }}
+        key: ${{ runner.os }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-${{ hashFiles(steps.setup.outputs.sources) }}
 
     - name: Test
       if: ${{ inputs.test == 'true' }}
