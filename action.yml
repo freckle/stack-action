@@ -113,10 +113,9 @@ runs:
     - id: setup
       name: Setup
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
       run: |
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          setup
+        cd '${{ inputs.working-directory }}' &&
+          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} setup
 
         resolver_nightly=
 
@@ -141,32 +140,32 @@ runs:
           resolver_nightly='--resolver nightly'
         fi
 
-        echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
-        echo "stack-build-arguments=${stack_build_arguments[*]}" >>"$GITHUB_OUTPUT"
-
-        # Can't use mapfile on OSX
-        IFS=$'\n' manifests=( $(find -type f -name 'package.yaml' -o -name '*.cabal') )
+        package_hash=${{ hashFiles(inputs.stack-yaml, `${{ inputs.working-directory }}/**/package.yaml`, `${{ inputs.working-directory }}/**/*.cabal`) }}
+        sources_hash=${{ hashFiles(`${{ inputs.working-directory }}/**`, '!**/.stack-work') }}
 
         {
-          echo 'lockfiles<<EOLOCKFILES'
-          echo '["${{ inputs.stack-yaml }}"'
-          printf ',"%s"' "${manifests[@]}"
-          echo ']'
-          echo 'EOLOCKFILES'
+          echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
+          echo "stack-build-arguments=${stack_build_arguments[*]}"
 
+          echo "package-hash=$package"
+          echo "sources-hash=$sources_hash"
+
+          shopt -s nullglob globstar
           echo 'stack-works<<EOSTACKWORKS'
-          for x in "${manifests[@]}"; do
+          for x in "${{ inputs.working-directory }}"/**/package.yaml "${{ inputs.working-directory }}"/**/*.cabal"; do
             echo "$(dirname "$x")/.stack-work"
           done | sort -u
           echo 'EOSTACKWORKS'
-        } >>"$GITHUB_OUTPUT"
+
+        } | tee -a GITHUB_OUTPUT"
 
     - name: TESTING
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
-        echo '${{ steps.setup.outputs.lockfiles }}'
-        echo '${{ fromJSON(steps.setup.outputs.lockfiles) }}'
-        echo '${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}'
+        echo '${{ steps.setup.outputs.package }}'
+        echo '${{ fromJSON(steps.setup.outputs.package) }}'
+        echo '${{ hashFiles(fromJSON(steps.setup.outputs.package)) }}'
 
     - name: Restore dependencies cache
       id: restore-deps
@@ -175,7 +174,7 @@ runs:
         path: |
           ~/.stack
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.setup.outputs.package-hash }}
         restore-keys: |
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-
 
@@ -196,16 +195,16 @@ runs:
         path: |
           ~/.stack
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.setup.outputs.package-hash )) }}
 
     - name: Restore build cache
       id: restore-build
       uses: actions/cache/restore@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}-${{ hashFiles('**') }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
         restore-keys: |
-          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}-
+          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.package-hash }}-
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-
 
     - name: Build
@@ -224,7 +223,7 @@ runs:
       uses: actions/cache/restore@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-${{ hashFiles('**') }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
 
     - name: Test
       if: ${{ inputs.test == 'true' }}
