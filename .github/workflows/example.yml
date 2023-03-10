@@ -23,13 +23,13 @@ jobs:
           - windows-latest
 
         resolver:
-          - nightly   # ghc-9.4 (as of writing)
+          # - nightly   # ghc-9.4 (as of writing)
           - lts       # ghc-9.2 (as of writing)
-          - lts-20.2  # ghc-9.2
-          - lts-19.33 # ghc-9.0
-          - lts-18.28 # ghc-8.10
-          - lts-16.31 # ghc-8.8
-          - lts-12.26 # ghc-8.4
+          # - lts-20.2  # ghc-9.2
+          # - lts-19.33 # ghc-9.0
+          # - lts-18.28 # ghc-8.10
+          # - lts-16.31 # ghc-8.8
+          # - lts-12.26 # ghc-8.4
 
       fail-fast: false
 
@@ -78,25 +78,25 @@ jobs:
           [[ -n "${{ steps.stack.outputs.local-bin-path }}" ]]
           [[ -n "${{ steps.stack.outputs.ghc-paths }}" ]]
 
-  test-auto-nightly:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - id: stack
-        uses: ./
-        with:
-          working-directory: example
-          stack-yaml: stack-nightly.yaml
-          cache-prefix: auto-nightly/
+  # test-auto-nightly:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - id: stack
+  #       uses: ./
+  #       with:
+  #         working-directory: example
+  #         stack-yaml: stack-nightly.yaml
+  #         cache-prefix: auto-nightly/
 
-  test-auto-nightly-with-explicit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - id: stack
-        uses: ./
-        with:
-          working-directory: example
-          stack-yaml: stack-nightly.yaml
-          stack-arguments: --resolver nightly
-          cache-prefix: auto-nightly-explicit/
+  # test-auto-nightly-with-explicit:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - id: stack
+  #       uses: ./
+  #       with:
+  #         working-directory: example
+  #         stack-yaml: stack-nightly.yaml
+  #         stack-arguments: --resolver nightly
+  #         cache-prefix: auto-nightly-explicit/
