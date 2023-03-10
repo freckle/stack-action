@@ -25,6 +25,7 @@ inputs:
     description: "Additional arguments for stack invocations"
     required: true
     default: ""
+  # TODO: cache-prefix
 outputs:
   compiler:
     description: "compiler.actual value from stack query"
@@ -141,7 +142,37 @@ runs:
         echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
         echo "stack-build-arguments=${stack_build_arguments[*]}" >>"$GITHUB_OUTPUT"
 
-    - name: Dependencies
+        mapfile -t manifests < <(find -type f -name 'package.yaml' -o -name '*.cabal')
+
+        {
+          echo 'lockfiles<<EOLOCKFILES'
+          printf '%s\n' '${{ inputs.stack-yaml }}' "${manifests[@]}"
+          echo 'EOLOCKFILES'
+
+          echo 'stack-works<<EOSTACKWORKS'
+          for x in "${manifests[@]}"; do
+            echo "$(dirname "$x")/.stack-work"
+          done | sort -u
+          echo 'EOSTACKWORKS'
+
+          echo 'sources<<EOSOURCES'
+          git ls-files .
+          echo 'EOSOURCES'
+        } >>"$GITHUB_OUTPUT"
+
+    - name: Restore dependencies cache
+      id: restore-deps
+      uses: actions/cache/restore@v3
+      with:
+        path: |
+          ~/.stack
+          ${{ steps.setup.outputs.stack-works }}
+        key: ${{ os.runner }}-stack-deps-${{ hashFiles(steps.setup.outputs.lockfiles) }}
+        restore-keys: |
+          ${{ os.runner }}-stack-deps-
+
+    - name: Install dependencies
+      if: steps.restore-deps.outputs.cache-hit != true
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -150,7 +181,27 @@ runs:
           build --dependencies-only --test --no-run-tests \
           ${{ inputs.stack-arguments }}
 
+    - name: Save dependencies cache
+      if: steps.restore-deps.outputs.cache-hit != true
+      uses: actions/cache/save@v3
+      with:
+        path: |
+          ~/.stack
+          ${{ steps.setup.outputs.stack-works }}
+        key: ${{ os.runner }}-stack-deps-${{ hashFiles(steps.setup.outputs.lockfiles) }}
+
+    - name: Restore build cache
+      id: restore-build
+      uses: actions/cache/restore@v3
+      with:
+        path: ${{ steps.setup.outputs.stack-works }}
+        key: ${{ os.runner }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-${{ hashFiles(steps.setup.outputs.sources) }}
+        restore-keys: |
+          ${{ os.runner }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-
+          ${{ os.runner }}-stack-build-
+
     - name: Build
+      if: steps.restore-build.outputs.cache-hit != true
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -159,6 +210,13 @@ runs:
           build ${{ steps.setup.outputs.stack-build-arguments }} \
           --test --no-run-tests \
           ${{ inputs.stack-arguments }}
+
+    - name: Save build cache
+      if: steps.restore-build.outputs.cache-hit != true
+      uses: actions/cache/restore@v3
+      with:
+        path: ${{ steps.setup.outputs.stack-works }}
+        key: ${{ os.runner }}-stack-build-${{ hashFiles(steps.setup.outputs.lockfiles) }}-${{ hashFiles(steps.setup.outputs.sources) }}
 
     - name: Test
       if: ${{ inputs.test == 'true' }}
