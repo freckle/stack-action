@@ -162,6 +162,7 @@ runs:
         } >>"$GITHUB_OUTPUT"
 
     - name: TESTING
+      shell: bash
       run: |
         echo '${{ steps.setup.outputs.lockfiles }}'
         echo '${{ fromJSON(steps.setup.outputs.lockfiles) }}'
