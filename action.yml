@@ -150,16 +150,19 @@ runs:
         echo "sources-hash=${{ hashFiles('**', '!**/.stack-work') }}" >>"$GITHUB_OUTPUT"
 
         echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
-        {
-          echo "${{ inputs.working-directory }}/.stack-work"
+        echo "${{ inputs.working-directory }}/.stack-work" >>"$GITHUB_OUTPUT"
 
-          # lots of simpler ways to do this, but only this works on OSX too
-          find . -regex '.*/\(package\.yaml\|.*\.cabal\)$' |
-            while IFS=$'\n' read -r path; do
-              dir=$(dirname "$path" | sed 's%^\.$%./%; s%^\.%%')
-              echo "${{ inputs.working-directory }}$dir/.stack-work"
-            done
-        } | sort -u >>"$GITHUB_OUTPUT"
+        # lots of simpler ways to do this, but only this works on OSX too
+        find . -regex '.*/\(package\.yaml\|.*\.cabal\)$' |
+          while IFS=$'\n' read -r path; do
+            dir=$(dirname "$path" | sed 's%^\./\?%%')
+
+            # Only print if non-empty. Empty means ./.stack-work, which we
+            # always echo above.
+            if [[ -n "$dir" ]]; then
+              echo "${{ inputs.working-directory }}/$dir/.stack-work"
+            fi
+          done | sort -u >>"$GITHUB_OUTPUT"
         echo 'EOM' >>"$GITHUB_OUTPUT"
 
     - name: Restore dependencies cache
