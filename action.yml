@@ -149,18 +149,18 @@ runs:
         echo "package-hash=${{ hashFiles(inputs.stack-yaml, '**/package.yaml', '**/*.cabal') }}" >>"$GITHUB_OUTPUT"
         echo "sources-hash=${{ hashFiles('**', '!**/.stack-work') }}" >>"$GITHUB_OUTPUT"
 
+        echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
         {
-          echo 'stack-works<<EOM'
           echo "${{ inputs.working-directory }}/.stack-work"
 
           # lots of simpler ways to do this, but only this works on OSX too
-          find . -regex '.*/\(package\.yaml\|.*\.cabal\)$' | while IFS=$'\n' read -r x; do
-            y=$(dirname "$x" | sed 's%^\./%%')
-            echo "${{ inputs.working-directory }}/$y/.stack-work"
-          done | sort -u
-
-          echo 'EOM'
-        } >>"$GITHUB_OUTPUT"
+          find . -regex '.*/\(package\.yaml\|.*\.cabal\)$' |
+            while IFS=$'\n' read -r path; do
+              dir=$(dirname "$path" | sed 's%^\.$%./%; s%^\.%%')
+              echo "${{ inputs.working-directory }}$dir/.stack-work"
+            done
+        } | sort -u >>"$GITHUB_OUTPUT"
+        echo 'EOM' >>"$GITHUB_OUTPUT"
 
     - name: Restore dependencies cache
       id: restore-deps
