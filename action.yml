@@ -140,8 +140,8 @@ runs:
           resolver_nightly='--resolver nightly'
         fi
 
-        package_hash=${{ hashFiles(inputs.stack-yaml, `${inputs.working-directory}/**/package.yaml`, `${inputs.working-directory}/**/*.cabal`) }}
-        sources_hash=${{ hashFiles(`${inputs.working-directory}/**`, '!**/.stack-work') }}
+        package_hash=${{ hashFiles(inputs.stack-yaml, format('{}/**/package.yaml', inputs.working-directory), format('{}/**/*.cabal', inputs.working-directory)) }}
+        sources_hash=${{ hashFiles(format('{}/**', inputs.working-directory), '!**/.stack-work') }}
 
         {
           echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
