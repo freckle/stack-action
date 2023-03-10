@@ -161,6 +161,12 @@ runs:
           echo 'EOSTACKWORKS'
         } >>"$GITHUB_OUTPUT"
 
+    - name: TESTING
+      run: |
+        echo '${{ steps.setup.outputs.lockfiles }}'
+        echo '${{ fromJSON(steps.setup.outputs.lockfiles) }}'
+        echo '${{ hashFiles(fromJSON(steps.setup.outputs.lockfiles)) }}'
+
     - name: Restore dependencies cache
       id: restore-deps
       uses: actions/cache/restore@v3
