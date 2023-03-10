@@ -155,7 +155,8 @@ runs:
 
           shopt -s globstar nullglob
           for x in **/package.yaml **/*.cabal; do
-            echo "${{ inputs.working-directory }}/$(dirname "$x")/.stack-work"
+            y=$(dirname "$x" | sed 's%^\./%%')
+            echo "${{ inputs.working-directory }}/$y/.stack-work"
           done | sort -u
 
           echo 'EOM'
