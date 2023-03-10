@@ -151,10 +151,13 @@ runs:
 
         {
           echo 'stack-works<<EOM'
+          echo "${{ inputs.working-directory }}/.stack-work"
+
           shopt -s globstar nullglob
           for x in **/package.yaml **/*.cabal; do
             echo "${{ inputs.working-directory }}/$(dirname "$x")/.stack-work"
           done | sort -u
+
           echo 'EOM'
         } >>"$GITHUB_OUTPUT"
 
