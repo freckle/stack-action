@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: freckle/stack-action@v3
+      - uses: freckle/stack-action@v4
 ```
+
+**NOTE**: as of version 4, this action automatically handles caching. You do not
+need to use a separate `stack-cache-action` step any more.
 
 ## Inputs
 
@@ -43,6 +46,10 @@ jobs:
   Default is none, except if `stack-yaml` is the string `"stack-nightly.yaml"`,
   in which case `--resolver nightly` will be used.
 
+- `cache-prefix`: prefix applied to all cache keys. This can be any value you
+  like, but teams often use `v{N} and bump it to `v{N+1}` when/if they need to
+  explicitly bust caches. The default is empty.
+
 ## Outputs
 
 `compiler` (e.g. `ghc-9.2.5`) and `compiler-version` (e.g. `9.2.5`) are set from
@@ -51,7 +58,7 @@ actions depend on it:
 
 ```yaml
 - id: stack
-  uses: freckle/stack-action@v3
+  uses: freckle/stack-action@v4
 - uses: freckle/weeder-action@v2
   with:
     ghc-version: ${{ steps.stack.outputs.compiler-version }}
@@ -62,7 +69,7 @@ for example, to upload executables or coverage reports:
 
 ```yaml
 - id: stack
-  uses: freckle/stack-action@v3
+  uses: freckle/stack-action@v4
   with:
     stack-arguments: --copy-bins --coverage
 
@@ -91,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - id: stack
-        uses: freckle/stack-action@v3
+        uses: freckle/stack-action@v4
 
       # Weeder requires running in the same Job (to access .hie artifacts)
       - uses: freckle/weeder-action@v2
