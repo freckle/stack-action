@@ -39,6 +39,8 @@ need to use a separate `stack-cache-action` step any more.
 
 - `pedantic`: pass `--pedantic` to stack build/test (default `true`).
 
+- `build`: whether build should be executed (default `true`).
+
 - `test`: whether tests should be executed (default `true`).
 
 - `stack-arguments`: additional arguments for stack invocation.

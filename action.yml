@@ -17,6 +17,10 @@ inputs:
     description: "Pass --pedantic in build/test"
     required: true
     default: true
+  build:
+    description: Whether to run build
+    required: false
+    default: true    
   test:
     description: Whether to run tests
     required: false
@@ -177,15 +181,21 @@ runs:
         restore-keys: |
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-
 
-    - name: Dependencies
+    - name: Stack setup
       if: steps.restore-deps.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} setup
+
+    - name: Build dependencies
+      if: steps.restore-deps.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
           ${{ steps.setup.outputs.resolver-nightly }} \
-          build --dependencies-only --test --no-run-tests \
+          build --dependencies-only \
           ${{ inputs.stack-arguments }}
 
     - name: Save dependencies cache
@@ -208,14 +218,13 @@ runs:
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-
 
     - name: Build
-      if: steps.restore-build.outputs.cache-hit != 'true'
+      if: ${{ inputs.test == 'true' }} && steps.restore-build.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
           ${{ steps.setup.outputs.resolver-nightly }} \
           build ${{ steps.setup.outputs.stack-build-arguments }} \
-          --test --no-run-tests \
           ${{ inputs.stack-arguments }}
 
     - name: Save build cache
