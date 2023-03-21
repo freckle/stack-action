@@ -218,7 +218,7 @@ runs:
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-
 
     - name: Build
-      if: ${{ inputs.test == 'true' }} && steps.restore-build.outputs.cache-hit != 'true'
+      if: ${{ inputs.build == 'true' }} && steps.restore-build.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
