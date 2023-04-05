@@ -47,7 +47,7 @@ need to use a separate `stack-cache-action` step any more.
   in which case `--resolver nightly` will be used.
 
 - `cache-prefix`: prefix applied to all cache keys. This can be any value you
-  like, but teams often use `v{N} and bump it to `v{N+1}` when/if they need to
+  like, but teams often use `v{N}` and bump it to `v{N+1}` when/if they need to
   explicitly bust caches. The default is empty.
 
 ## Outputs
