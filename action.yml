@@ -183,7 +183,9 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} setup
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          ${{ steps.setup.outputs.resolver-nightly }} \
+          setup
         stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
           ${{ steps.setup.outputs.resolver-nightly }} \
           build --dependencies-only --test --no-run-tests \
