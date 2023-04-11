@@ -163,7 +163,11 @@ runs:
         echo "${{ inputs.working-directory }}/.stack-work" >>"$GITHUB_OUTPUT"
         echo 'EOM' >>"$GITHUB_OUTPUT"
 
-        echo "snapshot-hash=${{ hashFiles(inputs.stack-yaml) }}" >>"$GITHUB_OUTPUT"
+        # NB. hashFiles() is VERY PICKY. We need to account for
+        # working-directory manually like this or it considers the stack-yaml
+        # not under the workspace. And it ignores files not under the workspace,
+        # silently producing an empty hash.
+        echo "snapshot-hash=${{ hashFiles(format('{0}/{1}', inputs.working-directory, inputs.stack-yaml)) }}" >>"$GITHUB_OUTPUT"
         echo "package-hash=${{ hashFiles('**/package.yaml', '**/*.cabal') }}" >>"$GITHUB_OUTPUT"
         echo "sources-hash=${{ hashFiles('**', '!**/.stack-work') }}" >>"$GITHUB_OUTPUT"
 
