@@ -226,7 +226,7 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
 
     - name: Test
       if: ${{ inputs.test == 'true' }}
