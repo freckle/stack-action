@@ -159,8 +159,9 @@ runs:
             fi
           done | sort -u >>"$GITHUB_OUTPUT"
 
-        # Always include a top-level .stack-work
-        echo "${{ inputs.working-directory }}/.stack-work" >>"$GITHUB_OUTPUT"
+        # Always include a top-level .stack-work, with the location being driven
+        # by the stack-yaml directory.
+        echo "$(dirname ${{ format('{0}/{1}', inputs.working-directory, inputs.stack-yaml) }})/.stack-work" >>"$GITHUB_OUTPUT"
         echo 'EOM' >>"$GITHUB_OUTPUT"
 
         # NB. hashFiles() is VERY PICKY. We need to account for
