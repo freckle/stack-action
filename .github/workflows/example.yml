@@ -75,8 +75,6 @@ jobs:
           [[ -n "${{ steps.stack.outputs.local-install-root }}" ]]
           [[ -n "${{ steps.stack.outputs.dist-dir }}" ]]
           [[ -n "${{ steps.stack.outputs.local-hpc-root }}" ]]
-          [[ -n "${{ steps.stack.outputs.local-bin-path }}" ]]
-          [[ -n "${{ steps.stack.outputs.ghc-paths }}" ]]
 
   test-auto-nightly:
     runs-on: ubuntu-latest
