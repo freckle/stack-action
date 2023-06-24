@@ -101,12 +101,6 @@ outputs:
   local-hpc-root:
     description: "local-hpc-root value from stack path"
     value: ${{ steps.stack-path.outputs.local-hpc-root }}
-  local-bin-path:
-    description: "local-bin-path value from stack path"
-    value: ${{ steps.stack-path.outputs.local-bin-path }}
-  ghc-paths:
-    description: "ghc-paths value from stack path"
-    value: ${{ steps.stack-path.outputs.ghc-paths }}
 runs:
   using: composite
   steps:
