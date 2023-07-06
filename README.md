@@ -114,6 +114,39 @@ jobs:
       - uses: haskell/actions/hlint-run@v2
 ```
 
+## Generating a Build Matrix of `stack.yaml`s
+
+The following automatically discovers all files matching `stack*.yaml` and runs
+this action with each of them:
+
+```yaml
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: generate
+        uses: freckle/stack-action/generate-matrix@v4
+  outputs:
+    stack-yamls: ${{ steps.generate.outputs.stack-yamls }}
+
+  test:
+    needs: generate
+    strategy:
+      matrix:
+        stack-yaml: ${{ fromJSON(needs.generate.outputs.stack-yamls) }}
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: freckle/stack-action@v4
+        with:
+          stack-yaml: ${{ matrix.stack-yaml }}
+```
+
+See [generate-matrix/action.yml](./generate-matrix/action.yml) for more details.
+
 ---
 
 [LICENSE](./LICENSE)

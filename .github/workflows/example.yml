@@ -76,6 +76,33 @@ jobs:
           [[ -n "${{ steps.stack.outputs.dist-dir }}" ]]
           [[ -n "${{ steps.stack.outputs.local-hpc-root }}" ]]
 
+  test-generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: generate
+        uses: ./generate-matrix
+        with:
+          working-directory: example
+    outputs:
+      stack-yamls: ${{ steps.generate.outputs.stack-yamls }}
+
+  test-stack-yamls:
+    needs: test-generate
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        stack-yaml: ${{ fromJSON(needs.test-generate.outputs.stack-yamls) }}
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        with:
+          working-directory: example
+          stack-yaml: ${{ matrix.stack-yaml }}
+
   test-auto-nightly:
     runs-on: ubuntu-latest
     steps:
