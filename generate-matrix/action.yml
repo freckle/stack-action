@@ -1,0 +1,28 @@
+name: Generate Matrix
+description: Sub-action to generate a matrix of stack-yamls
+inputs:
+  working-directory:
+    description: "Working directory for run commands"
+    required: true
+    default: .
+  find-options:
+    description: "Arguments to find(1) stack-yaml files"
+    required: true
+    default: "-maxdepth 1 -name 'stack*.yaml'"
+outputs:
+  stack-yamls:
+    description: Version-sorted list of all files matching stack*.yaml
+    value: ${{ steps.generate.outputs.stack-yamls }}
+runs:
+  using: composite
+  steps:
+    - id: generate
+      name: Generate
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        {
+          echo 'stack-yamls<<EOM'
+          find ${{ inputs.find-options }} -printf '"%f"\n' | sort -V | jq --slurp
+          echo 'EOM'
+        } >>"$GITHUB_OUTPUT"
