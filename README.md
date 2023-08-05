@@ -127,8 +127,8 @@ jobs:
       - uses: actions/checkout@v3
       - id: generate
         uses: freckle/stack-action/generate-matrix@v4
-  outputs:
-    stack-yamls: ${{ steps.generate.outputs.stack-yamls }}
+    outputs:
+      stack-yamls: ${{ steps.generate.outputs.stack-yamls }}
 
   test:
     needs: generate
