@@ -166,6 +166,21 @@ runs:
         echo "package-hash=${{ hashFiles('**/package.yaml', '**/*.cabal') }}" >>"$GITHUB_OUTPUT"
         echo "sources-hash=${{ hashFiles('**', '!**/.stack-work') }}" >>"$GITHUB_OUTPUT"
 
+    - id: stack-query
+      name: Set stack-query outputs
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      run: |
+        tmp=$(mktemp)
+        trap 'rm -r "$tmp"' EXIT
+
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          ${{ steps.setup.outputs.resolver-nightly }} \
+          query compiler | tee "$tmp"
+
+        sed '/^actual: \(.*\)$/!d; s//compiler=\1/' "$tmp" >>"$GITHUB_OUTPUT"
+        sed '/^actual: ghc-\(.*\)$/!d; s//compiler-version=\1/' "$tmp" >>"$GITHUB_OUTPUT"
+
     - name: Restore dependencies cache
       id: restore-deps
       uses: actions/cache/restore@v3
@@ -236,21 +251,6 @@ runs:
           ${{ steps.setup.outputs.resolver-nightly }} \
           build ${{ steps.setup.outputs.stack-build-arguments }} --test \
           ${{ inputs.stack-arguments }}
-
-    - id: stack-query
-      name: Set stack-query outputs
-      working-directory: ${{ inputs.working-directory }}
-      shell: bash
-      run: |
-        tmp=$(mktemp)
-        trap 'rm -r "$tmp"' EXIT
-
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          ${{ steps.setup.outputs.resolver-nightly }} \
-          query compiler | tee "$tmp"
-
-        sed '/^actual: \(.*\)$/!d; s//compiler=\1/' "$tmp" >>"$GITHUB_OUTPUT"
-        sed '/^actual: ghc-\(.*\)$/!d; s//compiler-version=\1/' "$tmp" >>"$GITHUB_OUTPUT"
 
     - id: stack-path
       name: Set stack-path outputs
