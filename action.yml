@@ -181,12 +181,25 @@ runs:
         sed '/^actual: \(.*\)$/!d; s//compiler=\1/' "$tmp" >>"$GITHUB_OUTPUT"
         sed '/^actual: ghc-\(.*\)$/!d; s//compiler-version=\1/' "$tmp" >>"$GITHUB_OUTPUT"
 
+    - id: stack-path
+      name: Set stack-path outputs
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      run: |
+        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+          ${{ steps.setup.outputs.resolver-nightly }} \
+          path | while IFS=:\  read -r name value; do
+          printf '%s: %s\n' "$name" "$value"
+          printf '%s=%s\n' "$name" "$value" >>"$GITHUB_OUTPUT"
+        done
+
     - name: Restore dependencies cache
       id: restore-deps
       uses: actions/cache/restore@v3
       with:
         path: |
-          ~/.stack
+          ${{ steps.stack-path.outputs.stack-root }}
+          ${{ steps.stack-path.outputs.programs }}
           ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
         restore-keys: |
@@ -211,7 +224,8 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: |
-          ~/.stack
+          ${{ steps.stack-path.outputs.stack-root }}
+          ${{ steps.stack-path.outputs.programs }}
           ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
 
@@ -252,15 +266,3 @@ runs:
           ${{ steps.setup.outputs.resolver-nightly }} \
           build ${{ steps.setup.outputs.stack-build-arguments }} --test \
           ${{ inputs.stack-arguments }}
-
-    - id: stack-path
-      name: Set stack-path outputs
-      working-directory: ${{ inputs.working-directory }}
-      shell: bash
-      run: |
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          ${{ steps.setup.outputs.resolver-nightly }} \
-          path | while IFS=:\  read -r name value; do
-          printf '%s: %s\n' "$name" "$value"
-          printf '%s=%s\n' "$name" "$value" >>"$GITHUB_OUTPUT"
-        done
