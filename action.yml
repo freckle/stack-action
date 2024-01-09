@@ -186,11 +186,11 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       shell: bash
       run: |
-        echo "stack-root='$(
+        echo "stack-root=$(
           stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
             ${{ steps.setup.outputs.resolver-nightly }} \
             path --stack-root
-        )'" >>"$GITHUB_OUTPUT"
+        )" >>"$GITHUB_OUTPUT"
 
     - name: Restore dependencies cache
       id: restore-deps
