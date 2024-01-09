@@ -181,17 +181,23 @@ runs:
         sed '/^actual: \(.*\)$/!d; s//compiler=\1/' "$tmp" >>"$GITHUB_OUTPUT"
         sed '/^actual: ghc-\(.*\)$/!d; s//compiler-version=\1/' "$tmp" >>"$GITHUB_OUTPUT"
 
+    - id: get-stack-root
+      name: Set stack-root output
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      run: |
+        echo "stack-root='$(
+          stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
+            ${{ steps.setup.outputs.resolver-nightly }} \
+            path --stack-root
+        )'" >>"$GITHUB_OUTPUT"
+
     - name: Restore dependencies cache
       id: restore-deps
       uses: actions/cache/restore@v3
       with:
         path: |
-          ${{ startsWith(runner.os, 'Windows') && 
-              '
-              ~\AppData\Roaming\stack
-              ~\AppData\Local\Programs\stack'
-            || '~/.stack'
-          }}
+          ${{ steps.get-stack-root.outputs.stack-root }}
           ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
         restore-keys: |
@@ -216,12 +222,7 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: |
-          ${{ startsWith(runner.os, 'Windows') && 
-              '
-              ~\AppData\Roaming\stack
-              ~\AppData\Local\Programs\stack'
-            || '~/.stack'
-          }}
+          ${{ steps.get-stack-root.outputs.stack-root }}
           ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
 
