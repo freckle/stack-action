@@ -186,7 +186,12 @@ runs:
       uses: actions/cache/restore@v3
       with:
         path: |
-          ~/.stack
+          ${{ startsWith(runner.os, 'Windows') && 
+              '
+              ~\AppData\Roaming\stack
+              ~\AppData\Local\Programs\stack'
+            || '~/.stack'
+          }}
           ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
         restore-keys: |
@@ -211,7 +216,12 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: |
-          ~/.stack
+          ${{ startsWith(runner.os, 'Windows') && 
+              '
+              ~\AppData\Roaming\stack
+              ~\AppData\Local\Programs\stack'
+            || '~/.stack'
+          }}
           ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
 
