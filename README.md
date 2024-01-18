@@ -50,6 +50,9 @@ need to use a separate `stack-cache-action` step any more.
   like, but teams often use `v{N}` and bump it to `v{N+1}` when/if they need to
   explicitly bust caches. The default is empty.
 
+- `cache-save-always`: save artifacts to the cache even if the build fails.
+  This may speed up builds in subsequent runs.
+
 ## Outputs
 
 `compiler` (e.g. `ghc-9.2.5`) and `compiler-version` (e.g. `9.2.5`) are set from
