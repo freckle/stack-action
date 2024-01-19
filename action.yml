@@ -38,19 +38,23 @@ inputs:
     required: true
     default: ""
   stack-build-arguments:
-    description: "Additional arguments in `stack build` invocations."
+    description: "Additional arguments in all `stack build` invocations. Can not be overriden by other action inputs."
+    required: true
+    default: ""
+  stack-build-arguments-default:
+    description: "Additional arguments in `stack build` invocations. Can be overriden by other action inputs."
     required: true
     default: ""
   stack-build-arguments-dependencies:
-    description: "When a non-empy string, overrides the input `stack-build-arguments` on the `Dependencies` step."
+    description: "When a non-empy string, overrides the input `stack-build-arguments-default` on the `Dependencies` step."
     required: true
     default: ""
   stack-build-arguments-build:
-    description: "When a non-empy string, overrides the input `stack-build-arguments` on the `Build` step."
+    description: "When a non-empy string, overrides the input `stack-build-arguments-default` on the `Build` step."
     required: true
     default: ""
   stack-build-arguments-test:
-    description: "When a non-empy string, overrides the input `stack-build-arguments` on the `Test` step."
+    description: "When a non-empy string, overrides the input `stack-build-arguments-default` on the `Test` step."
     required: true
     default: ""
   cache-prefix:
@@ -150,9 +154,9 @@ runs:
           stack_build_arguments+=( --pedantic )
         fi
 
-        echo "stack-build-arguments-build=       ${stack_build_arguments[*]} ${{ inputs.stack-build-arguments-build        != '' && inputs.stack-build-arguments-build        || inputs.stack-build-arguments }}" >>"$GITHUB_OUTPUT"
-        echo "stack-build-arguments-dependencies=${stack_build_arguments[*]} ${{ inputs.stack-build-arguments-dependencies != '' && inputs.stack-build-arguments-dependencies || inputs.stack-build-arguments }}" >>"$GITHUB_OUTPUT"
-        echo "stack-build-arguments-test=        ${stack_build_arguments[*]} ${{ inputs.stack-build-arguments-test         != '' && inputs.stack-build-arguments-test         || inputs.stack-build-arguments }}" >>"$GITHUB_OUTPUT"
+        echo "stack-build-arguments-build=       ${stack_build_arguments[*]} ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build        != '' && inputs.stack-build-arguments-build        || inputs.stack-build-arguments-default }}" >>"$GITHUB_OUTPUT"
+        echo "stack-build-arguments-dependencies=${stack_build_arguments[*]} ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies != '' && inputs.stack-build-arguments-dependencies || inputs.stack-build-arguments-default }}" >>"$GITHUB_OUTPUT"
+        echo "stack-build-arguments-test=        ${stack_build_arguments[*]} ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test         != '' && inputs.stack-build-arguments-test         || inputs.stack-build-arguments-default }}" >>"$GITHUB_OUTPUT"
 
         has_resolver() {
           grep -Fq -- '--resolver' <<'EOM'
