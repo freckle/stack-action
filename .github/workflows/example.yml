@@ -22,14 +22,21 @@ jobs:
           - macOS-latest
           - windows-latest
 
-        resolver:
-          - nightly   # ghc-9.4 (as of writing)
-          - lts       # ghc-9.2 (as of writing)
-          - lts-20.2  # ghc-9.2
-          - lts-19.33 # ghc-9.0
-          - lts-18.28 # ghc-8.10
-          - lts-16.31 # ghc-8.8
-          - lts-12.26 # ghc-8.4
+        stack:
+          - resolver: nightly
+          - resolver: lts
+          - resolver: lts-22.7
+            ghc: "9.6.4"
+          - resolver: lts-20.2
+            ghc: "9.2.5"
+          - resolver: lts-19.33
+            ghc: "9.0.2"
+          - resolver: lts-18.28
+            ghc: "8.10.7"
+          - resolver: lts-16.31
+            ghc: "8.8.4"
+          - resolver: lts-12.26
+            ghc: "8.4.4"
 
       fail-fast: false
 
@@ -41,14 +48,17 @@ jobs:
         uses: ./
         with:
           working-directory: example
-          stack-arguments: --resolver ${{ matrix.resolver }}
-          cache-prefix: ${{ matrix.resolver }}/
-
-      - if: ${{ runner.os != 'windows' }}
+          stack-arguments: --resolver ${{ matrix.stack.resolver }}
+          cache-prefix: ${{ matrix.stack.resolver }}/
+      
+      - if: matrix.stack.ghc
+        shell: bash
         run: |
-          [[ "${{ steps.stack.outputs.compiler }}" = "ghc-8.10.4" ]]
-          [[ "${{ steps.stack.outputs.compiler-version }}" = "8.10.4" ]]
-
+          [[ "${{ steps.stack.outputs.compiler }}" = ghc-${{ matrix.stack.ghc }} ]]
+          [[ "${{ steps.stack.outputs.compiler-version }}" = ${{ matrix.stack.ghc }} ]]
+      
+      - shell: bash
+        run: |
           # stack path | cut -d: -f1
           [[ -n "${{ steps.stack.outputs.snapshot-doc-root }}" ]]
           [[ -n "${{ steps.stack.outputs.local-doc-root }}" ]]
