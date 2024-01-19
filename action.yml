@@ -9,20 +9,40 @@ inputs:
     description: "Override stack.yaml, relative to working-directory"
     required: true
     default: stack.yaml
-  fast:
-    description: "Pass --fast in build/test"
-    required: true
-    default: true
-  pedantic:
-    description: "Pass --pedantic in build/test"
-    required: true
-    default: true
   test:
     description: Whether to run tests
     required: false
     default: true
   stack-arguments:
-    description: "Additional arguments for stack invocations"
+    description: "Additional arguments for all top-level `stack` command invocations."
+    required: true
+    default: "--no-terminal"
+  stack-query-arguments:
+    description: "Additional arguments in `stack query` invocations."
+    required: true
+    default: ""
+  stack-path-arguments:
+    description: "Additional arguments in `stack path` invocations."
+    required: true
+    default: ""
+  stack-setup-arguments:
+    description: "Additional arguments in `stack setup` invocations."
+    required: true
+    default: ""
+  stack-build-arguments:
+    description: "Additional arguments for all `stack build` invocations."
+    required: true
+    default: "--fast --pedantic"
+  stack-build-arguments-dependencies:
+    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Dependencies` step."
+    required: true
+    default: ""
+  stack-build-arguments-build:
+    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Build` step."
+    required: true
+    default: ""
+  stack-build-arguments-test:
+    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Test` step."
     required: true
     default: ""
   cache-prefix:
@@ -112,31 +132,54 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        resolver_nightly=
+        # Accept newline-separated content on stdin and set it as the given
+        # output with those newlines replaced by spaces.
+        set_trimmed_output() {
+          { printf '%s=' "$1"; tr '\n' ' '; echo; } >>"$GITHUB_OUTPUT"
+        }
 
-        # Extra arguments for build and test steps, not the dependencies step
-        stack_build_arguments=()
-
-        if ${{ inputs.fast }}; then
-          stack_build_arguments+=( --fast )
-        fi
-
-        if ${{ inputs.pedantic }}; then
-          stack_build_arguments+=( --pedantic )
-        fi
-
+        # Check if stack-arguments is specifying --resolver
         has_resolver() {
           grep -Fq -- '--resolver' <<'EOM'
         ${{ inputs.stack-arguments }}
         EOM
         }
 
+        set_trimmed_output "stack-query-arguments" <<EOM
+        ${{ inputs.query-arguments }}
+        EOM
+
+        set_trimmed_output "stack-path-arguments" <<EOM
+        ${{ inputs.path-arguments }}
+        EOM
+
+        set_trimmed_output "stack-setup-arguments" <<EOM
+        ${{ inputs.setup-arguments }}
+        EOM
+
+        set_trimmed_output "stack-build-arguments-dependencies" <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}
+        EOM
+
+        set_trimmed_output "stack-build-arguments-build" <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build }}
+        EOM
+
+        set_trimmed_output "stack-build-arguments-test" <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test }}
+        EOM
+
+        resolver_nightly=
+
         if ! has_resolver && [[ "${{ inputs.stack-yaml }}" == 'stack-nightly.yaml' ]]; then
           resolver_nightly='--resolver nightly'
         fi
 
         echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
-        echo "stack-build-arguments=${stack_build_arguments[*]}" >>"$GITHUB_OUTPUT"
+
+        set_trimmed_output "stack-arguments" <<EOM
+        --stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly ${{ inputs.stack-arguments }}
+        EOM
 
         echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
         # We can't just list out '**/.stack-work' because the files may not
@@ -177,9 +220,9 @@ runs:
         tmp=$(mktemp)
         trap 'rm -r "$tmp"' EXIT
 
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          ${{ steps.setup.outputs.resolver-nightly }} \
-          query compiler | tee "$tmp"
+        stack ${{ steps.setup.outputs.stack-arguments }} \
+          query compiler ${{ steps.setup.outputs.stack-query-arguments }} \
+          | tee "$tmp"
 
         sed '/^actual: \(.*\)$/!d; s//compiler=\1/' "$tmp" >>"$GITHUB_OUTPUT"
         sed '/^actual: ghc-\(.*\)$/!d; s//compiler-version=\1/' "$tmp" >>"$GITHUB_OUTPUT"
@@ -189,9 +232,9 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       shell: bash
       run: |
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          ${{ steps.setup.outputs.resolver-nightly }} \
-          path | while IFS=:\  read -r name value; do
+        stack ${{ steps.setup.outputs.stack-arguments }} \
+          path ${{ steps.setup.outputs.stack-path-arguments }} \
+          | while IFS=:\  read -r name value; do
           printf '%s: %s\n' "$name" "$value"
           printf '%s=%s\n' "$name" "$value" >>"$GITHUB_OUTPUT"
         done
@@ -216,13 +259,11 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          ${{ steps.setup.outputs.resolver-nightly }} \
-          setup
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          ${{ steps.setup.outputs.resolver-nightly }} \
+        stack ${{ steps.setup.outputs.stack-arguments }} \
+          setup ${{ steps.setup.outputs.stack-setup-arguments }}
+        stack ${{ steps.setup.outputs.stack-arguments }} \
           build --dependencies-only --test --no-run-tests \
-          ${{ inputs.stack-arguments }}
+          ${{ steps.setup.outputs.stack-build-arguments-dependencies }}
 
     - name: Save dependencies cache
       if: |
@@ -253,11 +294,9 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          ${{ steps.setup.outputs.resolver-nightly }} \
-          build ${{ steps.setup.outputs.stack-build-arguments }} \
-          --test --no-run-tests \
-          ${{ inputs.stack-arguments }}
+        stack ${{ steps.setup.outputs.stack-arguments }} \
+          build --test --no-run-tests \
+          ${{ steps.setup.outputs.stack-build-arguments-build }}
 
     - name: Save build cache
       if: |
@@ -273,7 +312,6 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        stack --no-terminal --stack-yaml ${{ inputs.stack-yaml }} \
-          ${{ steps.setup.outputs.resolver-nightly }} \
-          build ${{ steps.setup.outputs.stack-build-arguments }} --test \
-          ${{ inputs.stack-arguments }}
+        stack ${{ steps.setup.outputs.stack-arguments }} \
+          build --test \
+          ${{ steps.setup.outputs.stack-build-arguments-test }}
