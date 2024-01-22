@@ -223,12 +223,6 @@ runs:
           build --dependencies-only --test --no-run-tests \
           ${{ inputs.stack-arguments }}
 
-    - name: Set dependencies cache key suffix on failure
-      id: deps-cache-key
-      if: failure() && inputs.cache-save-always == 'true'
-      shell: bash
-      run: echo "suffix=-partial" >>"$GITHUB_OUTPUT"
-
     - name: Save dependencies cache
       if: |
         (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
@@ -239,7 +233,7 @@ runs:
           ${{ steps.stack-path.outputs.stack-root }}
           ${{ steps.stack-path.outputs.programs }}
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}${{ steps.deps-cache-key.outputs.suffix }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}${{ failure() && '-partial' }}
 
     - name: Restore build cache
       id: restore-build
@@ -263,12 +257,6 @@ runs:
           --test --no-run-tests \
           ${{ inputs.stack-arguments }}
 
-    - name: Set build cache key suffix on failure
-      id: build-cache-key
-      if: failure() && inputs.cache-save-always == 'true'
-      shell: bash
-      run: echo "suffix=-partial" >>"$GITHUB_OUTPUT"
-
     - name: Save build cache
       if: |
         (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
@@ -276,7 +264,7 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}${{ steps.build-cache-key.outputs.suffix }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}${{ failure() && '-partial' }}
 
     - name: Test
       if: ${{ inputs.test == 'true' }}
