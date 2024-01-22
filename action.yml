@@ -130,12 +130,12 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       run: |
         {
-          echo "stack-query-arguments=              $(echo "${{ inputs.query-arguments       }}                                                 " | tr '\n' ' ')"
-          echo "stack-path-arguments=               $(echo "${{ inputs.path-arguments        }}                                                 " | tr '\n' ' ')"
-          echo "stack-setup-arguments=              $(echo "${{ inputs.setup-arguments       }}                                                 " | tr '\n' ' ')"
-          echo "stack-build-arguments-dependencies= $(echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}" | tr '\n' ' ')"
-          echo "stack-build-arguments-build=        $(echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build        }}" | tr '\n' ' ')"
-          echo "stack-build-arguments-test=         $(echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test         }}" | tr '\n' ' ')"
+          echo "stack-query-arguments=$(             echo "${{ inputs.query-arguments                                                        }}" | tr '\n' ' ')"
+          echo "stack-path-arguments=$(              echo "${{ inputs.path-arguments                                                         }}" | tr '\n' ' ')"
+          echo "stack-setup-arguments=$(             echo "${{ inputs.setup-arguments                                                        }}" | tr '\n' ' ')"
+          echo "stack-build-arguments-dependencies=$(echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}" | tr '\n' ' ')"
+          echo "stack-build-arguments-build=$(       echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build        }}" | tr '\n' ' ')"
+          echo "stack-build-arguments-test=$(        echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test         }}" | tr '\n' ' ')"
         } >> "$GITHUB_OUTPUT"
 
         has_resolver() {
