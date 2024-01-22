@@ -16,7 +16,7 @@ inputs:
   stack-arguments:
     description: "Additional arguments for stack invocations"
     required: true
-    default: ""
+    default: "--no-terminal"
   stack-query-arguments:
     description: "Additional arguments in `stack query` invocations."
     required: true
@@ -152,7 +152,7 @@ runs:
 
         echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
 
-        echo "stack-arguments=--no-terminal --stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly $(echo "${{ inputs.stack-arguments }}" | tr '\n' ' ')" >>"$GITHUB_OUTPUT"
+        echo "stack-arguments=--stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly $(echo "${{ inputs.stack-arguments }}" | tr '\n' ' ')" >>"$GITHUB_OUTPUT"
 
         echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
         # We can't just list out '**/.stack-work' because the files may not
