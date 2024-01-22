@@ -51,8 +51,7 @@ jobs:
           stack-arguments: --resolver ${{ matrix.resolver }}
           cache-prefix: ${{ matrix.resolver }}/
 
-      - if:
-        shell: bash
+      - shell: bash
         run: |
           [[ "${{ steps.stack.outputs.compiler }}" = ${{ format('ghc-{0}', matrix.ghc) }} ]]
           [[ "${{ steps.stack.outputs.compiler-version }}" = ${{ matrix.ghc }} ]]
