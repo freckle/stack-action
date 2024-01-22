@@ -221,7 +221,7 @@ runs:
           ${{ inputs.stack-arguments }}
 
     - name: Save dependencies cache
-      if: success() || (failure() && inputs.cache-save-always)
+      if: success() || (failure() && inputs.cache-save-always == 'true')
       uses: actions/cache/save@v3
       with:
         path: |
@@ -250,7 +250,7 @@ runs:
           ${{ inputs.stack-arguments }}
 
     - name: Save build cache
-      if: success() || (failure() && inputs.cache-save-always)
+      if: success() || (failure() && inputs.cache-save-always == 'true')
       uses: actions/cache/save@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
