@@ -9,14 +9,6 @@ inputs:
     description: "Override stack.yaml, relative to working-directory"
     required: true
     default: stack.yaml
-  fast:
-    description: "Pass --fast in build/test"
-    required: true
-    default: true
-  pedantic:
-    description: "Pass --pedantic in build/test"
-    required: true
-    default: true
   test:
     description: Whether to run tests
     required: false
@@ -40,7 +32,7 @@ inputs:
   stack-build-arguments:
     description: "Additional arguments in `stack build` invocations."
     required: true
-    default: ""
+    default: "--fast --pedantic"
   stack-build-arguments-dependencies:
     description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Dependencies` step."
     required: true
@@ -139,20 +131,9 @@ runs:
       run: |
         resolver_nightly=
 
-        # Extra arguments for build and test steps, not the dependencies step
-        stack_build_arguments=()
-
-        if ${{ inputs.fast }}; then
-          stack_build_arguments+=( --fast )
-        fi
-
-        if ${{ inputs.pedantic }}; then
-          stack_build_arguments+=( --pedantic )
-        fi
-
-        echo "stack-build-arguments-build=       ${stack_build_arguments[*]} ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build        }}" >>"$GITHUB_OUTPUT"
-        echo "stack-build-arguments-dependencies=${stack_build_arguments[*]} ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}" >>"$GITHUB_OUTPUT"
-        echo "stack-build-arguments-test=        ${stack_build_arguments[*]} ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test         }}" >>"$GITHUB_OUTPUT"
+        echo "stack-build-arguments-build=       ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build        }}" >>"$GITHUB_OUTPUT"
+        echo "stack-build-arguments-dependencies=${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}" >>"$GITHUB_OUTPUT"
+        echo "stack-build-arguments-test=        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test         }}" >>"$GITHUB_OUTPUT"
 
         has_resolver() {
           grep -Fq -- '--resolver' <<'EOM'
