@@ -22,7 +22,7 @@ jobs:
           - macOS-latest
           - windows-latest
 
-        include:
+        stack:
           - resolver: nightly
             ghc: "9.8.1"
           - resolver: lts-22.7
@@ -48,13 +48,13 @@ jobs:
         uses: ./
         with:
           working-directory: example
-          stack-arguments: --resolver ${{ matrix.resolver }}
-          cache-prefix: ${{ matrix.resolver }}/
+          stack-arguments: --resolver ${{ matrix.stack.resolver }}
+          cache-prefix: ${{ matrix.stack.resolver }}/
 
       - shell: bash
         run: |
-          [[ "${{ steps.stack.outputs.compiler }}" = ${{ format('ghc-{0}', matrix.ghc) }} ]]
-          [[ "${{ steps.stack.outputs.compiler-version }}" = ${{ matrix.ghc }} ]]
+          [[ "${{ steps.stack.outputs.compiler }}" = ${{ format('ghc-{0}', matrix.stack.ghc) }} ]]
+          [[ "${{ steps.stack.outputs.compiler-version }}" = ${{ matrix.stack.ghc }} ]]
 
           # stack path | cut -d: -f1
           [[ -n "${{ steps.stack.outputs.snapshot-doc-root }}" ]]
