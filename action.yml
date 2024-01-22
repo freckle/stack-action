@@ -197,6 +197,7 @@ runs:
         done
 
     - name: Restore dependencies cache
+      id: restore-deps
       uses: actions/cache/restore@v3
       with:
         path: |
@@ -205,10 +206,12 @@ runs:
           ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
         restore-keys: |
+          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-partial
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-
 
     - name: Dependencies
+      if: steps.restore-deps.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -221,25 +224,30 @@ runs:
           ${{ inputs.stack-arguments }}
 
     - name: Save dependencies cache
-      if: success() || (failure() && inputs.cache-save-always == 'true')
+      if: |
+        (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
+        (failure() && inputs.cache-save-always == 'true')
       uses: actions/cache/save@v3
       with:
         path: |
           ${{ steps.stack-path.outputs.stack-root }}
           ${{ steps.stack-path.outputs.programs }}
           ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}${{ failure() && '-partial' }}
 
     - name: Restore build cache
+      id: restore-build
       uses: actions/cache/restore@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
         restore-keys: |
+          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}-partial
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-
 
     - name: Build
+      if: steps.restore-build.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -250,11 +258,13 @@ runs:
           ${{ inputs.stack-arguments }}
 
     - name: Save build cache
-      if: success() || (failure() && inputs.cache-save-always == 'true')
+      if: |
+        (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
+        (failure() && inputs.cache-save-always == 'true')
       uses: actions/cache/save@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
+        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}${{ failure() && '-partial' }}
 
     - name: Test
       if: ${{ inputs.test == 'true' }}
