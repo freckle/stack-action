@@ -30,7 +30,7 @@ inputs:
     required: true
     default: ""
   stack-build-arguments:
-    description: "Additional arguments in `stack build` invocations."
+    description: "Additional arguments for all `stack build` invocations."
     required: true
     default: "--fast --pedantic"
   stack-build-arguments-dependencies:
