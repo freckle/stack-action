@@ -14,7 +14,7 @@ inputs:
     required: false
     default: true
   stack-arguments:
-    description: "Additional arguments for stack invocations"
+    description: "Additional arguments for all top-level `stack` command invocations."
     required: true
     default: "--no-terminal"
   stack-query-arguments:
