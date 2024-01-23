@@ -53,7 +53,7 @@ jobs:
 
       - shell: bash
         run: |
-          [[ "${{ steps.stack.outputs.compiler }}" = ${{ format('ghc-{0}', matrix.stack.ghc) }} ]]
+          [[ "${{ steps.stack.outputs.compiler }}" = ghc-${{ matrix.stack.ghc }} ]]
           [[ "${{ steps.stack.outputs.compiler-version }}" = ${{ matrix.stack.ghc }} ]]
 
           # stack path | cut -d: -f1
