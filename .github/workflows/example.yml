@@ -51,7 +51,7 @@ jobs:
           stack-arguments: --resolver ${{ matrix.stack.resolver }}
           cache-prefix: ${{ matrix.stack.resolver }}/
       
-      - if: matrix.stack.resolver != 'lts' && matrix.stack.resolver != 'nightly'
+      - if: matrix.stack.ghc
         shell: bash
         run: |
           [[ "${{ steps.stack.outputs.compiler }}" = ghc-${{ matrix.stack.ghc }} ]]
