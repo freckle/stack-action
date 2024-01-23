@@ -51,7 +51,8 @@ need to use a separate `stack-cache-action` step any more.
   explicitly bust caches. The default is empty.
 
 - `cache-save-always`: save artifacts to the cache even if the build fails.
-  This may speed up builds in subsequent runs.
+  This may speed up builds in subsequent runs at the expense of slightly-longer
+  builds when a full cache-hit occurs. (Since `@v4.2.0`)
 
 ## Outputs
 
