@@ -28,6 +28,9 @@ inputs:
   cache-prefix:
     required: true
     default: ""
+  cache-save-always:
+    description: "Save the dependencies and build cache even if a build fails"
+    default: false
 outputs:
   compiler:
     description: "compiler.actual value from stack query"
@@ -207,7 +210,9 @@ runs:
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-
 
     - name: Dependencies
-      if: steps.restore-deps.outputs.cache-hit != 'true'
+      if: |
+        (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
+        (!cancelled() && inputs.cache-save-always == 'true')
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -220,7 +225,9 @@ runs:
           ${{ inputs.stack-arguments }}
 
     - name: Save dependencies cache
-      if: steps.restore-deps.outputs.cache-hit != 'true'
+      if: |
+        (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
+        (!cancelled() && inputs.cache-save-always == 'true')
       uses: actions/cache/save@v3
       with:
         path: |
@@ -240,7 +247,9 @@ runs:
           ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-
 
     - name: Build
-      if: steps.restore-build.outputs.cache-hit != 'true'
+      if: |
+        (success() && steps.restore-build.outputs.cache-hit != 'true') ||
+        (!cancelled() && inputs.cache-save-always == 'true')
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
@@ -251,7 +260,9 @@ runs:
           ${{ inputs.stack-arguments }}
 
     - name: Save build cache
-      if: steps.restore-build.outputs.cache-hit != 'true'
+      if: |
+        (success() && steps.restore-build.outputs.cache-hit != 'true') ||
+        (!cancelled() && inputs.cache-save-always == 'true')
       uses: actions/cache/save@v3
       with:
         path: ${{ steps.setup.outputs.stack-works }}
