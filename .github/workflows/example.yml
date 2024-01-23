@@ -24,7 +24,7 @@ jobs:
 
         stack:
           - resolver: nightly
-            ghc: "9.8.1"
+          - resolver: lts
           - resolver: lts-22.7
             ghc: "9.6.4"
           - resolver: lts-20.2
@@ -50,12 +50,15 @@ jobs:
           working-directory: example
           stack-arguments: --resolver ${{ matrix.stack.resolver }}
           cache-prefix: ${{ matrix.stack.resolver }}/
-
-      - shell: bash
+      
+      - if: matrix.stack.resolver != 'lts' && matrix.stack.resolver != 'nightly'
+        shell: bash
         run: |
           [[ "${{ steps.stack.outputs.compiler }}" = ghc-${{ matrix.stack.ghc }} ]]
           [[ "${{ steps.stack.outputs.compiler-version }}" = ${{ matrix.stack.ghc }} ]]
-
+      
+      - shell: bash
+        run: |
           # stack path | cut -d: -f1
           [[ -n "${{ steps.stack.outputs.snapshot-doc-root }}" ]]
           [[ -n "${{ steps.stack.outputs.local-doc-root }}" ]]
