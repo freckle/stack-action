@@ -58,58 +58,7 @@ jobs:
 
 ## Inputs
 
-All inputs are optional.
-
-- `working-directory`: working directory for all `run` steps.
-
-  Default is `.`. Useful for a multi-project repository.
-
-- `stack-yaml`: path to use instead of `stack.yaml`.
-
-  Default is `stack.yaml`. Expected to be relative to `working-directory`.
-
-- `test`: whether tests should be executed
-
-  Default `true`.
-
-- `stack-arguments`: global arguments for **all** `stack` invocations
-
-  Default is `--no-terminal --stack-yaml {stack-yaml}`, and if `stack-yaml` is
-  the string `"stack-nightly.yaml"`, `--resolver nightly` will be added.
-
-- `stack-build-arguments`: arguments for **all** `stack build` invocations
-
-  Default is `--fast --pedantic`. If you are building executables, you probably
-  want to override this to remove `--fast`.
-
-- `stack-build-arguments-dependencies`: additional arguments for `stack build`
-  in the _Dependencies_ step.
-
-- `stack-build-arguments-build`: additional arguments for `stack build` in the
-  _Build_ step.
-
-- `stack-build-arguments-test`: additional arguments for `stack build` in the
-  _Test_ step.
-
-- `stack-setup-arguments`: additional arguments for `stack setup`
-
-  Default is none.
-
-- `stack-query-arguments`: additional arguments for `stack query`
-
-  Default is none.
-
-- `stack-path-arguments`: additional arguments for `stack path`
-
-  Default is none.
-
-- `cache-prefix`: prefix applied to all cache keys. This can be any value you
-  like, but teams often use `v{N}` and bump it to `v{N+1}` when/if they need to
-  explicitly bust caches. The default is empty.
-
-- `cache-save-always`: save artifacts to the cache even if the build fails.
-  This may speed up builds in subsequent runs at the expense of slightly-longer
-  builds when a full cache-hit occurs. (Since `@v4.2.0`)
+<table>    <thead>        <tr>            <th>name</th>            <th>description</th>            <th>default</th>            <th>required</th>        </tr>    </thead>    <tbody>        <tr>            <td><p><code>working-directory</code></p></td>            <td><p>Working directory for run commands</p></td>            <td><p><code>.</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>stack-yaml</code></p></td>            <td><p>Override stack.yaml, relative to working-directory</p></td>            <td><p><code>stack.yaml</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>test</code></p></td>            <td><p>Whether to run tests</p></td>            <td><p><code>true</code></p></td>            <td><p><code>false</code></p></td>        </tr>        <tr>            <td><p><code>stack-arguments</code></p></td>            <td><p>Additional arguments for all top-level <code>stack</code> command invocations.</p></td>            <td><p><code>--no-terminal</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>stack-query-arguments</code></p></td>            <td><p>Additional arguments in <code>stack query</code> invocations.</p></td>            <td><p><code>""</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>stack-path-arguments</code></p></td>            <td><p>Additional arguments in <code>stack path</code> invocations.</p></td>            <td><p><code>""</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>stack-setup-arguments</code></p></td>            <td><p>Additional arguments in <code>stack setup</code> invocations.</p></td>            <td><p><code>""</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>stack-build-arguments</code></p></td>            <td><p>Additional arguments for all <code>stack build</code> invocations.</p></td>            <td><p><code>--fast --pedantic</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>stack-build-arguments-dependencies</code></p></td>            <td><p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <code>Dependencies</code> step.</p></td>            <td><p><code>""</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>stack-build-arguments-build</code></p></td>            <td><p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <code>Build</code> step.</p></td>            <td><p><code>""</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>stack-build-arguments-test</code></p></td>            <td><p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <code>Test</code> step.</p></td>            <td><p><code>""</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>cache-prefix</code></p></td>            <td><p>Cache prefix</p></td>            <td><p><code>""</code></p></td>            <td><p><code>true</code></p></td>        </tr>        <tr>            <td><p><code>cache-save-always</code></p></td>            <td><p>Save the dependencies and build cache even if a build fails</p></td>            <td><p><code>false</code></p></td>            <td><p><code>false</code></p></td>        </tr>    </tbody></table>
 
 ## Outputs
 
