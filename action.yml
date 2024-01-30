@@ -217,7 +217,7 @@ runs:
 
     - name: Restore dependencies cache
       id: restore-deps
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         path: |
           ${{ steps.stack-path.outputs.stack-root }}
@@ -245,7 +245,7 @@ runs:
       if: |
         (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
         (!cancelled() && inputs.cache-save-always == 'true')
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@v4
       with:
         path: |
           ${{ steps.stack-path.outputs.stack-root }}
@@ -255,7 +255,7 @@ runs:
 
     - name: Restore build cache
       id: restore-build
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         path: ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
@@ -278,7 +278,7 @@ runs:
       if: |
         (success() && steps.restore-build.outputs.cache-hit != 'true') ||
         (!cancelled() && inputs.cache-save-always == 'true')
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@v4
       with:
         path: ${{ steps.setup.outputs.stack-works }}
         key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
