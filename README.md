@@ -157,7 +157,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: generate
-        uses: freckle/stack-action/generate-matrix@v4
+        uses: freckle/stack-action/generate-matrix@v5
     outputs:
       stack-yamls: ${{ steps.generate.outputs.stack-yamls }}
 
@@ -177,6 +177,7 @@ jobs:
 ```
 
 See [generate-matrix/action.yml](./generate-matrix/action.yml) for more details.
+This has been available since version 4 of this action.
 
 ---
 
