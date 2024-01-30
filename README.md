@@ -9,12 +9,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: freckle/stack-action@v4
+      - uses: actions/checkout@v4
+      - uses: freckle/stack-action@v5
 ```
 
-**NOTE**: as of version 4, this action automatically handles caching. You do not
-need to use a separate `stack-cache-action` step any more.
+## Notable Changes in v5
+
+As of version 5, the single `stack-arguments` input has been broken up into
+various, distinct `stack-[*-]arguments[-*]` inputs that are used in more
+specific ways. See the _Inputs_ section, or `action.yml` for documentation of
+the new options.
+
+## Notable Changes in v4
+
+As of version 4, this action automatically handles caching. You do not need to
+use a separate `stack-cache-action` step any more.
 
 ## Inputs
 
@@ -62,7 +71,7 @@ actions depend on it:
 
 ```yaml
 - id: stack
-  uses: freckle/stack-action@v4
+  uses: freckle/stack-action@v5
 - uses: freckle/weeder-action@v2
   with:
     ghc-version: ${{ steps.stack.outputs.compiler-version }}
@@ -73,9 +82,9 @@ for example, to upload executables or coverage reports:
 
 ```yaml
 - id: stack
-  uses: freckle/stack-action@v4
+  uses: freckle/stack-action@v5
   with:
-    stack-arguments: --copy-bins --coverage
+    stack-build-arguments: --copy-bins --coverage
 
 - uses: actions/upload-artifact@v2
   with:
@@ -100,9 +109,9 @@ jobs:
   test:
     # ...
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: stack
-        uses: freckle/stack-action@v4
+        uses: freckle/stack-action@v5
 
       # Weeder requires running in the same Job (to access .hie artifacts)
       - uses: freckle/weeder-action@v2
@@ -113,9 +122,9 @@ jobs:
   hlint:
     # ...
     steps:
-      - uses: actions/checkout@v3
-      - uses: haskell/actions/hlint-setup@v1
-      - uses: haskell/actions/hlint-run@v2
+      - uses: actions/checkout@v4
+      - uses: haskell-actions/hlint-setup@v1
+      - uses: haskell-actions/hlint-run@v2
 ```
 
 ## Generating a Build Matrix of `stack.yaml`s
@@ -128,7 +137,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: generate
         uses: freckle/stack-action/generate-matrix@v4
     outputs:
@@ -143,8 +152,8 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: freckle/stack-action@v4
+      - uses: actions/checkout@v4
+      - uses: freckle/stack-action@v5
         with:
           stack-yaml: ${{ matrix.stack-yaml }}
 ```
