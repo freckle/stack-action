@@ -27,33 +27,50 @@ use a separate `stack-cache-action` step any more.
 
 ## Inputs
 
+All inputs are optional.
+
 - `working-directory`: working directory for all `run` steps.
 
-  Useful for a multi-project repository.
+  Default is `.`. Useful for a multi-project repository.
 
 - `stack-yaml`: path to use instead of `stack.yaml`.
 
-  Expected to be relative to `working-directory`.
+  Default is `stack.yaml`. Expected to be relative to `working-directory`.
 
-- `fast`: pass `--fast` to stack build/test (default `true`).
+- `test`: whether tests should be executed
 
-  You probably want to disable `--fast` if building executables for
-  deployment. Assuming that happens on your default branch, you could
-  do:
+  Default `true`.
 
-  ```yaml
-  with:
-    fast: ${{ github.ref != 'refs/heads/main' }}
-  ```
+- `stack-arguments`: global arguments for **all** `stack` invocations
 
-- `pedantic`: pass `--pedantic` to stack build/test (default `true`).
+  Default is `--no-terminal --stack-yaml {stack-yaml}`, and if `stack-yaml` is
+  the string `"stack-nightly.yaml"`, `--resolver nightly` will be added.
 
-- `test`: whether tests should be executed (default `true`).
+- `stack-build-arguments`: arguments for **all** `stack build` invocations
 
-- `stack-arguments`: additional arguments for stack invocation.
+  Default is `--fast --pedantic`. If you are building executables, you probably
+  want to override this to remove `--fast`.
 
-  Default is none, except if `stack-yaml` is the string `"stack-nightly.yaml"`,
-  in which case `--resolver nightly` will be used.
+- `stack-build-arguments-dependencies`: additional arguments for `stack build`
+  in the _Dependencies_ step.
+
+- `stack-build-arguments-build`: additional arguments for `stack build` in the
+  _Build_ step.
+
+- `stack-build-arguments-test`: additional arguments for `stack build` in the
+  _Test step.
+
+- `stack-setup-arguments`: additional arguments for `stack setup`
+
+  Default is none.
+
+- `stack-query-arguments`: additional arguments for `stack query`
+
+  Default is none.
+
+- `stack-path-arguments`: additional arguments for `stack path`
+
+  Default is none.
 
 - `cache-prefix`: prefix applied to all cache keys. This can be any value you
   like, but teams often use `v{N}` and bump it to `v{N+1}` when/if they need to
