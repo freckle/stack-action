@@ -12,7 +12,7 @@ inputs:
   test:
     description: Whether to run tests
     required: false
-    default: true
+    default: "true"
   stack-arguments:
     description: "Additional arguments for all top-level `stack` command invocations."
     required: true
@@ -46,11 +46,12 @@ inputs:
     required: true
     default: ""
   cache-prefix:
+    description: "Cache prefix"
     required: true
     default: ""
   cache-save-always:
     description: "Save the dependencies and build cache even if a build fails"
-    default: false
+    default: "false"
 outputs:
   compiler:
     description: "compiler.actual value from stack query"
