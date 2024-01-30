@@ -58,7 +58,7 @@ All inputs are optional.
   _Build_ step.
 
 - `stack-build-arguments-test`: additional arguments for `stack build` in the
-  _Test step.
+  \_Test step.
 
 - `stack-setup-arguments`: additional arguments for `stack setup`
 
