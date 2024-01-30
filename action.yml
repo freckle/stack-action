@@ -3,126 +3,134 @@ description: Build, test, and lint a stack-based Haskell project
 inputs:
   working-directory:
     description: "Working directory for run commands"
-    required: true
     default: .
   stack-yaml:
-    description: "Override stack.yaml, relative to working-directory"
-    required: true
+    description: |
+      Override stack.yaml, relative to working-directory
     default: stack.yaml
   test:
-    description: Whether to run tests
-    required: false
+    description: |
+      Whether to run tests
     default: true
   stack-arguments:
-    description: "Additional arguments for all top-level `stack` command invocations."
-    required: true
+    description: |
+      Additional arguments for all top-level `stack` command invocations.
     default: "--no-terminal"
   stack-query-arguments:
-    description: "Additional arguments in `stack query` invocations."
-    required: true
-    default: ""
+    description: |
+      Additional arguments in `stack query` invocations.
+    required: false
   stack-path-arguments:
-    description: "Additional arguments in `stack path` invocations."
-    required: true
-    default: ""
+    description: |
+      Additional arguments in ``stack path`` invocations.
+    required: false
   stack-setup-arguments:
-    description: "Additional arguments in `stack setup` invocations."
-    required: true
-    default: ""
+    description: |
+      Additional arguments in `stack setup` invocations.
+    required: false
   stack-build-arguments:
-    description: "Additional arguments for all `stack build` invocations."
-    required: true
+    description: |
+      Additional arguments for all `stack build` invocations.
     default: "--fast --pedantic"
   stack-build-arguments-dependencies:
-    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Dependencies` step."
-    required: true
-    default: ""
+    description: |
+      Additional arguments passed after `stack-build-arguments` in `stack build`
+      invocations on the _Dependencies_ step.
+    required: false
   stack-build-arguments-build:
-    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Build` step."
-    required: true
-    default: ""
+    description: |
+      Additional arguments passed after `stack-build-arguments` in `stack build`
+      invocations on the _Build_ step.
+    required: false
   stack-build-arguments-test:
-    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Test` step."
-    required: true
-    default: ""
+    description: |
+      Additional arguments passed after `stack-build-arguments` in `stack build`
+      invocations on the _Test_ step.
+    required: false
   cache-prefix:
-    required: true
-    default: ""
+    description: |
+      Prefix applied to all cache keys. This can be any value you like, but
+      teams often use `v{N}` and bump it to `v{N+1}` when/if they need to
+      explicitly bust caches.
+    required: false
   cache-save-always:
-    description: "Save the dependencies and build cache even if a build fails"
+    description: |
+      Save artifacts to the cache even if the build fails. This may speed up
+      builds in subsequent runs at the expense of slightly-longer builds when a
+      full cache-hit occurs. Since `@v4.2.0`
     default: false
 outputs:
   compiler:
-    description: "compiler.actual value from stack query"
+    description: "`compiler.actual` value from stack query"
     value: ${{ steps.stack-query.outputs.compiler }}
   compiler-version:
     description: "The GHC version part of compiler"
     value: ${{ steps.stack-query.outputs.compiler-version }}
   snapshot-doc-root:
-    description: "snapshot-doc-root value from stack path"
+    description: "`snapshot-doc-root` value from `stack path`"
     value: ${{ steps.stack-path.outputs.snapshot-doc-root }}
   local-doc-root:
-    description: "local-doc-root value from stack path"
+    description: "`local-doc-root` value from `stack path`"
     value: ${{ steps.stack-path.outputs.local-doc-root }}
   local-hoogle-root:
-    description: "local-hoogle-root value from stack path"
+    description: "`local-hoogle-root` value from `stack path`"
     value: ${{ steps.stack-path.outputs.local-hoogle-root }}
   stack-root:
-    description: "stack-root value from stack path"
+    description: "`stack-root` value from `stack path`"
     value: ${{ steps.stack-path.outputs.stack-root }}
   project-root:
-    description: "project-root value from stack path"
+    description: "`project-root` value from `stack path`"
     value: ${{ steps.stack-path.outputs.project-root }}
   config-location:
-    description: "config-location value from stack path"
+    description: "`config-location` value from `stack path`"
     value: ${{ steps.stack-path.outputs.config-location }}
   bin-path:
-    description: "bin-path value from stack path"
+    description: "`bin-path` value from `stack path`"
     value: ${{ steps.stack-path.outputs.bin-path }}
   programs:
-    description: "programs value from stack path"
+    description: "`programs` value from `stack path`"
     value: ${{ steps.stack-path.outputs.programs }}
   compiler-exe:
-    description: "compiler-exe value from stack path"
+    description: "`compiler-exe` value from `stack path`"
     value: ${{ steps.stack-path.outputs.compiler-exe }}
   compiler-bin:
-    description: "compiler-bin value from stack path"
+    description: "`compiler-bin` value from `stack path`"
     value: ${{ steps.stack-path.outputs.compiler-bin }}
   compiler-tools-bin:
-    description: "compiler-tools-bin value from stack path"
+    description: "`compiler-tools-bin` value from `stack path`"
     value: ${{ steps.stack-path.outputs.compiler-tools-bin }}
   local-bin:
-    description: "local-bin value from stack path"
+    description: "`local-bin` value from `stack path`"
     value: ${{ steps.stack-path.outputs.local-bin }}
   extra-include-dirs:
-    description: "extra-include-dirs value from stack path"
+    description: "`extra-include-dirs` value from `stack path`"
     value: ${{ steps.stack-path.outputs.extra-include-dirs }}
   extra-library-dirs:
-    description: "extra-library-dirs value from stack path"
+    description: "`extra-library-dirs` value from `stack path`"
     value: ${{ steps.stack-path.outputs.extra-library-dirs }}
   snapshot-pkg-db:
-    description: "snapshot-pkg-db value from stack path"
+    description: "`snapshot-pkg-db` value from `stack path`"
     value: ${{ steps.stack-path.outputs.snapshot-pkg-db }}
   local-pkg-db:
-    description: "local-pkg-db value from stack path"
+    description: "`local-pkg-db` value from `stack path`"
     value: ${{ steps.stack-path.outputs.local-pkg-db }}
   global-pkg-db:
-    description: "global-pkg-db value from stack path"
+    description: "`global-pkg-db` value from `stack path`"
     value: ${{ steps.stack-path.outputs.global-pkg-db }}
   ghc-package-path:
-    description: "ghc-package-path value from stack path"
+    description: "`ghc-package-path` value from `stack path`"
     value: ${{ steps.stack-path.outputs.ghc-package-path }}
   snapshot-install-root:
-    description: "snapshot-install-root value from stack path"
+    description: "`snapshot-install-root` value from `stack path`"
     value: ${{ steps.stack-path.outputs.snapshot-install-root }}
   local-install-root:
-    description: "local-install-root value from stack path"
+    description: "`local-install-root` value from `stack path`"
     value: ${{ steps.stack-path.outputs.local-install-root }}
   dist-dir:
-    description: "dist-dir value from stack path"
+    description: "`dist-dir` value from `stack path`"
     value: ${{ steps.stack-path.outputs.dist-dir }}
   local-hpc-root:
-    description: "local-hpc-root value from stack path"
+    description: "`local-hpc-root` value from `stack path`"
     value: ${{ steps.stack-path.outputs.local-hpc-root }}
 runs:
   using: composite
