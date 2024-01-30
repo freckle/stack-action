@@ -25,6 +25,37 @@ the new options.
 As of version 4, this action automatically handles caching. You do not need to
 use a separate `stack-cache-action` step any more.
 
+## Notable Changes in v3
+
+Previous versions of this Action ran HLint and Weeder for you. We recommend
+doing that as separate actions now, so, as of `v3, those options have been
+removed.
+
+Here is an example of running separate Actions:
+
+```yaml
+jobs:
+  test:
+    # ...
+    steps:
+      - uses: actions/checkout@v4
+      - id: stack
+        uses: freckle/stack-action@v5
+
+      # Weeder requires running in the same Job (to access .hie artifacts)
+      - uses: freckle/weeder-action@v2
+        with:
+          ghc-version: ${{ steps.stack.outputs.compiler-version }}
+
+  # HLint can be a distinct Job, possibly limited to changed files
+  hlint:
+    # ...
+    steps:
+      - uses: actions/checkout@v4
+      - uses: haskell-actions/hlint-setup@v1
+      - uses: haskell-actions/hlint-run@v2
+```
+
 ## Inputs
 
 All inputs are optional.
@@ -112,36 +143,6 @@ for example, to upload executables or coverage reports:
   with:
     name: coverage-report
     path: ${{ steps.stack.outputs.local-hpc-root }}/index.html
-```
-
-## HLint & Weeder
-
-Previous versions of this Action ran HLint and Weeder for you. We recommend
-doing that as separate actions now, so those options have been removed.
-
-Here is an example of running separate Actions:
-
-```yaml
-jobs:
-  test:
-    # ...
-    steps:
-      - uses: actions/checkout@v4
-      - id: stack
-        uses: freckle/stack-action@v5
-
-      # Weeder requires running in the same Job (to access .hie artifacts)
-      - uses: freckle/weeder-action@v2
-        with:
-          ghc-version: ${{ steps.stack.outputs.compiler-version }}
-
-  # HLint can be a distinct Job, possibly limited to changed files
-  hlint:
-    # ...
-    steps:
-      - uses: actions/checkout@v4
-      - uses: haskell-actions/hlint-setup@v1
-      - uses: haskell-actions/hlint-run@v2
 ```
 
 ## Generating a Build Matrix of `stack.yaml`s
