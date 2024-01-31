@@ -132,20 +132,42 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        {
-          echo "stack-query-arguments=$(             echo "${{ inputs.query-arguments                                                        }}" | tr '\n' ' ')"
-          echo "stack-path-arguments=$(              echo "${{ inputs.path-arguments                                                         }}" | tr '\n' ' ')"
-          echo "stack-setup-arguments=$(             echo "${{ inputs.setup-arguments                                                        }}" | tr '\n' ' ')"
-          echo "stack-build-arguments-dependencies=$(echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}" | tr '\n' ' ')"
-          echo "stack-build-arguments-build=$(       echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build        }}" | tr '\n' ' ')"
-          echo "stack-build-arguments-test=$(        echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test         }}" | tr '\n' ' ')"
-        } >> "$GITHUB_OUTPUT"
+        # Accept newline-separated content on stdin and set it as the given
+        # output with those newlines replaced by spaces.
+        set_trimmed_output() {
+          { printf '%s=' "$1"; tr '\n' ' '; echo; } >>"$GITHUB_OUTPUT"
+        }
 
+        # Check if stack-arguments is specifying --resolver
         has_resolver() {
           grep -Fq -- '--resolver' <<'EOM'
         ${{ inputs.stack-arguments }}
         EOM
         }
+
+        set_trimmed_output "stack-query-arguments" <<EOM
+        ${{ inputs.query-arguments }}
+        EOM
+
+        set_trimmed_output "stack-path-arguments" <<EOM
+        ${{ inputs.path-arguments }}
+        EOM
+
+        set_trimmed_output "stack-setup-arguments" <<EOM
+        ${{ inputs.setup-arguments }}
+        EOM
+
+        set_trimmed_output "stack-build-arguments-dependencies" <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}
+        EOM
+
+        set_trimmed_output "stack-build-arguments-build" <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build }}
+        EOM
+
+        set_trimmed_output "stack-build-arguments-test" <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test }}
+        EOM
 
         resolver_nightly=
 
@@ -155,7 +177,9 @@ runs:
 
         echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
 
-        echo "stack-arguments=--stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly $(echo "${{ inputs.stack-arguments }}" | tr '\n' ' ')" >>"$GITHUB_OUTPUT"
+        set_trimmed_output "stack-arguments" <<EOM
+        --stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly ${{ inputs.stack-arguments }}
+        EOM
 
         echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
         # We can't just list out '**/.stack-work' because the files may not
