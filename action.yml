@@ -6,50 +6,70 @@ inputs:
     required: true
     default: .
   stack-yaml:
-    description: "Override stack.yaml, relative to working-directory"
+    description: |
+      Override stack.yaml, relative to working-directory
     required: true
     default: stack.yaml
   test:
-    description: Whether to run tests
+    description: |
+      Whether to run tests
     required: false
     default: true
   stack-arguments:
-    description: "Additional arguments for all top-level `stack` command invocations."
+    description: |
+      Additional arguments for all top-level `stack` command invocations.
     required: true
     default: "--no-terminal"
   stack-query-arguments:
-    description: "Additional arguments in `stack query` invocations."
+    description: |
+      Additional arguments in `stack query` invocations.
     required: true
     default: ""
   stack-path-arguments:
-    description: "Additional arguments in `stack path` invocations."
+    description: |
+      Additional arguments in `stack path` invocations.
     required: true
     default: ""
   stack-setup-arguments:
-    description: "Additional arguments in `stack setup` invocations."
+    description: |
+      Additional arguments in `stack setup` invocations.
     required: true
     default: ""
   stack-build-arguments:
-    description: "Additional arguments for all `stack build` invocations."
+    description: |
+      Additional arguments for all `stack build` invocations.
     required: true
     default: "--fast --pedantic"
   stack-build-arguments-dependencies:
-    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Dependencies` step."
+    description: |
+      Additional arguments passed after `stack-build-arguments` in `stack build`
+      invocations on the `Dependencies` step.
     required: true
     default: ""
   stack-build-arguments-build:
-    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Build` step."
+    description: |
+      Additional arguments passed after `stack-build-arguments` in `stack build`
+      invocations on the `Build` step."
     required: true
     default: ""
   stack-build-arguments-test:
-    description: "Additional arguments passed after `stack-build-arguments` in `stack build` invocations on the `Test` step."
+    description: |
+      Additional arguments passed after `stack-build-arguments` in `stack build`
+      invocations on the `Test` step."
     required: true
     default: ""
   cache-prefix:
+    description: |
+      Prefix applied to all cache keys. This can be any value you like, but
+      teams often use `v{N}` and bump it to `v{N+1}` when/if they need to
+      explicitly bust caches.
     required: true
     default: ""
   cache-save-always:
-    description: "Save the dependencies and build cache even if a build fails"
+    description: |
+      Save artifacts to the cache even if the build fails. This may speed up
+      builds in subsequent runs at the expense of slightly-longer builds when a
+      full cache-hit occurs. Since `@v4.2.0`
     default: false
 outputs:
   compiler:
