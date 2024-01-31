@@ -56,94 +56,56 @@ jobs:
       - uses: haskell-actions/hlint-run@v2
 ```
 
+<!-- action-docs-inputs action="action.yml" -->
 ## Inputs
 
-All inputs are optional.
+| name | description | required | default |
+| --- | --- | --- | --- |
+| `working-directory` | <p>Working directory for run commands</p> | `true` | `.` |
+| `stack-yaml` | <p>Override stack.yaml, relative to working-directory</p> | `true` | `stack.yaml` |
+| `test` | <p>Whether to run tests</p> | `false` | `true` |
+| `stack-arguments` | <p>Additional arguments for all top-level <code>stack</code> command invocations.</p> | `true` | `--no-terminal` |
+| `stack-query-arguments` | <p>Additional arguments in <code>stack query</code> invocations.</p> | `true` | `""` |
+| `stack-path-arguments` | <p>Additional arguments in <code>stack path</code> invocations.</p> | `true` | `""` |
+| `stack-setup-arguments` | <p>Additional arguments in <code>stack setup</code> invocations.</p> | `true` | `""` |
+| `stack-build-arguments` | <p>Additional arguments for all <code>stack build</code> invocations.</p> | `true` | `--fast --pedantic` |
+| `stack-build-arguments-dependencies` | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <code>Dependencies</code> step.</p> | `true` | `""` |
+| `stack-build-arguments-build` | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <code>Build</code> step."</p> | `true` | `""` |
+| `stack-build-arguments-test` | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <code>Test</code> step."</p> | `true` | `""` |
+| `cache-prefix` | <p>Prefix applied to all cache keys. This can be any value you like, but teams often use <code>v{N}</code> and bump it to <code>v{N+1}</code> when/if they need to explicitly bust caches.</p> | `true` | `""` |
+| `cache-save-always` | <p>Save artifacts to the cache even if the build fails. This may speed up builds in subsequent runs at the expense of slightly-longer builds when a full cache-hit occurs. Since <code>@v4.2.0</code></p> | `false` | `false` |
+<!-- action-docs-inputs action="action.yml" -->
 
-- `working-directory`: working directory for all `run` steps.
-
-  Default is `.`. Useful for a multi-project repository.
-
-- `stack-yaml`: path to use instead of `stack.yaml`.
-
-  Default is `stack.yaml`. Expected to be relative to `working-directory`.
-
-- `test`: whether tests should be executed
-
-  Default `true`.
-
-- `stack-arguments`: global arguments for **all** `stack` invocations
-
-  Default is `--no-terminal --stack-yaml {stack-yaml}`, and if `stack-yaml` is
-  the string `"stack-nightly.yaml"`, `--resolver nightly` will be added.
-
-- `stack-build-arguments`: arguments for **all** `stack build` invocations
-
-  Default is `--fast --pedantic`. If you are building executables, you probably
-  want to override this to remove `--fast`.
-
-- `stack-build-arguments-dependencies`: additional arguments for `stack build`
-  in the _Dependencies_ step.
-
-- `stack-build-arguments-build`: additional arguments for `stack build` in the
-  _Build_ step.
-
-- `stack-build-arguments-test`: additional arguments for `stack build` in the
-  _Test_ step.
-
-- `stack-setup-arguments`: additional arguments for `stack setup`
-
-  Default is none.
-
-- `stack-query-arguments`: additional arguments for `stack query`
-
-  Default is none.
-
-- `stack-path-arguments`: additional arguments for `stack path`
-
-  Default is none.
-
-- `cache-prefix`: prefix applied to all cache keys. This can be any value you
-  like, but teams often use `v{N}` and bump it to `v{N+1}` when/if they need to
-  explicitly bust caches. The default is empty.
-
-- `cache-save-always`: save artifacts to the cache even if the build fails.
-  This may speed up builds in subsequent runs at the expense of slightly-longer
-  builds when a full cache-hit occurs. (Since `@v4.2.0`)
-
+<!-- action-docs-outputs action="action.yml" -->
 ## Outputs
 
-`compiler` (e.g. `ghc-9.2.5`) and `compiler-version` (e.g. `9.2.5`) are set from
-the output of `stack query compiler actual`. This can be useful when downstream
-actions depend on it:
-
-```yaml
-- id: stack
-  uses: freckle/stack-action@v5
-- uses: freckle/weeder-action@v2
-  with:
-    ghc-version: ${{ steps.stack.outputs.compiler-version }}
-```
-
-Every value from `stack path` is set as itself as an output. This can be useful,
-for example, to upload executables or coverage reports:
-
-```yaml
-- id: stack
-  uses: freckle/stack-action@v5
-  with:
-    stack-build-arguments: --copy-bins --coverage
-
-- uses: actions/upload-artifact@v2
-  with:
-    name: executable
-    path: ${{ steps.stack.outputs.local-bin-path }}/my-exe
-
-- uses: actions/upload-artifact@v2
-  with:
-    name: coverage-report
-    path: ${{ steps.stack.outputs.local-hpc-root }}/index.html
-```
+| name | description |
+| --- | --- |
+| `compiler` | <p>compiler.actual value from stack query</p> |
+| `compiler-version` | <p>The GHC version part of compiler</p> |
+| `snapshot-doc-root` | <p>snapshot-doc-root value from stack path</p> |
+| `local-doc-root` | <p>local-doc-root value from stack path</p> |
+| `local-hoogle-root` | <p>local-hoogle-root value from stack path</p> |
+| `stack-root` | <p>stack-root value from stack path</p> |
+| `project-root` | <p>project-root value from stack path</p> |
+| `config-location` | <p>config-location value from stack path</p> |
+| `bin-path` | <p>bin-path value from stack path</p> |
+| `programs` | <p>programs value from stack path</p> |
+| `compiler-exe` | <p>compiler-exe value from stack path</p> |
+| `compiler-bin` | <p>compiler-bin value from stack path</p> |
+| `compiler-tools-bin` | <p>compiler-tools-bin value from stack path</p> |
+| `local-bin` | <p>local-bin value from stack path</p> |
+| `extra-include-dirs` | <p>extra-include-dirs value from stack path</p> |
+| `extra-library-dirs` | <p>extra-library-dirs value from stack path</p> |
+| `snapshot-pkg-db` | <p>snapshot-pkg-db value from stack path</p> |
+| `local-pkg-db` | <p>local-pkg-db value from stack path</p> |
+| `global-pkg-db` | <p>global-pkg-db value from stack path</p> |
+| `ghc-package-path` | <p>ghc-package-path value from stack path</p> |
+| `snapshot-install-root` | <p>snapshot-install-root value from stack path</p> |
+| `local-install-root` | <p>local-install-root value from stack path</p> |
+| `dist-dir` | <p>dist-dir value from stack path</p> |
+| `local-hpc-root` | <p>local-hpc-root value from stack path</p> |
+<!-- action-docs-outputs action="action.yml" -->
 
 ## Generating a Build Matrix of `stack.yaml`s
 
