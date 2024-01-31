@@ -135,6 +135,7 @@ runs:
         print_assignment() {
           printf '%s=' "$1"
           tr '\n' ' '
+          printf '\n'
         }
         
         {
