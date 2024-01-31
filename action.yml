@@ -132,13 +132,35 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
+        function print_assignment {
+          echo "$(echo "$1=$2" | tr '\n' ' ')"
+        }
+        
         {
-          echo "stack-query-arguments=$(             echo "${{ inputs.query-arguments                                                        }}" | tr '\n' ' ')"
-          echo "stack-path-arguments=$(              echo "${{ inputs.path-arguments                                                         }}" | tr '\n' ' ')"
-          echo "stack-setup-arguments=$(             echo "${{ inputs.setup-arguments                                                        }}" | tr '\n' ' ')"
-          echo "stack-build-arguments-dependencies=$(echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}" | tr '\n' ' ')"
-          echo "stack-build-arguments-build=$(       echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build        }}" | tr '\n' ' ')"
-          echo "stack-build-arguments-test=$(        echo "${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test         }}" | tr '\n' ' ')"
+        print_assignment "stack-query-arguments" "$(cat <<EOM
+        ${{ inputs.query-arguments }}
+        EOM
+        )"
+        print_assignment "stack-path-arguments" "$(cat <<EOM
+        ${{ inputs.path-arguments }}
+        EOM
+        )"
+        print_assignment "stack-setup-arguments" "$(cat <<EOM
+        ${{ inputs.setup-arguments }}
+        EOM
+        )"
+        print_assignment "stack-build-arguments-dependencies" "$(cat <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}
+        EOM
+        )"
+        print_assignment "stack-build-arguments-build" "$(cat <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build }}
+        EOM
+        )"
+        print_assignment "stack-build-arguments-test" "$(cat <<EOM
+        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test }}
+        EOM
+        )"
         } >> "$GITHUB_OUTPUT"
 
         has_resolver() {
@@ -155,7 +177,11 @@ runs:
 
         echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
 
-        echo "stack-arguments=--stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly $(echo "${{ inputs.stack-arguments }}" | tr '\n' ' ')" >>"$GITHUB_OUTPUT"
+        print_assignment "stack-arguments" "$(cat <<EOM
+        --stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly
+        ${{ inputs.stack-arguments }}
+        EOM
+        )" >> "$GITHUB_OUTPUT"
 
         echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
         # We can't just list out '**/.stack-work' because the files may not
