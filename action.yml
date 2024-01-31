@@ -206,7 +206,7 @@ runs:
         # exist at the time of restoring (we want to restore them after all), so
         # we look for the package manifests and assume there should be a
         # .stack-work alongside each. There are lots of simpler ways to do this,
-        # but only find-regex works on a default OSX system. Sigh.
+        # but only find-regex works on a default macOS system. Sigh.
         find . -regex '.*/\(package\.yaml\|.*\.cabal\)$' |
           while IFS=$'\n' read -r path; do
             dir=$(dirname "$path" | sed 's%^\./\?%%')
