@@ -132,35 +132,36 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        function print_assignment {
-          echo "$(echo "$1=$2" | tr '\n' ' ')"
+        print_assignment() {
+          printf '%s=' "$1"
+          tr '\n' ' '
         }
         
         {
-        print_assignment "stack-query-arguments" "$(cat <<EOM
+        print_assignment "stack-query-arguments" <<EOM
         ${{ inputs.query-arguments }}
         EOM
-        )"
-        print_assignment "stack-path-arguments" "$(cat <<EOM
+        
+        print_assignment "stack-path-arguments" <<EOM
         ${{ inputs.path-arguments }}
         EOM
-        )"
-        print_assignment "stack-setup-arguments" "$(cat <<EOM
+        
+        print_assignment "stack-setup-arguments" <<EOM
         ${{ inputs.setup-arguments }}
         EOM
-        )"
-        print_assignment "stack-build-arguments-dependencies" "$(cat <<EOM
+        
+        print_assignment "stack-build-arguments-dependencies" <<EOM
         ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}
         EOM
-        )"
-        print_assignment "stack-build-arguments-build" "$(cat <<EOM
+        
+        print_assignment "stack-build-arguments-build" <<EOM
         ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build }}
         EOM
-        )"
-        print_assignment "stack-build-arguments-test" "$(cat <<EOM
+        
+        print_assignment "stack-build-arguments-test" <<EOM
         ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test }}
         EOM
-        )"
+        
         } >> "$GITHUB_OUTPUT"
 
         has_resolver() {
@@ -177,11 +178,10 @@ runs:
 
         echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
 
-        print_assignment "stack-arguments" "$(cat <<EOM
+        print_assignment "stack-arguments" >> "$GITHUB_OUTPUT" <<EOM
         --stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly
         ${{ inputs.stack-arguments }}
         EOM
-        )" >> "$GITHUB_OUTPUT"
 
         echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
         # We can't just list out '**/.stack-work' because the files may not
