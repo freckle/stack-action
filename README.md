@@ -20,6 +20,12 @@ various, distinct `stack-[*-]arguments[-*]` inputs that are used in more
 specific ways. See the _Inputs_ section, or `action.yml` for documentation of
 the new options.
 
+The `fast` and `pedantic` inputs were removed. Use a ternary operator (see [Operators](https://docs.github.com/en/actions/learn-github-actions/expressions#operators)) to pass a flag conditionally. Example:
+
+```yaml
+stack-build-arguments: ${{ github.ref_name != 'main' && '--fast' || '' }} --pedantic
+```
+
 ## Notable Changes in v4
 
 As of version 4, this action automatically handles caching. You do not need to
