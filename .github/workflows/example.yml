@@ -51,13 +51,15 @@ jobs:
           stack-arguments: --resolver ${{ matrix.stack.resolver }}
           cache-prefix: ${{ matrix.stack.resolver }}/
 
-      - if: matrix.stack.ghc
+      - name: Check compiler[-*] outputs
+        if: matrix.stack.ghc
         shell: bash
         run: |
           [[ "${{ steps.stack.outputs.compiler }}" = ghc-${{ matrix.stack.ghc }} ]]
           [[ "${{ steps.stack.outputs.compiler-version }}" = ${{ matrix.stack.ghc }} ]]
 
-      - shell: bash
+      - name: Check presence of other outputs
+        shell: bash
         run: |
           # stack path | cut -d: -f1
           [[ -n "${{ steps.stack.outputs.snapshot-doc-root }}" ]]
