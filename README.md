@@ -1,6 +1,6 @@
 # Stack Action
 
-GitHub Action to build, test, and lint a stack-based Haskell project.
+GitHub Action to build and test a stack-based Haskell project.
 
 ## Usage
 

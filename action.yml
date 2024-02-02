@@ -1,5 +1,5 @@
 name: Stack
-description: Build, test, and lint a stack-based Haskell project
+description: Build and test a stack-based Haskell project
 inputs:
   working-directory:
     description: "Working directory for run commands"
