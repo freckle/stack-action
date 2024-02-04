@@ -1,8 +1,8 @@
 {
   "devDependencies": {
-    "typescript": "^5.3.0",
+    "action-docs": "github:npalm/action-docs",
     "prettier": "^3.2.4",
-    "action-docs": "git+https://github.com/deemp/action-docs.git#0cb0ac2c40736aba24c4fd5097f1074b5a7c7a4b"
+    "typescript": "^5.3.0"
   },
   "scripts": {
     "readme": "npx action-docs -u && prettier --write README.md"
