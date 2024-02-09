@@ -68,7 +68,7 @@ jobs:
 
 | name                                 | description                                                                                                                                                                                               | required | default             |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------- |
-| `working-directory`                  | <p>Working directory for run commands</p>                                                                                                                                                                 | `false`  | `.`                 |
+| `working-directory`                  | <p>Working directory for run commands</p>                                                                                                                                                                 | `false`  | `""`                |
 | `stack-yaml`                         | <p>Override stack.yaml, relative to working-directory</p>                                                                                                                                                 | `false`  | `stack.yaml`        |
 | `test`                               | <p>Whether to run tests</p>                                                                                                                                                                               | `false`  | `true`              |
 | `stack-arguments`                    | <p>Additional arguments for all top-level <code>stack</code> command invocations.</p>                                                                                                                     | `false`  | `--no-terminal`     |
@@ -83,8 +83,6 @@ jobs:
 | `cache-save-always`                  | <p>Save artifacts to the cache even if the build fails. This may speed up builds in subsequent runs at the expense of slightly-longer builds when a full cache-hit occurs. Since <code>@v4.2.0</code></p> | `false`  | `false`             |
 
 <!-- action-docs-inputs action="action.yml" -->
-
-<!-- action-docs-outputs action="action.yml" -->
 
 ## Outputs
 
@@ -114,8 +112,6 @@ jobs:
 | `local-install-root`    | <p><code>local-install-root</code> value from <code>stack path</code></p>    |
 | `dist-dir`              | <p><code>dist-dir</code> value from <code>stack path</code></p>              |
 | `local-hpc-root`        | <p><code>local-hpc-root</code> value from <code>stack path</code></p>        |
-
-<!-- action-docs-outputs action="action.yml" -->
 
 ## Generating a Build Matrix of `stack.yaml`s
 
