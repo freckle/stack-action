@@ -2,12 +2,12 @@ name: Stack
 description: Build and test a stack-based Haskell project
 inputs:
   working-directory:
-    description: "Working directory for run commands"
-    default: .
+    description: |
+      Working directory for run commands
   stack-yaml:
     description: |
       Override stack.yaml, relative to working-directory
-    default: stack.yaml
+    default: "stack.yaml"
   test:
     description: |
       Whether to run tests
@@ -19,15 +19,12 @@ inputs:
   stack-query-arguments:
     description: |
       Additional arguments in `stack query` invocations.
-    required: false
   stack-path-arguments:
     description: |
       Additional arguments in ``stack path`` invocations.
-    required: false
   stack-setup-arguments:
     description: |
       Additional arguments in `stack setup` invocations.
-    required: false
   stack-build-arguments:
     description: |
       Additional arguments for all `stack build` invocations.
@@ -36,290 +33,29 @@ inputs:
     description: |
       Additional arguments passed after `stack-build-arguments` in `stack build`
       invocations on the _Dependencies_ step.
-    required: false
   stack-build-arguments-build:
     description: |
       Additional arguments passed after `stack-build-arguments` in `stack build`
       invocations on the _Build_ step.
-    required: false
   stack-build-arguments-test:
     description: |
       Additional arguments passed after `stack-build-arguments` in `stack build`
       invocations on the _Test_ step.
-    required: false
   cache-prefix:
     description: |
       Prefix applied to all cache keys. This can be any value you like, but
       teams often use `v{N}` and bump it to `v{N+1}` when/if they need to
       explicitly bust caches.
-    required: false
   cache-save-always:
     description: |
       Save artifacts to the cache even if the build fails. This may speed up
       builds in subsequent runs at the expense of slightly-longer builds when a
       full cache-hit occurs. Since `@v4.2.0`
     default: false
-outputs:
-  compiler:
-    description: "`compiler.actual` value from stack query"
-    value: ${{ steps.stack-query.outputs.compiler }}
-  compiler-version:
-    description: "The GHC version part of compiler"
-    value: ${{ steps.stack-query.outputs.compiler-version }}
-  snapshot-doc-root:
-    description: "`snapshot-doc-root` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.snapshot-doc-root }}
-  local-doc-root:
-    description: "`local-doc-root` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.local-doc-root }}
-  local-hoogle-root:
-    description: "`local-hoogle-root` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.local-hoogle-root }}
-  stack-root:
-    description: "`stack-root` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.stack-root }}
-  project-root:
-    description: "`project-root` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.project-root }}
-  config-location:
-    description: "`config-location` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.config-location }}
-  bin-path:
-    description: "`bin-path` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.bin-path }}
-  programs:
-    description: "`programs` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.programs }}
-  compiler-exe:
-    description: "`compiler-exe` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.compiler-exe }}
-  compiler-bin:
-    description: "`compiler-bin` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.compiler-bin }}
-  compiler-tools-bin:
-    description: "`compiler-tools-bin` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.compiler-tools-bin }}
-  local-bin:
-    description: "`local-bin` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.local-bin }}
-  extra-include-dirs:
-    description: "`extra-include-dirs` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.extra-include-dirs }}
-  extra-library-dirs:
-    description: "`extra-library-dirs` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.extra-library-dirs }}
-  snapshot-pkg-db:
-    description: "`snapshot-pkg-db` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.snapshot-pkg-db }}
-  local-pkg-db:
-    description: "`local-pkg-db` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.local-pkg-db }}
-  global-pkg-db:
-    description: "`global-pkg-db` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.global-pkg-db }}
-  ghc-package-path:
-    description: "`ghc-package-path` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.ghc-package-path }}
-  snapshot-install-root:
-    description: "`snapshot-install-root` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.snapshot-install-root }}
-  local-install-root:
-    description: "`local-install-root` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.local-install-root }}
-  dist-dir:
-    description: "`dist-dir` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.dist-dir }}
-  local-hpc-root:
-    description: "`local-hpc-root` value from `stack path`"
-    value: ${{ steps.stack-path.outputs.local-hpc-root }}
+  no-upgrade-stack:
+    description: |
+      Don't upgrade stack
+    default: false
 runs:
-  using: composite
-  steps:
-    - id: setup
-      name: Setup
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: |
-        # Accept newline-separated content on stdin and set it as the given
-        # output with those newlines replaced by spaces.
-        set_trimmed_output() {
-          { printf '%s=' "$1"; tr '\n' ' '; echo; } >>"$GITHUB_OUTPUT"
-        }
-
-        # Check if stack-arguments is specifying --resolver
-        has_resolver() {
-          grep -Fq -- '--resolver' <<'EOM'
-        ${{ inputs.stack-arguments }}
-        EOM
-        }
-
-        set_trimmed_output "stack-query-arguments" <<EOM
-        ${{ inputs.query-arguments }}
-        EOM
-
-        set_trimmed_output "stack-path-arguments" <<EOM
-        ${{ inputs.path-arguments }}
-        EOM
-
-        set_trimmed_output "stack-setup-arguments" <<EOM
-        ${{ inputs.setup-arguments }}
-        EOM
-
-        set_trimmed_output "stack-build-arguments-dependencies" <<EOM
-        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-dependencies }}
-        EOM
-
-        set_trimmed_output "stack-build-arguments-build" <<EOM
-        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-build }}
-        EOM
-
-        set_trimmed_output "stack-build-arguments-test" <<EOM
-        ${{ inputs.stack-build-arguments }} ${{ inputs.stack-build-arguments-test }}
-        EOM
-
-        resolver_nightly=
-
-        if ! has_resolver && [[ "${{ inputs.stack-yaml }}" == 'stack-nightly.yaml' ]]; then
-          resolver_nightly='--resolver nightly'
-        fi
-
-        echo "resolver-nightly=$resolver_nightly" >>"$GITHUB_OUTPUT"
-
-        set_trimmed_output "stack-arguments" <<EOM
-        --stack-yaml ${{ inputs.stack-yaml }} $resolver_nightly ${{ inputs.stack-arguments }}
-        EOM
-
-        echo 'stack-works<<EOM' >>"$GITHUB_OUTPUT"
-        # We can't just list out '**/.stack-work' because the files may not
-        # exist at the time of restoring (we want to restore them after all), so
-        # we look for the package manifests and assume there should be a
-        # .stack-work alongside each. There are lots of simpler ways to do this,
-        # but only find-regex works on a default macOS system. Sigh.
-        find . -regex '.*/\(package\.yaml\|.*\.cabal\)$' |
-          while IFS=$'\n' read -r path; do
-            dir=$(dirname "$path" | sed 's%^\./\?%%')
-
-            if [[ -n "$dir" ]]; then
-              # If dir is empty, that means ./.stack-work. We'll always add
-              # that explicitly and printing it through this loop would produce
-              # "...//.stack-work" anyway, which we don't want.
-              echo "${{ inputs.working-directory }}/$dir/.stack-work"
-            fi
-          done | sort -u >>"$GITHUB_OUTPUT"
-
-        # Always include a top-level .stack-work, with the location being driven
-        # by the stack-yaml directory.
-        echo "$(dirname '${{ format('{0}/{1}', inputs.working-directory, inputs.stack-yaml) }}')/.stack-work" >>"$GITHUB_OUTPUT"
-        echo 'EOM' >>"$GITHUB_OUTPUT"
-
-        # NB. hashFiles() is VERY PICKY. We need to account for
-        # working-directory manually like this or it considers the stack-yaml
-        # not under the workspace. And it ignores files not under the workspace,
-        # silently producing an empty hash.
-        echo "snapshot-hash=${{ hashFiles(format('{0}/{1}', inputs.working-directory, inputs.stack-yaml)) }}" >>"$GITHUB_OUTPUT"
-        echo "package-hash=${{ hashFiles('**/package.yaml', '**/*.cabal') }}" >>"$GITHUB_OUTPUT"
-        echo "sources-hash=${{ hashFiles('**', '!**/.stack-work', '!.git') }}" >>"$GITHUB_OUTPUT"
-
-    - id: stack-query
-      name: Set stack-query outputs
-      working-directory: ${{ inputs.working-directory }}
-      shell: bash
-      run: |
-        tmp=$(mktemp)
-        trap 'rm -r "$tmp"' EXIT
-
-        stack ${{ steps.setup.outputs.stack-arguments }} \
-          query compiler ${{ steps.setup.outputs.stack-query-arguments }} \
-          | tee "$tmp"
-
-        sed '/^actual: \(.*\)$/!d; s//compiler=\1/' "$tmp" >>"$GITHUB_OUTPUT"
-        sed '/^actual: ghc-\(.*\)$/!d; s//compiler-version=\1/' "$tmp" >>"$GITHUB_OUTPUT"
-
-    - id: stack-path
-      name: Set stack-path outputs
-      working-directory: ${{ inputs.working-directory }}
-      shell: bash
-      run: |
-        stack ${{ steps.setup.outputs.stack-arguments }} \
-          path ${{ steps.setup.outputs.stack-path-arguments }} \
-          | while IFS=:\  read -r name value; do
-          printf '%s: %s\n' "$name" "$value"
-          printf '%s=%s\n' "$name" "$value" >>"$GITHUB_OUTPUT"
-        done
-
-    - name: Restore dependencies cache
-      id: restore-deps
-      uses: actions/cache/restore@v4
-      with:
-        path: |
-          ${{ steps.stack-path.outputs.stack-root }}
-          ${{ steps.stack-path.outputs.programs }}
-          ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
-        restore-keys: |
-          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-
-          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-
-
-    - name: Dependencies
-      if: |
-        (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
-        (!cancelled() && inputs.cache-save-always == 'true')
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: |
-        stack ${{ steps.setup.outputs.stack-arguments }} \
-          setup ${{ steps.setup.outputs.stack-setup-arguments }}
-        stack ${{ steps.setup.outputs.stack-arguments }} \
-          build --dependencies-only --test --no-run-tests \
-          ${{ steps.setup.outputs.stack-build-arguments-dependencies }}
-
-    - name: Save dependencies cache
-      if: |
-        (success() && steps.restore-deps.outputs.cache-hit != 'true') ||
-        (!cancelled() && inputs.cache-save-always == 'true')
-      uses: actions/cache/save@v4
-      with:
-        path: |
-          ${{ steps.stack-path.outputs.stack-root }}
-          ${{ steps.stack-path.outputs.programs }}
-          ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-deps-${{ steps.stack-query.outputs.compiler }}-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}
-
-    - name: Restore build cache
-      id: restore-build
-      uses: actions/cache/restore@v4
-      with:
-        path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
-        restore-keys: |
-          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-
-          ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-
-
-    - name: Build
-      if: |
-        (success() && steps.restore-build.outputs.cache-hit != 'true') ||
-        (!cancelled() && inputs.cache-save-always == 'true')
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: |
-        stack ${{ steps.setup.outputs.stack-arguments }} \
-          build --test --no-run-tests \
-          ${{ steps.setup.outputs.stack-build-arguments-build }}
-
-    - name: Save build cache
-      if: |
-        (success() && steps.restore-build.outputs.cache-hit != 'true') ||
-        (!cancelled() && inputs.cache-save-always == 'true')
-      uses: actions/cache/save@v4
-      with:
-        path: ${{ steps.setup.outputs.stack-works }}
-        key: ${{ inputs.cache-prefix }}${{ runner.os }}-stack-build-${{ steps.setup.outputs.snapshot-hash }}-${{ steps.setup.outputs.package-hash }}-${{ steps.setup.outputs.sources-hash }}
-
-    - name: Test
-      if: ${{ inputs.test == 'true' }}
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: |
-        stack ${{ steps.setup.outputs.stack-arguments }} \
-          build --test \
-          ${{ steps.setup.outputs.stack-build-arguments-test }}
+  using: "node20"
+  main: "dist/index.js"
