@@ -30,6 +30,7 @@ async function run() {
       core.isDebug(),
     );
 
+    // TODO: input to skip this
     await core.group("Upgrade stack", async () => {
       await stack.upgrade();
     });

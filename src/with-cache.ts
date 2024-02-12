@@ -3,10 +3,7 @@ import * as cache from "@actions/cache";
 import type { CacheKeys } from "./get-cache-keys";
 
 export interface CoreDelegate {
-  debug: (msg: string) => void;
   info: (msg: string) => void;
-  warning: (msg: string) => void;
-  error: (msg: string) => void;
 }
 
 export interface CacheDelegate {
