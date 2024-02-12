@@ -1,12 +1,12 @@
+import * as exec from "@actions/exec";
+
 import { StackCLI } from "./stack-cli";
 
-const exec = {
-  exec: jest.fn(),
-};
+jest.spyOn(exec, "exec");
 
 describe("StackCLI", () => {
   test("Adds --stack-yaml", async () => {
-    const stackCLI = new StackCLI("my-stack.yaml", [], false, exec);
+    const stackCLI = new StackCLI("my-stack.yaml", [], false);
 
     await stackCLI.setup([]);
 
@@ -22,7 +22,6 @@ describe("StackCLI", () => {
       "my-stack.yaml",
       ["--resolver", "lts"],
       false,
-      exec,
     );
 
     await stackCLI.setup([]);
@@ -35,7 +34,7 @@ describe("StackCLI", () => {
   });
 
   test("Adds --resolver nightly", async () => {
-    const stackCLI = new StackCLI("sub/stack-nightly.yaml", [], false, exec);
+    const stackCLI = new StackCLI("sub/stack-nightly.yaml", [], false);
 
     await stackCLI.setup([]);
 
@@ -57,7 +56,6 @@ describe("StackCLI", () => {
       "sub/stack-nightly.yaml",
       ["--resolver", "nightly-20240201"],
       false,
-      exec,
     );
 
     await stackCLI.setup([]);
@@ -76,7 +74,7 @@ describe("StackCLI", () => {
   });
 
   test("buildDependencies", async () => {
-    const stackCLI = new StackCLI("stack.yaml", [], false, exec);
+    const stackCLI = new StackCLI("stack.yaml", [], false);
 
     await stackCLI.buildDependencies(["--coverage"]);
 
@@ -96,7 +94,7 @@ describe("StackCLI", () => {
   });
 
   test("buildNoTest", async () => {
-    const stackCLI = new StackCLI("stack.yaml", [], false, exec);
+    const stackCLI = new StackCLI("stack.yaml", [], false);
 
     await stackCLI.buildNoTest(["--coverage"]);
 
@@ -115,7 +113,7 @@ describe("StackCLI", () => {
   });
 
   test("buildTest", async () => {
-    const stackCLI = new StackCLI("stack.yaml", [], false, exec);
+    const stackCLI = new StackCLI("stack.yaml", [], false);
 
     await stackCLI.buildTest(["--coverage"]);
 
@@ -127,7 +125,7 @@ describe("StackCLI", () => {
   });
 
   test("build", async () => {
-    const stackCLI = new StackCLI("stack.yaml", [], false, exec);
+    const stackCLI = new StackCLI("stack.yaml", [], false);
 
     await stackCLI.build(["--coverage"]);
 

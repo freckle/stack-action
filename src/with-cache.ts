@@ -2,29 +2,14 @@ import * as core from "@actions/core";
 import * as cache from "@actions/cache";
 import type { CacheKeys } from "./get-cache-keys";
 
-export interface CoreDelegate {
-  info: (msg: string) => void;
-}
-
-export interface CacheDelegate {
-  restoreCache: (
-    paths: string[],
-    primaryKey: string,
-    restoreKeys: string[],
-  ) => Promise<string | undefined>;
-  saveCache: (paths: string[], primaryKey: string) => Promise<number>;
-}
-
 export type CacheOptions = {
   skipOnHit: boolean;
-  coreDelegate: CoreDelegate;
-  cacheDelegate: CacheDelegate;
+  saveOnError: boolean;
 };
 
 export const DEFAULT_CACHE_OPTIONS = {
   skipOnHit: true,
-  coreDelegate: core,
-  cacheDelegate: cache,
+  saveOnError: false,
 };
 
 export async function withCache<T>(
@@ -33,23 +18,28 @@ export async function withCache<T>(
   fn: () => Promise<T>,
   options: CacheOptions = DEFAULT_CACHE_OPTIONS,
 ): Promise<T | undefined> {
-  const { skipOnHit, coreDelegate, cacheDelegate } = options;
+  const { skipOnHit, saveOnError } = options;
 
-  coreDelegate.info(`Paths:\n - ${paths.join("\n - ")}`);
-  coreDelegate.info(`Primary key: ${keys.primaryKey}`);
-  coreDelegate.info(`Restore keys:\n - ${keys.restoreKeys.join("\n - ")}`);
+  core.info(`Cached paths:\n - ${paths.join("\n - ")}`);
+  core.info(`Cache key: ${keys.primaryKey}`);
+  core.info(`Cache restore keys:\n - ${keys.restoreKeys.join("\n - ")}`);
 
-  const restoredKey = await cacheDelegate.restoreCache(
+  const restoredKey = await cache.restoreCache(
     paths,
     keys.primaryKey,
     keys.restoreKeys,
   );
 
   const primaryKeyHit = restoredKey == keys.primaryKey;
-  coreDelegate.info(`Restored key: ${restoredKey ?? "<none>"}`);
 
-  if (primaryKeyHit && skipOnHit) {
-    coreDelegate.info("Skipping due to primary key hit");
+  if (restoredKey) {
+    core.info(`Cache restored from key: ${restoredKey}`);
+  } else {
+    core.warning("No cache found");
+  }
+
+  if (primaryKeyHit && skipOnHit && !saveOnError) {
+    core.info("Skipping due to primary key hit");
     return;
   }
 
@@ -57,10 +47,16 @@ export async function withCache<T>(
 
   try {
     result = await fn();
-  } finally {
+
     if (!primaryKeyHit) {
-      await cacheDelegate.saveCache(paths, keys.primaryKey);
+      await cache.saveCache(paths, keys.primaryKey);
     }
+  } catch (ex) {
+    if (saveOnError && !primaryKeyHit) {
+      await cache.saveCache(paths, keys.primaryKey);
+    }
+
+    throw ex;
   }
 
   return result;
