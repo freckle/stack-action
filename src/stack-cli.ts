@@ -16,7 +16,6 @@ export interface ExecDelegate {
   ) => Promise<number>;
 }
 
-// TODO: unit tests (the reason for the delegate option)
 export class StackCLI {
   private debug: boolean;
   private globalArgs: string[];

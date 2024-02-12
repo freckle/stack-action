@@ -27,7 +27,6 @@ export const DEFAULT_CACHE_OPTIONS = {
   cacheDelegate: cache,
 };
 
-// TODO: unit tests (the reason for the delegate options)
 export async function withCache<T>(
   paths: string[],
   keys: CacheKeys,
