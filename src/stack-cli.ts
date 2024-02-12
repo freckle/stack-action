@@ -40,7 +40,7 @@ export class StackCLI {
   }
 
   async upgrade(): Promise<number> {
-    // Skip this.exec because we don't need/want globalArgs
+    // Avoid this.exec because we don't need/want globalArgs
     return await this.execDelegate.exec("stack", ["upgrade"]);
   }
 
