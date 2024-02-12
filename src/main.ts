@@ -30,10 +30,11 @@ async function run() {
       core.isDebug(),
     );
 
-    // TODO: input to skip this
-    await core.group("Upgrade stack", async () => {
-      await stack.upgrade();
-    });
+    if (!inputs.noUpgradeStack) {
+      await core.group("Upgrade stack", async () => {
+        await stack.upgrade();
+      });
+    }
 
     const { stackYaml, stackRoot, stackWorks } = await core.group(
       "Determine stack directories",
@@ -63,11 +64,7 @@ async function run() {
         getCacheKeys([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]),
         async () => {
           await stack.setup(inputs.stackSetupArguments);
-          await stack.buildDependencies(
-            inputs.stackBuildArguments.concat(
-              inputs.stackBuildArgumentsDependencies,
-            ),
-          );
+          await stack.buildDependencies(inputs.stackBuildArgumentsDependencies);
         },
         {
           ...DEFAULT_CACHE_OPTIONS,
@@ -86,9 +83,7 @@ async function run() {
           hashes.sources,
         ]),
         async () => {
-          await stack.buildNoTest(
-            inputs.stackBuildArguments.concat(inputs.stackBuildArgumentsBuild),
-          );
+          await stack.buildNoTest(inputs.stackBuildArgumentsBuild);
         },
         {
           ...DEFAULT_CACHE_OPTIONS,
@@ -97,13 +92,11 @@ async function run() {
       );
     });
 
-    await core.group("Test", async () => {
-      if (inputs.test) {
-        await stack.buildTest(
-          inputs.stackBuildArguments.concat(inputs.stackBuildArgumentsTest),
-        );
-      }
-    });
+    if (inputs.test) {
+      await core.group("Test", async () => {
+        await stack.buildTest(inputs.stackBuildArgumentsTest);
+      });
+    }
 
     await core.group("Set outputs", async () => {
       const stackQuery = await stack.query();

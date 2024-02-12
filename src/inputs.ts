@@ -8,15 +8,21 @@ export type Inputs = {
   stackArguments: string[];
   stackSetupArguments: string[];
   stackQueryArguments: string[];
-  stackBuildArguments: string[];
   stackBuildArgumentsDependencies: string[];
   stackBuildArgumentsBuild: string[];
   stackBuildArgumentsTest: string[];
   cachePrefix: string;
   cacheSaveAlways: boolean;
+  noUpgradeStack: boolean;
 };
 
 export function getInputs(): Inputs {
+  const getBuildArguments = (step: string): string[] => {
+    return getShellWordsInput("stack-build-arguments").concat(
+      getShellWordsInput(`stack-build-arguments-${step}`),
+    );
+  };
+
   return {
     workingDirectory: getInputDefault("working-directory", null),
     stackYaml: getInputDefault("stack-yaml", "stack.yaml"),
@@ -24,14 +30,12 @@ export function getInputs(): Inputs {
     stackArguments: getShellWordsInput("stack-arguments"),
     stackSetupArguments: getShellWordsInput("stack-setup-arguments"),
     stackQueryArguments: getShellWordsInput("stack-query-arguments"),
-    stackBuildArguments: getShellWordsInput("stack-build-arguments"),
-    stackBuildArgumentsDependencies: getShellWordsInput(
-      "stack-build-arguments-dependencies",
-    ),
-    stackBuildArgumentsBuild: getShellWordsInput("stack-build-arguments-build"),
-    stackBuildArgumentsTest: getShellWordsInput("stack-build-arguments-test"),
+    stackBuildArgumentsDependencies: getBuildArguments("dependencies"),
+    stackBuildArgumentsBuild: getBuildArguments("build"),
+    stackBuildArgumentsTest: getBuildArguments("test"),
     cachePrefix: core.getInput("cache-prefix"),
     cacheSaveAlways: core.getBooleanInput("cache-save-always"),
+    noUpgradeStack: core.getBooleanInput("no-upgrade-stack"),
   };
 }
 
