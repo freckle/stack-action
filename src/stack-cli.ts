@@ -1,6 +1,8 @@
 import * as fs from "fs";
+import { devNull } from "os";
 import type { ExecOptions } from "@actions/exec";
 import * as realExec from "@actions/exec";
+
 import type { StackPath } from "./parse-stack-path";
 import { parseStackPath } from "./parse-stack-path";
 import type { StackQuery } from "./parse-stack-query";
@@ -89,9 +91,7 @@ export class StackCLI {
 
     if (!this.debug) {
       // If not debugging, hide the output being read
-      options.outStream = fs.createWriteStream(
-        process.platform === "win32" ? "nul" : "/dev/null",
-      );
+      options.outStream = fs.createWriteStream(devNull);
     }
 
     await this.exec(args, options);
