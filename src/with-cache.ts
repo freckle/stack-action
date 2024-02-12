@@ -17,12 +17,14 @@ export interface CacheDelegate {
 
 export type CacheOptions = {
   skipOnHit: boolean;
+  saveOnError: boolean;
   coreDelegate: CoreDelegate;
   cacheDelegate: CacheDelegate;
 };
 
 export const DEFAULT_CACHE_OPTIONS = {
   skipOnHit: true,
+  saveOnError: false,
   coreDelegate: core,
   cacheDelegate: cache,
 };
@@ -33,7 +35,7 @@ export async function withCache<T>(
   fn: () => Promise<T>,
   options: CacheOptions = DEFAULT_CACHE_OPTIONS,
 ): Promise<T | undefined> {
-  const { skipOnHit, coreDelegate, cacheDelegate } = options;
+  const { skipOnHit, saveOnError, coreDelegate, cacheDelegate } = options;
 
   coreDelegate.info(`Paths:\n - ${paths.join("\n - ")}`);
   coreDelegate.info(`Primary key: ${keys.primaryKey}`);
@@ -48,7 +50,7 @@ export async function withCache<T>(
   const primaryKeyHit = restoredKey == keys.primaryKey;
   coreDelegate.info(`Restored key: ${restoredKey ?? "<none>"}`);
 
-  if (primaryKeyHit && skipOnHit) {
+  if (primaryKeyHit && skipOnHit && !saveOnError) {
     coreDelegate.info("Skipping due to primary key hit");
     return;
   }
@@ -57,10 +59,16 @@ export async function withCache<T>(
 
   try {
     result = await fn();
-  } finally {
+
     if (!primaryKeyHit) {
       await cacheDelegate.saveCache(paths, keys.primaryKey);
     }
+  } catch (ex) {
+    if (saveOnError && !primaryKeyHit) {
+      await cacheDelegate.saveCache(paths, keys.primaryKey);
+    }
+
+    throw ex;
   }
 
   return result;

@@ -68,7 +68,7 @@ async function run() {
         },
         {
           ...DEFAULT_CACHE_OPTIONS,
-          skipOnHit: !inputs.cacheSaveAlways,
+          saveOnError: inputs.cacheSaveAlways,
         },
       );
     });
@@ -88,6 +88,7 @@ async function run() {
         {
           ...DEFAULT_CACHE_OPTIONS,
           skipOnHit: false, // always Build
+          saveOnError: inputs.cacheSaveAlways,
         },
       );
     });
