@@ -57,17 +57,9 @@ async function run() {
     const cachePrefix = `${inputs.cachePrefix}${process.platform}/${stackYaml.resolver}`;
 
     await core.group("Setup and install dependencies", async () => {
-      const cacheKeys = getCacheKeys([
-        `${cachePrefix}/deps`,
-        hashes.snapshot,
-        hashes.package,
-      ]);
-
-      const cachePaths = [stackRoot].concat(stackWorks);
-
       await withCache(
-        cachePaths,
-        cacheKeys,
+        [stackRoot].concat(stackWorks),
+        getCacheKeys([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]),
         async () => {
           await stack.setup(inputs.stackSetupArguments);
           await stack.buildDependencies(
@@ -84,20 +76,19 @@ async function run() {
     });
 
     await core.group("Build", async () => {
-      const cacheKeys = getCacheKeys([
-        `${cachePrefix}/build`,
-        hashes.snapshot,
-        hashes.package,
-        hashes.sources,
-      ]);
-
       await withCache(
         stackWorks,
-        cacheKeys,
-        async () =>
+        getCacheKeys([
+          `${cachePrefix}/build`,
+          hashes.snapshot,
+          hashes.package,
+          hashes.sources,
+        ]),
+        async () => {
           await stack.buildNoTest(
             inputs.stackBuildArguments.concat(inputs.stackBuildArgumentsBuild),
-          ),
+          );
+        },
         {
           ...DEFAULT_CACHE_OPTIONS,
           skipOnHit: false, // always Build
