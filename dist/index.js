@@ -370,6 +370,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StackCLI = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
+const os_1 = __nccwpck_require__(2037);
 const realExec = __importStar(__nccwpck_require__(1514));
 const parse_stack_path_1 = __nccwpck_require__(1895);
 const parse_stack_query_1 = __nccwpck_require__(6445);
@@ -425,7 +426,7 @@ class StackCLI {
             },
         };
         if (!this.debug) {
-            options.outStream = fs.createWriteStream(process.platform === "win32" ? "nul" : "/dev/null");
+            options.outStream = fs.createWriteStream(os_1.devNull);
         }
         await this.exec(args, options);
         return stdout;
