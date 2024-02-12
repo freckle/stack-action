@@ -1,0 +1,13 @@
+restylers:
+  - clang-format:
+      enabled: false
+  - jq:
+      enabled: false # prefer prettier-json
+  - prettier:
+      include:
+        - "src/**/*.ts"
+  - whitespace:
+      include:
+        - "**/*"
+        - "!dist/index.js"
+  - "*"
