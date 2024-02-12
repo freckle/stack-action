@@ -29,14 +29,17 @@ export class StackCLI {
   ) {
     this.debug = debug ?? false;
     this.execDelegate = execDelegate ?? realExec;
+
+    const stackYamlArgs = !args.includes("--stack-yaml")
+      ? ["--stack-yaml", stackYaml]
+      : [];
+
     const resolverArgs =
       stackYaml.endsWith("stack-nightly.yaml") && !args.includes("--resolver")
         ? ["--resolver", "nightly"]
         : [];
 
-    this.globalArgs = ["--stack-yaml", stackYaml]
-      .concat(resolverArgs)
-      .concat(args);
+    this.globalArgs = stackYamlArgs.concat(resolverArgs).concat(args);
   }
 
   async upgrade(): Promise<number> {
