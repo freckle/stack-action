@@ -52,10 +52,10 @@ inputs:
       builds in subsequent runs at the expense of slightly-longer builds when a
       full cache-hit occurs. Since `@v4.2.0`
     default: false
-  no-upgrade-stack:
+  upgrade-stack:
     description: |
-      Don't upgrade stack
-    default: false
+      Upgrade stack
+    default: true
 runs:
   using: "node20"
   main: "dist/index.js"

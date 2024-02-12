@@ -4,7 +4,7 @@ import { StackCLI } from "./stack-cli";
 import { getCacheKeys } from "./get-cache-keys";
 import { hashProject } from "./hash-project";
 import { getInputs } from "./inputs";
-import { readStackYamlSync, packagesStackWorks } from "./stack-yaml";
+import { readStackYamlSync, getStackDirectories } from "./stack-yaml";
 import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache";
 
 async function run() {
@@ -30,37 +30,44 @@ async function run() {
       core.isDebug(),
     );
 
-    if (!inputs.noUpgradeStack) {
+    if (inputs.upgradeStack) {
       await core.group("Upgrade stack", async () => {
         await stack.upgrade();
       });
     }
 
-    const { stackYaml, stackRoot, stackWorks } = await core.group(
+    const { stackYaml, stackDirectories } = await core.group(
       "Determine stack directories",
       async () => {
-        // Only use --stack-root, which (as of stack v2.15) won't load the
-        // environment and install GHC, etc. It's the only option currently safe
-        // to make use of outside of caching.
-        const stackRoot = (await stack.read(["path", "--stack-root"])).trim();
-        core.info(`Stack root: ${stackRoot}`);
-
         const stackYaml = readStackYamlSync(inputs.stackYaml);
-        const stackWorks = packagesStackWorks(stackYaml);
-        core.info(`Stack works:\n - ${stackWorks.join("\n - ")}`);
+        const stackDirectories = await getStackDirectories(stackYaml, stack);
 
-        return { stackYaml, stackRoot, stackWorks };
+        core.info(
+          [
+            `Stack root: ${stackDirectories.stackRoot}`,
+            `Stack programs: ${stackDirectories.stackPrograms}`,
+            `Stack works:\n - ${stackDirectories.stackWorks.join("\n - ")}`,
+          ].join("\n"),
+        );
+
+        return { stackYaml, stackDirectories };
       },
     );
 
     // Can't use compiler here because stack-query requires setting up the Stack
     // environment, installing GHC, etc. And we never want to do that outside of
-    // caching. Use the resolver itself instead.
-    const cachePrefix = `${inputs.cachePrefix}${process.platform}/${stackYaml.resolver}`;
+    // caching. Use the resolver itself instead. This will use either --resolver
+    // from stack-arguments, if given, or fall back to reading resolver from the
+    // stack.yaml file in use.
+    const cachePrefix = `${inputs.cachePrefix}${process.platform}/${
+      stack.resolver ?? stackYaml.resolver
+    }`;
 
     await core.group("Setup and install dependencies", async () => {
+      const { stackRoot, stackPrograms, stackWorks } = stackDirectories;
+
       await withCache(
-        [stackRoot].concat(stackWorks),
+        [stackRoot, stackPrograms].concat(stackWorks),
         getCacheKeys([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]),
         async () => {
           await stack.setup(inputs.stackSetupArguments);
@@ -68,14 +75,14 @@ async function run() {
         },
         {
           ...DEFAULT_CACHE_OPTIONS,
-          skipOnHit: !inputs.cacheSaveAlways,
+          saveOnError: inputs.cacheSaveAlways,
         },
       );
     });
 
     await core.group("Build", async () => {
       await withCache(
-        stackWorks,
+        stackDirectories.stackWorks,
         getCacheKeys([
           `${cachePrefix}/build`,
           hashes.snapshot,
@@ -88,6 +95,7 @@ async function run() {
         {
           ...DEFAULT_CACHE_OPTIONS,
           skipOnHit: false, // always Build
+          saveOnError: inputs.cacheSaveAlways,
         },
       );
     });

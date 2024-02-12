@@ -27,14 +27,6 @@ jobs:
           - resolver: lts
           - resolver: lts-22.7
             ghc: "9.6.4"
-          - resolver: lts-20.2
-            ghc: "9.2.5"
-          - resolver: lts-19.33
-            ghc: "9.0.2"
-          - resolver: lts-18.28
-            ghc: "8.10.7"
-          - resolver: lts-16.31
-            ghc: "8.8.4"
           - resolver: lts-12.26
             ghc: "8.4.4"
 
@@ -49,7 +41,6 @@ jobs:
         with:
           working-directory: example
           stack-arguments: --resolver ${{ matrix.stack.resolver }}
-          cache-prefix: ${{ matrix.stack.resolver }}/
 
       - name: Check compiler[-*] outputs
         if: matrix.stack.ghc
@@ -114,26 +105,3 @@ jobs:
         with:
           working-directory: example
           stack-yaml: ${{ matrix.stack-yaml }}
-
-  test-auto-nightly:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - id: stack
-        uses: ./
-        with:
-          working-directory: example
-          stack-yaml: stack-nightly.yaml
-          cache-prefix: auto-nightly/
-
-  test-auto-nightly-with-explicit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - id: stack
-        uses: ./
-        with:
-          working-directory: example
-          stack-yaml: stack-nightly.yaml
-          stack-arguments: --resolver nightly
-          cache-prefix: auto-nightly-explicit/

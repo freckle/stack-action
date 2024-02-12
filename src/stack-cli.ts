@@ -1,7 +1,8 @@
 import * as fs from "fs";
+import * as path from "path";
 import { devNull } from "os";
 import type { ExecOptions } from "@actions/exec";
-import * as realExec from "@actions/exec";
+import * as exec from "@actions/exec";
 
 import type { StackPath } from "./parse-stack-path";
 import { parseStackPath } from "./parse-stack-path";
@@ -19,32 +20,35 @@ export interface ExecDelegate {
 export class StackCLI {
   private debug: boolean;
   private globalArgs: string[];
-  private execDelegate: ExecDelegate;
 
-  constructor(
-    stackYaml: string,
-    args: string[],
-    debug?: boolean,
-    execDelegate?: ExecDelegate,
-  ) {
+  public resolver: string | null;
+
+  constructor(stackYaml: string, args: string[], debug?: boolean) {
     this.debug = debug ?? false;
-    this.execDelegate = execDelegate ?? realExec;
 
     const stackYamlArgs = !args.includes("--stack-yaml")
       ? ["--stack-yaml", stackYaml]
       : [];
 
-    const resolverArgs =
-      stackYaml.endsWith("stack-nightly.yaml") && !args.includes("--resolver")
-        ? ["--resolver", "nightly"]
-        : [];
+    // Capture --resolver if given
+    const resolverIdx = args.indexOf("--resolver");
+    const resolverArg = resolverIdx >= 0 ? args[resolverIdx + 1] : null;
 
-    this.globalArgs = stackYamlArgs.concat(resolverArgs).concat(args);
+    this.resolver = resolverArg;
+    this.globalArgs = stackYamlArgs.concat(args);
+
+    // Infer nightly if not given
+    if (!resolverArg && path.basename(stackYaml) === "stack-nightly.yaml") {
+      this.resolver = "nightly";
+      this.globalArgs = stackYamlArgs
+        .concat(["--resolver", "nightly"])
+        .concat(args);
+    }
   }
 
   async upgrade(): Promise<number> {
     // Avoid this.exec because we don't need/want globalArgs
-    return await this.execDelegate.exec("stack", ["upgrade"]);
+    return await exec.exec("stack", ["upgrade"]);
   }
 
   async setup(args: string[]): Promise<number> {
@@ -101,10 +105,6 @@ export class StackCLI {
   }
 
   private async exec(args: string[], options?: ExecOptions): Promise<number> {
-    return await this.execDelegate.exec(
-      "stack",
-      this.globalArgs.concat(args),
-      options,
-    );
+    return await exec.exec("stack", this.globalArgs.concat(args), options);
   }
 }

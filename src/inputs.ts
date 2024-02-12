@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
 import * as Shellwords from "shellwords-ts";
+import { envsubst } from "./envsubst";
 
 export type Inputs = {
   workingDirectory: string | null;
@@ -13,7 +14,7 @@ export type Inputs = {
   stackBuildArgumentsTest: string[];
   cachePrefix: string;
   cacheSaveAlways: boolean;
-  noUpgradeStack: boolean;
+  upgradeStack: boolean;
 };
 
 export function getInputs(): Inputs {
@@ -35,7 +36,7 @@ export function getInputs(): Inputs {
     stackBuildArgumentsTest: getBuildArguments("test"),
     cachePrefix: core.getInput("cache-prefix"),
     cacheSaveAlways: core.getBooleanInput("cache-save-always"),
-    noUpgradeStack: core.getBooleanInput("no-upgrade-stack"),
+    upgradeStack: core.getBooleanInput("upgrade-stack"),
   };
 }
 
@@ -49,5 +50,5 @@ function getShellWordsInput(
   options?: core.InputOptions,
 ): string[] {
   const raw = core.getMultilineInput(name, options).join(" ");
-  return Shellwords.split(raw);
+  return Shellwords.split(raw).map(envsubst);
 }
