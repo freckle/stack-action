@@ -189,17 +189,20 @@ async function run() {
                 await stack.upgrade();
             });
         }
-        const { stackYaml, stackRoot, stackWorks } = await core.group("Determine stack directories", async () => {
-            const stackRoot = (await stack.read(["path", "--stack-root"])).trim();
-            core.info(`Stack root: ${stackRoot}`);
+        const { stackYaml, stackDirectories } = await core.group("Determine stack directories", async () => {
             const stackYaml = (0, stack_yaml_1.readStackYamlSync)(inputs.stackYaml);
-            const stackWorks = (0, stack_yaml_1.packagesStackWorks)(stackYaml);
-            core.info(`Stack works:\n - ${stackWorks.join("\n - ")}`);
-            return { stackYaml, stackRoot, stackWorks };
+            const stackDirectories = await (0, stack_yaml_1.getStackDirectories)(stackYaml, stack);
+            core.info([
+                `Stack root: ${stackDirectories.stackRoot}`,
+                `Stack programs: ${stackDirectories.stackPrograms}`,
+                `Stack works:\n - ${stackDirectories.stackWorks.join("\n - ")}`,
+            ].join("\n"));
+            return { stackYaml, stackDirectories };
         });
         const cachePrefix = `${inputs.cachePrefix}${process.platform}/${stackYaml.resolver}`;
         await core.group("Setup and install dependencies", async () => {
-            await (0, with_cache_1.withCache)([stackRoot].concat(stackWorks), (0, get_cache_keys_1.getCacheKeys)([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]), async () => {
+            const { stackRoot, stackPrograms, stackWorks } = stackDirectories;
+            await (0, with_cache_1.withCache)([stackRoot, stackPrograms].concat(stackWorks), (0, get_cache_keys_1.getCacheKeys)([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]), async () => {
                 await stack.setup(inputs.stackSetupArguments);
                 await stack.buildDependencies(inputs.stackBuildArgumentsDependencies);
             }, {
@@ -208,7 +211,7 @@ async function run() {
             });
         });
         await core.group("Build", async () => {
-            await (0, with_cache_1.withCache)(stackWorks, (0, get_cache_keys_1.getCacheKeys)([
+            await (0, with_cache_1.withCache)(stackDirectories.stackWorks, (0, get_cache_keys_1.getCacheKeys)([
                 `${cachePrefix}/build`,
                 hashes.snapshot,
                 hashes.package,
@@ -469,7 +472,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.packagesStackWorks = exports.parseStackYaml = exports.readStackYamlSync = void 0;
+exports.getStackDirectories = exports.parseStackYaml = exports.readStackYamlSync = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 const path_1 = __nccwpck_require__(1017);
 const yaml = __importStar(__nccwpck_require__(1917));
@@ -482,14 +485,20 @@ function parseStackYaml(contents) {
     return yaml.load(contents);
 }
 exports.parseStackYaml = parseStackYaml;
-function packagesStackWorks(stackYaml, workingDirectory) {
+async function getStackDirectories(stackYaml, stack, workingDirectory) {
     const cwd = workingDirectory ?? process.cwd();
+    const stackRoot = (await stack.read(["path", "--stack-root"])).trim();
+    const stackPrograms = (await stack.read(["path", "--programs"])).trim();
+    const stackWorks = packagesStackWorks(stackYaml, cwd);
+    return { stackRoot, stackPrograms, stackWorks };
+}
+exports.getStackDirectories = getStackDirectories;
+function packagesStackWorks(stackYaml, cwd) {
     const packageStackWorks = (stackYaml.packages ?? [])
         .filter((p) => p !== ".")
         .map((p) => (0, path_1.join)(cwd, p, ".stack-work"));
     return [(0, path_1.join)(cwd, ".stack-work")].concat(packageStackWorks);
 }
-exports.packagesStackWorks = packagesStackWorks;
 
 
 /***/ }),
