@@ -199,7 +199,7 @@ async function run() {
             ].join("\n"));
             return { stackYaml, stackDirectories };
         });
-        const cachePrefix = `${inputs.cachePrefix}${process.platform}/${stackYaml.resolver}`;
+        const cachePrefix = `${inputs.cachePrefix}${process.platform}/${stack.resolver ?? stackYaml.resolver}`;
         await core.group("Setup and install dependencies", async () => {
             const { stackRoot, stackPrograms, stackWorks } = stackDirectories;
             await (0, with_cache_1.withCache)([stackRoot, stackPrograms].concat(stackWorks), (0, get_cache_keys_1.getCacheKeys)([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]), async () => {
@@ -374,6 +374,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StackCLI = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
+const path = __importStar(__nccwpck_require__(1017));
 const os_1 = __nccwpck_require__(2037);
 const exec = __importStar(__nccwpck_require__(1514));
 const parse_stack_path_1 = __nccwpck_require__(1895);
@@ -381,15 +382,22 @@ const parse_stack_query_1 = __nccwpck_require__(6445);
 class StackCLI {
     debug;
     globalArgs;
+    resolver;
     constructor(stackYaml, args, debug) {
         this.debug = debug ?? false;
         const stackYamlArgs = !args.includes("--stack-yaml")
             ? ["--stack-yaml", stackYaml]
             : [];
-        const resolverArgs = stackYaml.endsWith("stack-nightly.yaml") && !args.includes("--resolver")
-            ? ["--resolver", "nightly"]
-            : [];
-        this.globalArgs = stackYamlArgs.concat(resolverArgs).concat(args);
+        const resolverIdx = args.indexOf("--resolver");
+        const resolverArg = resolverIdx >= 0 ? args[resolverIdx + 1] : null;
+        this.resolver = resolverArg;
+        this.globalArgs = stackYamlArgs.concat(args);
+        if (!resolverArg && path.basename(stackYaml) === "stack-nightly.yaml") {
+            this.resolver = "nightly";
+            this.globalArgs = stackYamlArgs
+                .concat(["--resolver", "nightly"])
+                .concat(args);
+        }
     }
     async upgrade() {
         return await exec.exec("stack", ["upgrade"]);
