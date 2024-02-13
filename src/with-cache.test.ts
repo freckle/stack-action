@@ -1,20 +1,12 @@
+import * as core from "@actions/core";
+import * as cache from "@actions/cache";
+
 import { getCacheKeys } from "./get-cache-keys";
 import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache";
 
-const core = {
-  info: jest.fn(),
-};
-
-const cache = {
-  restoreCache: jest.fn(),
-  saveCache: jest.fn(),
-};
-
-const TEST_CACHE_OPTIONS = {
-  ...DEFAULT_CACHE_OPTIONS,
-  coreDelegate: core,
-  cacheDelegate: cache,
-};
+const restoreCacheMock = jest.spyOn(cache, "restoreCache");
+jest.spyOn(cache, "saveCache");
+jest.spyOn(core, "info");
 
 async function testFunction(): Promise<number> {
   return 42;
@@ -27,29 +19,29 @@ async function testFunctionThrows(): Promise<number> {
 function simulateCacheHit(
   _paths: string[],
   primaryKey: string,
-  _restoreKeys: string[],
-): string {
-  return primaryKey;
+  _restoreKeys?: string[],
+): Promise<string | undefined> {
+  return Promise.resolve(primaryKey);
 }
 
 function simulateCacheMiss(
   _paths: string[],
   primaryKey: string,
-  _restoreKeys: string[],
-): string {
-  return primaryKey.replace(/-*$/, "-XXX");
+  _restoreKeys?: string[],
+): Promise<string | undefined> {
+  return Promise.resolve(primaryKey.replace(/-*$/, "-XXX"));
 }
 
 test("withCache skips on primary-key hit", async () => {
   const cachePaths = ["/a", "/b"];
   const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  cache.restoreCache.mockImplementation(simulateCacheHit);
+  restoreCacheMock.mockImplementation(simulateCacheHit);
 
   const result = await withCache(
     cachePaths,
     cacheKeys,
     testFunction,
-    TEST_CACHE_OPTIONS,
+    DEFAULT_CACHE_OPTIONS,
   );
 
   expect(result).toBeUndefined();
@@ -64,13 +56,13 @@ test("withCache skips on primary-key hit", async () => {
 test("withCache acts and saves if no primary-key hit", async () => {
   const cachePaths = ["/a", "/b"];
   const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  cache.restoreCache.mockImplementation(simulateCacheMiss);
+  restoreCacheMock.mockImplementation(simulateCacheMiss);
 
   const result = await withCache(
     cachePaths,
     cacheKeys,
     testFunction,
-    TEST_CACHE_OPTIONS,
+    DEFAULT_CACHE_OPTIONS,
   );
 
   expect(result).toEqual(42);
@@ -88,10 +80,10 @@ test("withCache acts and saves if no primary-key hit", async () => {
 test("withCache can be configured to act and save anyway", async () => {
   const cachePaths = ["/a", "/b"];
   const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  cache.restoreCache.mockImplementation(simulateCacheHit);
+  restoreCacheMock.mockImplementation(simulateCacheHit);
 
   const result = await withCache(cachePaths, cacheKeys, testFunction, {
-    ...TEST_CACHE_OPTIONS,
+    ...DEFAULT_CACHE_OPTIONS,
     skipOnHit: false,
   });
 
@@ -109,14 +101,14 @@ test("withCache can be configured to act and save anyway", async () => {
 test("withCache does not save on error", async () => {
   const cachePaths = ["/a", "/b"];
   const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  cache.restoreCache.mockImplementation(simulateCacheMiss);
+  restoreCacheMock.mockImplementation(simulateCacheMiss);
 
   await expect(async () => {
     await withCache(
       cachePaths,
       cacheKeys,
       testFunctionThrows,
-      TEST_CACHE_OPTIONS,
+      DEFAULT_CACHE_OPTIONS,
     );
   }).rejects.toThrow();
 
@@ -133,11 +125,11 @@ test("withCache does not save on error", async () => {
 test("withCache can be configured to save on error", async () => {
   const cachePaths = ["/a", "/b"];
   const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  cache.restoreCache.mockImplementation(simulateCacheMiss);
+  restoreCacheMock.mockImplementation(simulateCacheMiss);
 
   await expect(async () => {
     await withCache(cachePaths, cacheKeys, testFunctionThrows, {
-      ...TEST_CACHE_OPTIONS,
+      ...DEFAULT_CACHE_OPTIONS,
       saveOnError: true,
     });
   }).rejects.toThrow();
