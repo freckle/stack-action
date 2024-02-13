@@ -488,11 +488,20 @@ exports.parseStackYaml = parseStackYaml;
 async function getStackDirectories(stackYaml, stack, workingDirectory) {
     const cwd = workingDirectory ?? process.cwd();
     const stackRoot = (await stack.read(["path", "--stack-root"])).trim();
-    const stackPrograms = (await stack.read(["path", "--programs"])).trim();
+    const stackPrograms = stackYaml["local-programs-path"] ?? defaultLocalProgramsPath(stackRoot);
     const stackWorks = packagesStackWorks(stackYaml, cwd);
     return { stackRoot, stackPrograms, stackWorks };
 }
 exports.getStackDirectories = getStackDirectories;
+function defaultLocalProgramsPath(stackRoot) {
+    if (process.platform === "win32") {
+        const localAppData = process.env["%LOCALAPPDATA%"];
+        if (localAppData) {
+            return (0, path_1.join)(localAppData, "Programs", "stack");
+        }
+    }
+    return (0, path_1.join)(stackRoot, "programs");
+}
 function packagesStackWorks(stackYaml, cwd) {
     const packageStackWorks = (stackYaml.packages ?? [])
         .filter((p) => p !== ".")
