@@ -4,7 +4,7 @@ import { StackCLI } from "./stack-cli";
 import { getCacheKeys } from "./get-cache-keys";
 import { hashProject } from "./hash-project";
 import { getInputs } from "./inputs";
-import { readStackYamlSync, packagesStackWorks } from "./stack-yaml";
+import { readStackYamlSync, getStackDirectories } from "./stack-yaml";
 import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache";
 
 async function run() {
@@ -36,20 +36,18 @@ async function run() {
       });
     }
 
-    const { stackYaml, stackRoot, stackWorks } = await core.group(
+    const { stackYaml, stackDirectories } = await core.group(
       "Determine stack directories",
       async () => {
-        // Only use --stack-root, which (as of stack v2.15) won't load the
-        // environment and install GHC, etc. It's the only option currently safe
-        // to make use of outside of caching.
-        const stackRoot = (await stack.read(["path", "--stack-root"])).trim();
-        core.info(`Stack root: ${stackRoot}`);
-
         const stackYaml = readStackYamlSync(inputs.stackYaml);
-        const stackWorks = packagesStackWorks(stackYaml);
-        core.info(`Stack works:\n - ${stackWorks.join("\n - ")}`);
+        const stackDirectories = await getStackDirectories(stackYaml, stack);
 
-        return { stackYaml, stackRoot, stackWorks };
+        core.info(`Stack root: ${stackDirectories.stackRoot}`);
+        core.info(
+          `Stack works:\n - ${stackDirectories.stackWorks.join("\n - ")}`,
+        );
+
+        return { stackYaml, stackDirectories };
       },
     );
 
@@ -60,7 +58,7 @@ async function run() {
 
     await core.group("Setup and install dependencies", async () => {
       await withCache(
-        [stackRoot].concat(stackWorks),
+        [stackDirectories.stackRoot].concat(stackDirectories.stackWorks),
         getCacheKeys([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]),
         async () => {
           await stack.setup(inputs.stackSetupArguments);
@@ -75,7 +73,7 @@ async function run() {
 
     await core.group("Build", async () => {
       await withCache(
-        stackWorks,
+        stackDirectories.stackWorks,
         getCacheKeys([
           `${cachePrefix}/build`,
           hashes.snapshot,

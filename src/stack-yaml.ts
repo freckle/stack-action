@@ -2,9 +2,12 @@ import * as fs from "fs";
 import { join as pathJoin } from "path";
 import * as yaml from "js-yaml";
 
+import { StackCLI } from "./stack-cli";
+
 export type StackYaml = {
   resolver: string;
   packages: string[] | null;
+  "local-programs-path": string | null;
 };
 
 export function readStackYamlSync(path: string): StackYaml {
@@ -16,12 +19,27 @@ export function parseStackYaml(contents: string): StackYaml {
   return yaml.load(contents) as StackYaml;
 }
 
-export function packagesStackWorks(
+export type StackDirectories = {
+  stackRoot: string;
+  stackWorks: string[];
+};
+
+export async function getStackDirectories(
   stackYaml: StackYaml,
+  stack: StackCLI,
   workingDirectory?: string,
-): string[] {
+): Promise<StackDirectories> {
   const cwd = workingDirectory ?? process.cwd();
 
+  // Only use --stack-root, which (as of stack v2.15) won't load the
+  // environment and install GHC, etc. It's the only option currently safe
+  // to make use of outside of caching.
+  const stackRoot = (await stack.read(["path", "--stack-root"])).trim();
+  const stackWorks = packagesStackWorks(stackYaml, cwd);
+  return { stackRoot, stackWorks };
+}
+
+function packagesStackWorks(stackYaml: StackYaml, cwd: string): string[] {
   // We always include ./.stack-work, so filter the "." element if present
   const packageStackWorks = (stackYaml.packages ?? [])
     .filter((p) => p !== ".")

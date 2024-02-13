@@ -1,52 +1,79 @@
-import { parseStackYaml, packagesStackWorks } from "./stack-yaml";
+import { parseStackYaml, getStackDirectories } from "./stack-yaml";
+import { StackCLI } from "./stack-cli";
 
-test("packageStackWorks with no packages", () => {
-  const stackYaml = parseStackYaml("resolver: lts-22\n");
+describe("getStackDirectories", () => {
+  test("without packages", async () => {
+    const stackYaml = parseStackYaml("resolver: lts-22\n");
+    const stack = new StackCLI("stack.yaml", []);
 
-  expect(packagesStackWorks(stackYaml, "/home/project")).toEqual([
-    "/home/project/.stack-work",
-  ]);
-});
+    jest
+      .spyOn(stack, "read")
+      .mockImplementation((_args: string[]): Promise<string> => {
+        return Promise.resolve("/home/me/.stack");
+      });
 
-test("packageStackWorks with default . as packages", () => {
-  const stackYaml = parseStackYaml("resolver: lts-22\npackages:\n- .");
+    const stackDirectories = await getStackDirectories(
+      stackYaml,
+      stack,
+      "/home/me/code/project",
+    );
 
-  expect(packagesStackWorks(stackYaml, "/home/project")).toEqual([
-    "/home/project/.stack-work",
-  ]);
-});
+    expect(stackDirectories.stackRoot).toEqual("/home/me/.stack");
+    expect(stackDirectories.stackWorks).toEqual([
+      "/home/me/code/project/.stack-work",
+    ]);
+  });
 
-test("packageStackWorks with sub-packages", () => {
-  const stackYaml = parseStackYaml(
-    [
-      "resolver: lts-22",
-      "packages:",
-      "  - subproject1",
-      "  - subproject2",
-    ].join("\n"),
-  );
+  test("with packages: [.]", async () => {
+    const stackYaml = parseStackYaml("resolver: lts-22\npackages:\n- .");
+    const stack = new StackCLI("stack.yaml", []);
 
-  expect(packagesStackWorks(stackYaml, "/home/project")).toEqual([
-    "/home/project/.stack-work",
-    "/home/project/subproject1/.stack-work",
-    "/home/project/subproject2/.stack-work",
-  ]);
-});
+    jest
+      .spyOn(stack, "read")
+      .mockImplementation((_args: string[]): Promise<string> => {
+        return Promise.resolve("/home/me/.stack");
+      });
 
-test("packageStackWorks with . and sub-packages", () => {
-  const stackYaml = parseStackYaml(
-    [
-      "resolver: lts-22",
-      "packages:",
-      "  - .",
-      "  - subproject1",
-      "  - subproject2",
-    ].join("\n"),
-  );
+    const stackDirectories = await getStackDirectories(
+      stackYaml,
+      stack,
+      "/home/me/code/project",
+    );
 
-  expect(packagesStackWorks(stackYaml, "/home/project")).toEqual([
-    "/home/project/.stack-work",
-    "/home/project/subproject1/.stack-work",
-    "/home/project/subproject2/.stack-work",
-  ]);
+    expect(stackDirectories.stackRoot).toEqual("/home/me/.stack");
+    expect(stackDirectories.stackWorks).toEqual([
+      "/home/me/code/project/.stack-work",
+    ]);
+  });
+
+  test("with subpackages", async () => {
+    const stackYaml = parseStackYaml(
+      [
+        "resolver: lts-22",
+        "packages:",
+        "  - subproject1",
+        "  - subproject2",
+      ].join("\n"),
+    );
+    const stack = new StackCLI("stack.yaml", []);
+
+    jest
+      .spyOn(stack, "read")
+      .mockImplementation((_args: string[]): Promise<string> => {
+        return Promise.resolve("/home/me/.stack");
+      });
+
+    const stackDirectories = await getStackDirectories(
+      stackYaml,
+      stack,
+      "/home/me/code/project",
+    );
+
+    expect(stackDirectories.stackRoot).toEqual("/home/me/.stack");
+    expect(stackDirectories.stackWorks).toEqual([
+      "/home/me/code/project/.stack-work",
+      "/home/me/code/project/subproject1/.stack-work",
+      "/home/me/code/project/subproject2/.stack-work",
+    ]);
+  });
 });
