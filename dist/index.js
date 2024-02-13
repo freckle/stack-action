@@ -372,16 +372,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StackCLI = void 0;
 const fs = __importStar(__nccwpck_require__(7147));
 const os_1 = __nccwpck_require__(2037);
-const realExec = __importStar(__nccwpck_require__(1514));
+const exec = __importStar(__nccwpck_require__(1514));
 const parse_stack_path_1 = __nccwpck_require__(1895);
 const parse_stack_query_1 = __nccwpck_require__(6445);
 class StackCLI {
     debug;
     globalArgs;
-    execDelegate;
-    constructor(stackYaml, args, debug, execDelegate) {
+    constructor(stackYaml, args, debug) {
         this.debug = debug ?? false;
-        this.execDelegate = execDelegate ?? realExec;
         const stackYamlArgs = !args.includes("--stack-yaml")
             ? ["--stack-yaml", stackYaml]
             : [];
@@ -391,7 +389,7 @@ class StackCLI {
         this.globalArgs = stackYamlArgs.concat(resolverArgs).concat(args);
     }
     async upgrade() {
-        return await this.execDelegate.exec("stack", ["upgrade"]);
+        return await exec.exec("stack", ["upgrade"]);
     }
     async setup(args) {
         return await this.exec(["setup"].concat(args));
@@ -434,7 +432,7 @@ class StackCLI {
         return stdout;
     }
     async exec(args, options) {
-        return await this.execDelegate.exec("stack", this.globalArgs.concat(args), options);
+        return await exec.exec("stack", this.globalArgs.concat(args), options);
     }
 }
 exports.StackCLI = StackCLI;
@@ -531,31 +529,29 @@ const cache = __importStar(__nccwpck_require__(7799));
 exports.DEFAULT_CACHE_OPTIONS = {
     skipOnHit: true,
     saveOnError: false,
-    coreDelegate: core,
-    cacheDelegate: cache,
 };
 async function withCache(paths, keys, fn, options = exports.DEFAULT_CACHE_OPTIONS) {
-    const { skipOnHit, saveOnError, coreDelegate, cacheDelegate } = options;
-    coreDelegate.info(`Paths:\n - ${paths.join("\n - ")}`);
-    coreDelegate.info(`Primary key: ${keys.primaryKey}`);
-    coreDelegate.info(`Restore keys:\n - ${keys.restoreKeys.join("\n - ")}`);
-    const restoredKey = await cacheDelegate.restoreCache(paths, keys.primaryKey, keys.restoreKeys);
+    const { skipOnHit, saveOnError } = options;
+    core.info(`Paths:\n - ${paths.join("\n - ")}`);
+    core.info(`Primary key: ${keys.primaryKey}`);
+    core.info(`Restore keys:\n - ${keys.restoreKeys.join("\n - ")}`);
+    const restoredKey = await cache.restoreCache(paths, keys.primaryKey, keys.restoreKeys);
     const primaryKeyHit = restoredKey == keys.primaryKey;
-    coreDelegate.info(`Restored key: ${restoredKey ?? "<none>"}`);
+    core.info(`Restored key: ${restoredKey ?? "<none>"}`);
     if (primaryKeyHit && skipOnHit && !saveOnError) {
-        coreDelegate.info("Skipping due to primary key hit");
+        core.info("Skipping due to primary key hit");
         return;
     }
     let result;
     try {
         result = await fn();
         if (!primaryKeyHit) {
-            await cacheDelegate.saveCache(paths, keys.primaryKey);
+            await cache.saveCache(paths, keys.primaryKey);
         }
     }
     catch (ex) {
         if (saveOnError && !primaryKeyHit) {
-            await cacheDelegate.saveCache(paths, keys.primaryKey);
+            await cache.saveCache(paths, keys.primaryKey);
         }
         throw ex;
     }
