@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { devNull } from "os";
 import type { ExecOptions } from "@actions/exec";
-import * as realExec from "@actions/exec";
+import * as exec from "@actions/exec";
 
 import type { StackPath } from "./parse-stack-path";
 import { parseStackPath } from "./parse-stack-path";
@@ -19,16 +19,9 @@ export interface ExecDelegate {
 export class StackCLI {
   private debug: boolean;
   private globalArgs: string[];
-  private execDelegate: ExecDelegate;
 
-  constructor(
-    stackYaml: string,
-    args: string[],
-    debug?: boolean,
-    execDelegate?: ExecDelegate,
-  ) {
+  constructor(stackYaml: string, args: string[], debug?: boolean) {
     this.debug = debug ?? false;
-    this.execDelegate = execDelegate ?? realExec;
 
     const stackYamlArgs = !args.includes("--stack-yaml")
       ? ["--stack-yaml", stackYaml]
@@ -44,7 +37,7 @@ export class StackCLI {
 
   async upgrade(): Promise<number> {
     // Avoid this.exec because we don't need/want globalArgs
-    return await this.execDelegate.exec("stack", ["upgrade"]);
+    return await exec.exec("stack", ["upgrade"]);
   }
 
   async setup(args: string[]): Promise<number> {
@@ -101,10 +94,6 @@ export class StackCLI {
   }
 
   private async exec(args: string[], options?: ExecOptions): Promise<number> {
-    return await this.execDelegate.exec(
-      "stack",
-      this.globalArgs.concat(args),
-      options,
-    );
+    return await exec.exec("stack", this.globalArgs.concat(args), options);
   }
 }
