@@ -56,8 +56,10 @@ async function run() {
 
     // Can't use compiler here because stack-query requires setting up the Stack
     // environment, installing GHC, etc. And we never want to do that outside of
-    // caching. Use the resolver itself instead.
-    const cachePrefix = `${inputs.cachePrefix}${process.platform}/${stackYaml.resolver}`;
+    // caching. Use the resolver itself instead. This will use either --resolver
+    // from stack-arguments, if given, or fall back to reading resolver from the
+    // stack.yaml file in use.
+    const cachePrefix = `${inputs.cachePrefix}${process.platform}/${stack.resolver ?? stackYaml.resolver}`;
 
     await core.group("Setup and install dependencies", async () => {
       const { stackRoot, stackPrograms, stackWorks } = stackDirectories;

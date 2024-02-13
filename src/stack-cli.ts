@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as path from "path";
 import { devNull } from "os";
 import type { ExecOptions } from "@actions/exec";
 import * as exec from "@actions/exec";
@@ -20,6 +21,8 @@ export class StackCLI {
   private debug: boolean;
   private globalArgs: string[];
 
+  public resolver: string | null;
+
   constructor(stackYaml: string, args: string[], debug?: boolean) {
     this.debug = debug ?? false;
 
@@ -27,12 +30,20 @@ export class StackCLI {
       ? ["--stack-yaml", stackYaml]
       : [];
 
-    const resolverArgs =
-      stackYaml.endsWith("stack-nightly.yaml") && !args.includes("--resolver")
-        ? ["--resolver", "nightly"]
-        : [];
+    // Capture --resolver if given
+    const resolverIdx = args.indexOf("--resolver");
+    const resolverArg = resolverIdx >= 0 ? args[resolverIdx + 1] : null;
 
-    this.globalArgs = stackYamlArgs.concat(resolverArgs).concat(args);
+    this.resolver = resolverArg;
+    this.globalArgs = stackYamlArgs.concat(args);
+
+    // Infer nightly if not given
+    if (!resolverArg && path.basename(stackYaml) === "stack-nightly.yaml") {
+      this.resolver = "nightly";
+      this.globalArgs = stackYamlArgs
+        .concat(["--resolver", "nightly"])
+        .concat(args);
+    }
   }
 
   async upgrade(): Promise<number> {
