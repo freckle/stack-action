@@ -117,7 +117,7 @@ function getInputs() {
         stackBuildArgumentsTest: getBuildArguments("test"),
         cachePrefix: core.getInput("cache-prefix"),
         cacheSaveAlways: core.getBooleanInput("cache-save-always"),
-        noUpgradeStack: core.getBooleanInput("no-upgrade-stack"),
+        upgradeStack: core.getBooleanInput("upgrade-stack"),
     };
 }
 exports.getInputs = getInputs;
@@ -184,7 +184,7 @@ async function run() {
             return hashes;
         });
         const stack = new stack_cli_1.StackCLI(inputs.stackYaml, inputs.stackArguments, core.isDebug());
-        if (!inputs.noUpgradeStack) {
+        if (inputs.upgradeStack) {
             await core.group("Upgrade stack", async () => {
                 await stack.upgrade();
             });
