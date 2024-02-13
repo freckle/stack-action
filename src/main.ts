@@ -42,9 +42,12 @@ async function run() {
         const stackYaml = readStackYamlSync(inputs.stackYaml);
         const stackDirectories = await getStackDirectories(stackYaml, stack);
 
-        core.info(`Stack root: ${stackDirectories.stackRoot}`);
         core.info(
-          `Stack works:\n - ${stackDirectories.stackWorks.join("\n - ")}`,
+          [
+            `Stack root: ${stackDirectories.stackRoot}`,
+            `Stack programs: ${stackDirectories.stackPrograms}`,
+            `Stack works:\n - ${stackDirectories.stackWorks.join("\n - ")}`,
+          ].join("\n"),
         );
 
         return { stackYaml, stackDirectories };
@@ -57,8 +60,10 @@ async function run() {
     const cachePrefix = `${inputs.cachePrefix}${process.platform}/${stackYaml.resolver}`;
 
     await core.group("Setup and install dependencies", async () => {
+      const { stackRoot, stackPrograms, stackWorks } = stackDirectories;
+
       await withCache(
-        [stackDirectories.stackRoot].concat(stackDirectories.stackWorks),
+        [stackRoot, stackPrograms].concat(stackWorks),
         getCacheKeys([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]),
         async () => {
           await stack.setup(inputs.stackSetupArguments);

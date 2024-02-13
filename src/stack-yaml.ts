@@ -21,6 +21,7 @@ export function parseStackYaml(contents: string): StackYaml {
 
 export type StackDirectories = {
   stackRoot: string;
+  stackPrograms: string;
   stackWorks: string[];
 };
 
@@ -31,12 +32,14 @@ export async function getStackDirectories(
 ): Promise<StackDirectories> {
   const cwd = workingDirectory ?? process.cwd();
 
-  // Only use --stack-root, which (as of stack v2.15) won't load the
-  // environment and install GHC, etc. It's the only option currently safe
+  // Only use --stack-root and --programs, which (as of stack v2.15) won't load
+  // the environment and install GHC, etc. It's the only options currently safe
   // to make use of outside of caching.
   const stackRoot = (await stack.read(["path", "--stack-root"])).trim();
+  const stackPrograms = (await stack.read(["path", "--programs"])).trim();
   const stackWorks = packagesStackWorks(stackYaml, cwd);
-  return { stackRoot, stackWorks };
+
+  return { stackRoot, stackPrograms, stackWorks };
 }
 
 function packagesStackWorks(stackYaml: StackYaml, cwd: string): string[] {
