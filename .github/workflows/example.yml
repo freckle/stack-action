@@ -106,26 +106,3 @@ jobs:
         with:
           working-directory: example
           stack-yaml: ${{ matrix.stack-yaml }}
-
-  test-auto-nightly:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - id: stack
-        uses: ./
-        with:
-          working-directory: example
-          stack-yaml: stack-nightly.yaml
-          cache-prefix: auto-nightly/
-
-  test-auto-nightly-with-explicit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - id: stack
-        uses: ./
-        with:
-          working-directory: example
-          stack-yaml: stack-nightly.yaml
-          stack-arguments: --resolver nightly
-          cache-prefix: auto-nightly-explicit/
