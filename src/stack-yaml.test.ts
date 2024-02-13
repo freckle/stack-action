@@ -1,7 +1,7 @@
 import { parseStackYaml, getStackDirectories } from "./stack-yaml";
 import { StackCLI } from "./stack-cli";
 
-function mockStackCLI(stackRoot: string, stackPrograms: string): StackCLI {
+function mockStackCLI(stackRoot: string = "/home/me/.stack"): StackCLI {
   const stack = new StackCLI("stack.yaml", []);
 
   jest
@@ -14,11 +14,9 @@ function mockStackCLI(stackRoot: string, stackPrograms: string): StackCLI {
       switch (args[1]) {
         case "--stack-root":
           return Promise.resolve(stackRoot);
-        case "--programs":
-          return Promise.resolve(stackPrograms);
         default:
           throw new Error(
-            "StackCLI.read(path) is only mocked for --stack-root or --programs",
+            "StackCLI.read(path) is only mocked for --stack-root",
           );
       }
     });
@@ -29,23 +27,18 @@ function mockStackCLI(stackRoot: string, stackPrograms: string): StackCLI {
 describe("getStackDirectories", () => {
   test("stackRoot, stackPrograms", async () => {
     const stackYaml = parseStackYaml("resolver: lts-22\n");
-    const stack = mockStackCLI(
-      "/home/me/.stack",
-      "/home/me/.stack/programs/x86_64-linux",
-    );
+    const stack = mockStackCLI("/home/me/.stack");
 
     const stackDirectories = await getStackDirectories(stackYaml, stack, "");
 
     expect(stackDirectories.stackRoot).toEqual("/home/me/.stack");
-    expect(stackDirectories.stackPrograms).toEqual(
-      "/home/me/.stack/programs/x86_64-linux",
-    );
+    expect(stackDirectories.stackPrograms).toEqual("/home/me/.stack/programs");
   });
 
   describe("stackWorks", () => {
     test("without packages", async () => {
       const stackYaml = parseStackYaml("resolver: lts-22\n");
-      const stack = mockStackCLI("", "");
+      const stack = mockStackCLI();
 
       const stackDirectories = await getStackDirectories(
         stackYaml,
@@ -60,7 +53,7 @@ describe("getStackDirectories", () => {
 
     test("with packages: [.]", async () => {
       const stackYaml = parseStackYaml("resolver: lts-22\npackages:\n- .");
-      const stack = mockStackCLI("", "");
+      const stack = mockStackCLI();
 
       const stackDirectories = await getStackDirectories(
         stackYaml,
@@ -82,7 +75,7 @@ describe("getStackDirectories", () => {
           "  - subproject2",
         ].join("\n"),
       );
-      const stack = mockStackCLI("", "");
+      const stack = mockStackCLI();
 
       const stackDirectories = await getStackDirectories(
         stackYaml,
