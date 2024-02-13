@@ -30,7 +30,7 @@ async function run() {
       core.isDebug(),
     );
 
-    if (!inputs.noUpgradeStack) {
+    if (inputs.upgradeStack) {
       await core.group("Upgrade stack", async () => {
         await stack.upgrade();
       });

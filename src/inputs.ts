@@ -13,7 +13,7 @@ export type Inputs = {
   stackBuildArgumentsTest: string[];
   cachePrefix: string;
   cacheSaveAlways: boolean;
-  noUpgradeStack: boolean;
+  upgradeStack: boolean;
 };
 
 export function getInputs(): Inputs {
@@ -35,7 +35,7 @@ export function getInputs(): Inputs {
     stackBuildArgumentsTest: getBuildArguments("test"),
     cachePrefix: core.getInput("cache-prefix"),
     cacheSaveAlways: core.getBooleanInput("cache-save-always"),
-    noUpgradeStack: core.getBooleanInput("no-upgrade-stack"),
+    upgradeStack: core.getBooleanInput("upgrade-stack"),
   };
 }
 
