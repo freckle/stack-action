@@ -41,7 +41,6 @@ jobs:
         with:
           working-directory: example
           stack-arguments: --resolver ${{ matrix.stack.resolver }}
-          cache-prefix: ${{ matrix.stack.resolver }}/
 
       - name: Check compiler[-*] outputs
         if: matrix.stack.ghc
