@@ -18,31 +18,33 @@ export interface ExecDelegate {
 }
 
 export class StackCLI {
+  public config: string;
+  public resolver: string | null;
+
   private debug: boolean;
   private globalArgs: string[];
 
-  public resolver: string | null;
-
-  constructor(stackYaml: string, args: string[], debug?: boolean) {
+  constructor(args: string[], debug?: boolean) {
     this.debug = debug ?? false;
+    this.globalArgs = args;
 
-    const stackYamlArgs = !args.includes("--stack-yaml")
-      ? ["--stack-yaml", stackYaml]
-      : [];
+    // Capture --stack-yaml if given
+    const stackYamlIdx = args.indexOf("--stack-yaml");
+    const stackYamlArg = stackYamlIdx >= 0 ? args[stackYamlIdx + 1] : null;
+
+    this.config = stackYamlArg ?? process.env.STACK_YAML ?? "stack.yaml";
 
     // Capture --resolver if given
     const resolverIdx = args.indexOf("--resolver");
     const resolverArg = resolverIdx >= 0 ? args[resolverIdx + 1] : null;
 
     this.resolver = resolverArg;
-    this.globalArgs = stackYamlArgs.concat(args);
 
     // Infer nightly if not given
-    if (!resolverArg && path.basename(stackYaml) === "stack-nightly.yaml") {
+    if (!this.resolver && path.basename(this.config) === "stack-nightly.yaml") {
       this.resolver = "nightly";
-      this.globalArgs = stackYamlArgs
-        .concat(["--resolver", "nightly"])
-        .concat(args);
+      this.globalArgs.push("--resolver");
+      this.globalArgs.push("nightly");
     }
   }
 

@@ -4,7 +4,6 @@ import { envsubst } from "./envsubst";
 
 export type Inputs = {
   workingDirectory: string | null;
-  stackYaml: string;
   test: boolean;
   stackArguments: string[];
   stackSetupArguments: string[];
@@ -15,6 +14,9 @@ export type Inputs = {
   cachePrefix: string;
   cacheSaveAlways: boolean;
   upgradeStack: boolean;
+
+  // Deprecated
+  stackYaml: string | null;
 };
 
 export function getInputs(): Inputs {
@@ -26,7 +28,6 @@ export function getInputs(): Inputs {
 
   return {
     workingDirectory: getInputDefault("working-directory", null),
-    stackYaml: getInputDefault("stack-yaml", "stack.yaml"),
     test: core.getBooleanInput("test"),
     stackArguments: getShellWordsInput("stack-arguments"),
     stackSetupArguments: getShellWordsInput("stack-setup-arguments"),
@@ -37,6 +38,7 @@ export function getInputs(): Inputs {
     cachePrefix: core.getInput("cache-prefix"),
     cacheSaveAlways: core.getBooleanInput("cache-save-always"),
     upgradeStack: core.getBooleanInput("upgrade-stack"),
+    stackYaml: getInputDefault("stack-yaml", null),
   };
 }
 

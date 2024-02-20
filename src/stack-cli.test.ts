@@ -5,36 +5,23 @@ import { StackCLI } from "./stack-cli";
 jest.spyOn(exec, "exec");
 
 describe("StackCLI", () => {
-  test("Adds --stack-yaml", async () => {
-    const stackCLI = new StackCLI("my-stack.yaml", [], false);
-
-    await stackCLI.setup([]);
-
-    expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      ["--stack-yaml", "my-stack.yaml", "setup"],
-      undefined, // ExecOptions
-    );
-  });
-
   test("Respects --resolver given", async () => {
-    const stackCLI = new StackCLI(
-      "my-stack.yaml",
-      ["--resolver", "lts"],
-      false,
-    );
+    const stackCLI = new StackCLI(["--resolver", "lts"], false);
 
     await stackCLI.setup([]);
 
     expect(exec.exec).toHaveBeenCalledWith(
       "stack",
-      ["--stack-yaml", "my-stack.yaml", "--resolver", "lts", "setup"],
+      ["--resolver", "lts", "setup"],
       undefined, // ExecOptions
     );
   });
 
   test("Adds --resolver nightly", async () => {
-    const stackCLI = new StackCLI("sub/stack-nightly.yaml", [], false);
+    const stackCLI = new StackCLI(
+      ["--stack-yaml", "sub/stack-nightly.yaml"],
+      false,
+    );
 
     await stackCLI.setup([]);
 
@@ -53,8 +40,12 @@ describe("StackCLI", () => {
 
   test("Doesn't add --resolver nightly if given", async () => {
     const stackCLI = new StackCLI(
-      "sub/stack-nightly.yaml",
-      ["--resolver", "nightly-20240201"],
+      [
+        "--stack-yaml",
+        "sub/stack-nightly.yaml",
+        "--resolver",
+        "nightly-20240201",
+      ],
       false,
     );
 
@@ -74,15 +65,13 @@ describe("StackCLI", () => {
   });
 
   test("buildDependencies", async () => {
-    const stackCLI = new StackCLI("stack.yaml", [], false);
+    const stackCLI = new StackCLI([], false);
 
     await stackCLI.buildDependencies(["--coverage"]);
 
     expect(exec.exec).toHaveBeenCalledWith(
       "stack",
       [
-        "--stack-yaml",
-        "stack.yaml",
         "build",
         "--test",
         "--no-run-tests",
@@ -94,44 +83,37 @@ describe("StackCLI", () => {
   });
 
   test("buildNoTest", async () => {
-    const stackCLI = new StackCLI("stack.yaml", [], false);
+    const stackCLI = new StackCLI([], false);
 
     await stackCLI.buildNoTest(["--coverage"]);
 
     expect(exec.exec).toHaveBeenCalledWith(
       "stack",
-      [
-        "--stack-yaml",
-        "stack.yaml",
-        "build",
-        "--test",
-        "--no-run-tests",
-        "--coverage",
-      ],
+      ["build", "--test", "--no-run-tests", "--coverage"],
       undefined,
     );
   });
 
   test("buildTest", async () => {
-    const stackCLI = new StackCLI("stack.yaml", [], false);
+    const stackCLI = new StackCLI([], false);
 
     await stackCLI.buildTest(["--coverage"]);
 
     expect(exec.exec).toHaveBeenCalledWith(
       "stack",
-      ["--stack-yaml", "stack.yaml", "build", "--test", "--coverage"],
+      ["build", "--test", "--coverage"],
       undefined,
     );
   });
 
   test("build", async () => {
-    const stackCLI = new StackCLI("stack.yaml", [], false);
+    const stackCLI = new StackCLI([], false);
 
     await stackCLI.build(["--coverage"]);
 
     expect(exec.exec).toHaveBeenCalledWith(
       "stack",
-      ["--stack-yaml", "stack.yaml", "build", "--coverage"],
+      ["build", "--coverage"],
       undefined,
     );
   });

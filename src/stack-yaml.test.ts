@@ -2,7 +2,7 @@ import { parseStackYaml, getStackDirectories } from "./stack-yaml";
 import { StackCLI } from "./stack-cli";
 
 function mockStackCLI(stackRoot: string = "/home/me/.stack"): StackCLI {
-  const stack = new StackCLI("stack.yaml", []);
+  const stack = new StackCLI([]);
 
   jest
     .spyOn(stack, "read")
