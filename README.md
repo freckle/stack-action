@@ -81,6 +81,7 @@ jobs:
 | `stack-build-arguments-test`         | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <em>Test</em> step.</p>                                                            | `false`  | `""`                |
 | `cache-prefix`                       | <p>Prefix applied to all cache keys. This can be any value you like, but teams often use <code>v{N}</code> and bump it to <code>v{N+1}</code> when/if they need to explicitly bust caches.</p>            | `false`  | `""`                |
 | `cache-save-always`                  | <p>Save artifacts to the cache even if the build fails. This may speed up builds in subsequent runs at the expense of slightly-longer builds when a full cache-hit occurs. Since <code>@v4.2.0</code></p> | `false`  | `false`             |
+| `upgrade-stack`                      | <p>Upgrade stack</p>                                                                                                                                                                                      | `false`  | `true`              |
 
 <!-- action-docs-inputs action="action.yml" -->
 
