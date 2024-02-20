@@ -127,7 +127,6 @@ function getInputs() {
     };
     return {
         workingDirectory: getInputDefault("working-directory", null),
-        stackYaml: getInputDefault("stack-yaml", "stack.yaml"),
         test: core.getBooleanInput("test"),
         stackArguments: getShellWordsInput("stack-arguments"),
         stackSetupArguments: getShellWordsInput("stack-setup-arguments"),
@@ -138,6 +137,7 @@ function getInputs() {
         cachePrefix: core.getInput("cache-prefix"),
         cacheSaveAlways: core.getBooleanInput("cache-save-always"),
         upgradeStack: core.getBooleanInput("upgrade-stack"),
+        stackYaml: getInputDefault("stack-yaml", null),
     };
 }
 exports.getInputs = getInputs;
@@ -196,21 +196,26 @@ async function run() {
             core.debug(`Change directory: ${inputs.workingDirectory}`);
             process.chdir(inputs.workingDirectory);
         }
+        if (inputs.stackYaml) {
+            core.warning("inputs.stack-yaml is deprecated. Set env.STACK_YAML or use inputs.stack-arguments instead.");
+            inputs.stackArguments.unshift(inputs.stackYaml);
+            inputs.stackArguments.unshift("--stack-yaml");
+        }
+        const stack = new stack_cli_1.StackCLI(inputs.stackArguments, core.isDebug());
         const hashes = await core.group("Calculate hashes", async () => {
-            const hashes = await (0, hash_project_1.hashProject)(inputs.stackYaml);
+            const hashes = await (0, hash_project_1.hashProject)(stack.config);
             core.info(`Snapshot: ${hashes.snapshot}`);
             core.info(`Packages: ${hashes.package}`);
             core.info(`Sources: ${hashes.sources}`);
             return hashes;
         });
-        const stack = new stack_cli_1.StackCLI(inputs.stackYaml, inputs.stackArguments, core.isDebug());
         if (inputs.upgradeStack) {
             await core.group("Upgrade stack", async () => {
                 await stack.upgrade();
             });
         }
         const { stackYaml, stackDirectories } = await core.group("Determine stack directories", async () => {
-            const stackYaml = (0, stack_yaml_1.readStackYamlSync)(inputs.stackYaml);
+            const stackYaml = (0, stack_yaml_1.readStackYamlSync)(stack.config);
             const stackDirectories = await (0, stack_yaml_1.getStackDirectories)(stackYaml, stack);
             core.info([
                 `Stack root: ${stackDirectories.stackRoot}`,
@@ -400,23 +405,23 @@ const exec = __importStar(__nccwpck_require__(1514));
 const parse_stack_path_1 = __nccwpck_require__(1895);
 const parse_stack_query_1 = __nccwpck_require__(6445);
 class StackCLI {
+    config;
+    resolver;
     debug;
     globalArgs;
-    resolver;
-    constructor(stackYaml, args, debug) {
+    constructor(args, debug) {
         this.debug = debug ?? false;
-        const stackYamlArgs = !args.includes("--stack-yaml")
-            ? ["--stack-yaml", stackYaml]
-            : [];
+        this.globalArgs = args;
+        const stackYamlIdx = args.indexOf("--stack-yaml");
+        const stackYamlArg = stackYamlIdx >= 0 ? args[stackYamlIdx + 1] : null;
+        this.config = stackYamlArg ?? process.env.STACK_YAML ?? "stack.yaml";
         const resolverIdx = args.indexOf("--resolver");
         const resolverArg = resolverIdx >= 0 ? args[resolverIdx + 1] : null;
         this.resolver = resolverArg;
-        this.globalArgs = stackYamlArgs.concat(args);
-        if (!resolverArg && path.basename(stackYaml) === "stack-nightly.yaml") {
+        if (!this.resolver && path.basename(this.config) === "stack-nightly.yaml") {
             this.resolver = "nightly";
-            this.globalArgs = stackYamlArgs
-                .concat(["--resolver", "nightly"])
-                .concat(args);
+            this.globalArgs.push("--resolver");
+            this.globalArgs.push("nightly");
         }
     }
     async upgrade() {
