@@ -28,7 +28,7 @@
     "@types/jest": "^27.4.0",
     "@types/js-yaml": "^4.0.5",
     "@types/node": "^20.11.10",
-    "@vercel/ncc": "^0.33.1",
+    "@vercel/ncc": "^0.38.1",
     "action-docs": "^2.0.0",
     "jest": "^27.4.7",
     "prettier": "^3.2.4",
