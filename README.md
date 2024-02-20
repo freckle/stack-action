@@ -69,7 +69,6 @@ jobs:
 | name                                 | description                                                                                                                                                                                               | required | default             |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------- |
 | `working-directory`                  | <p>Working directory for run commands</p>                                                                                                                                                                 | `false`  | `""`                |
-| `stack-yaml`                         | <p>Override stack.yaml, relative to working-directory</p>                                                                                                                                                 | `false`  | `stack.yaml`        |
 | `test`                               | <p>Whether to run tests</p>                                                                                                                                                                               | `false`  | `true`              |
 | `stack-arguments`                    | <p>Additional arguments for all top-level <code>stack</code> command invocations.</p>                                                                                                                     | `false`  | `--no-terminal`     |
 | `stack-query-arguments`              | <p>Additional arguments in <code>stack query</code> invocations.</p>                                                                                                                                      | `false`  | `""`                |
@@ -82,6 +81,7 @@ jobs:
 | `cache-prefix`                       | <p>Prefix applied to all cache keys. This can be any value you like, but teams often use <code>v{N}</code> and bump it to <code>v{N+1}</code> when/if they need to explicitly bust caches.</p>            | `false`  | `""`                |
 | `cache-save-always`                  | <p>Save artifacts to the cache even if the build fails. This may speed up builds in subsequent runs at the expense of slightly-longer builds when a full cache-hit occurs. Since <code>@v4.2.0</code></p> | `false`  | `false`             |
 | `upgrade-stack`                      | <p>Upgrade stack</p>                                                                                                                                                                                      | `false`  | `true`              |
+| `stack-yaml`                         | <p><strong>Deprecated</strong> use <code>env.STACK_YAML</code> or <code>stack-arguments</code> instead.</p>                                                                                               | `false`  | `""`                |
 
 <!-- action-docs-inputs action="action.yml" -->
 
@@ -142,7 +142,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: freckle/stack-action@v5
         with:
-          stack-yaml: ${{ matrix.stack-yaml }}
+          stack-arguments: --stack-yaml ${{ matrix.stack-yaml }}
 ```
 
 See [generate-matrix/action.yml](./generate-matrix/action.yml) for more details.

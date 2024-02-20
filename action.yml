@@ -4,10 +4,6 @@ inputs:
   working-directory:
     description: |
       Working directory for run commands
-  stack-yaml:
-    description: |
-      Override stack.yaml, relative to working-directory
-    default: "stack.yaml"
   test:
     description: |
       Whether to run tests
@@ -56,6 +52,9 @@ inputs:
     description: |
       Upgrade stack
     default: true
+  stack-yaml:
+    description: |
+      **Deprecated** use `env.STACK_YAML` or `stack-arguments` instead.
 runs:
   using: "node20"
   main: "dist/index.js"

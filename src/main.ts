@@ -16,19 +16,25 @@ async function run() {
       process.chdir(inputs.workingDirectory);
     }
 
+    if (inputs.stackYaml) {
+      core.warning(
+        "inputs.stack-yaml is deprecated. Set env.STACK_YAML or use inputs.stack-arguments instead.",
+      );
+
+      // Maintain original behavior for now
+      inputs.stackArguments.unshift(inputs.stackYaml);
+      inputs.stackArguments.unshift("--stack-yaml");
+    }
+
+    const stack = new StackCLI(inputs.stackArguments, core.isDebug());
+
     const hashes = await core.group("Calculate hashes", async () => {
-      const hashes = await hashProject(inputs.stackYaml);
+      const hashes = await hashProject(stack.config);
       core.info(`Snapshot: ${hashes.snapshot}`);
       core.info(`Packages: ${hashes.package}`);
       core.info(`Sources: ${hashes.sources}`);
       return hashes;
     });
-
-    const stack = new StackCLI(
-      inputs.stackYaml,
-      inputs.stackArguments,
-      core.isDebug(),
-    );
 
     if (inputs.upgradeStack) {
       await core.group("Upgrade stack", async () => {
@@ -39,7 +45,7 @@ async function run() {
     const { stackYaml, stackDirectories } = await core.group(
       "Determine stack directories",
       async () => {
-        const stackYaml = readStackYamlSync(inputs.stackYaml);
+        const stackYaml = readStackYamlSync(stack.config);
         const stackDirectories = await getStackDirectories(stackYaml, stack);
 
         core.info(

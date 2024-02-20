@@ -104,4 +104,4 @@ jobs:
       - uses: ./
         with:
           working-directory: example
-          stack-yaml: ${{ matrix.stack-yaml }}
+          stack-arguments: --stack-yaml ${{ matrix.stack-yaml }}
