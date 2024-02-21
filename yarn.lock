@@ -884,10 +884,10 @@ acorn@^8.2.4:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.11.3.tgz#71e0b14e13a4ec160724b38fb7b0f233b1b81d7a"
   integrity sha512-Y9rRfJG5jcKOE0CLisYbojUjIrIEE7AGMzA/Sm4BslANhbS+cDMpgBdcPT91oJ7OuJ9hYJBx59RjbhxVnrF8Xg==
 
-action-docs@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/action-docs/-/action-docs-2.0.0.tgz#b1bd68296458473664ac9028160894a576b24d6c"
-  integrity sha512-AT46HljUncSwJQAF2cojGzpFKzth9eV11as1zSJ5KPp3un0yreFNEwYvr4Zwip37fR64szeGgLyNn8dOFgW1yg==
+action-docs@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/action-docs/-/action-docs-2.1.0.tgz#f20c45094c2b92b2b16eab524075a113dd6b64a9"
+  integrity sha512-1XrMDfa/Su08K8BF64Rei7b3eylgi+1Bj40TL5tek52EEic3HZMtN97+iWcx+S9L+SL1oJYXZ9A6mQ5iICcQlw==
   dependencies:
     chalk "^5.3.0"
     eslint-import-resolver-typescript "^3.6.1"
