@@ -105,3 +105,16 @@ jobs:
         with:
           working-directory: example
           stack-arguments: --stack-yaml ${{ matrix.stack-yaml }}
+
+  test-fails-on-error:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: stack-action-step
+        continue-on-error: true
+        uses: ./
+        with:
+          working-directory: example
+          stack-arguments: --resolver bad-resolver
+      - if: steps.stack-action-step.outcome != 'failure'
+        run: exit 1
