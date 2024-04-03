@@ -131,7 +131,7 @@ async function run() {
       }
     });
     // https://github.com/actions/cache/blob/0c45773b623bea8c8e75f6c82b208c3cf94ea4f9/src/restoreImpl.ts#L99-L106
-    process.exit(0)
+    process.exit(0);
   } catch (error) {
     if (error instanceof Error) {
       core.error(error);
@@ -144,7 +144,7 @@ async function run() {
       core.setFailed("Non-Error exception");
     }
     // https://github.com/actions/cache/blob/0c45773b623bea8c8e75f6c82b208c3cf94ea4f9/src/restoreImpl.ts#L88
-    process.exit(1)
+    process.exit(1);
   }
 }
 
