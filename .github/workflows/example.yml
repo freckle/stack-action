@@ -110,11 +110,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: stack-action-step
+      - name: Should fail
+        id: stack-action-step
         continue-on-error: true
         uses: ./
         with:
           working-directory: example
           stack-arguments: --resolver bad-resolver
-      - if: steps.stack-action-step.outcome != 'failure'
+      - name: Check failure
+        if: steps.stack-action-step.outcome != 'failure'
         run: exit 1
