@@ -57,6 +57,15 @@ export class StackCLI {
     return await this.exec(["setup"].concat(args));
   }
 
+  async installCompilerTools(tools: string[]): Promise<number> {
+    if (tools.length > 0) {
+      return await this.exec(["install", "--copy-compiler-tool"].concat(tools));
+    }
+
+    // No tools to install
+    return 0;
+  }
+
   async buildDependencies(args: string[]): Promise<number> {
     return await this.buildNoTest(["--dependencies-only"].concat(args));
   }

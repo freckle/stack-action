@@ -14,6 +14,7 @@ export type Inputs = {
   cachePrefix: string;
   cacheSaveAlways: boolean;
   upgradeStack: boolean;
+  compilerTools: string[];
 
   // Deprecated
   stackYaml: string | null;
@@ -38,6 +39,7 @@ export function getInputs(): Inputs {
     cachePrefix: core.getInput("cache-prefix"),
     cacheSaveAlways: core.getBooleanInput("cache-save-always"),
     upgradeStack: core.getBooleanInput("upgrade-stack"),
+    compilerTools: core.getMultilineInput("compiler-tools"),
     stackYaml: getInputDefault("stack-yaml", null),
   };
 }
