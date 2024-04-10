@@ -78,6 +78,7 @@ async function run() {
         async () => {
           await stack.setup(inputs.stackSetupArguments);
           await stack.buildDependencies(inputs.stackBuildArgumentsDependencies);
+          await stack.installCompilerTools(inputs.compilerTools);
         },
         {
           ...DEFAULT_CACHE_OPTIONS,

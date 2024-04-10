@@ -46,12 +46,17 @@ inputs:
     description: |
       Save artifacts to the cache even if the build fails. This may speed up
       builds in subsequent runs at the expense of slightly-longer builds when a
-      full cache-hit occurs. Since `@v4.2.0`
+      full cache-hit occurs. Since `@v4.2.0`.
     default: false
   upgrade-stack:
     description: |
       Upgrade stack
     default: true
+  compiler-tools:
+    description: |
+      A list of packages to install as compiler tools, one per line. This is
+      useful to do here rather than separate `run` commands so that their
+      installation is incorporated in the dependency cache. Since `@v5.2.0`.
   stack-yaml:
     description: |
       **Deprecated** use `env.STACK_YAML` or `stack-arguments` instead.

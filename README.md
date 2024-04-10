@@ -66,22 +66,23 @@ jobs:
 
 ## Inputs
 
-| name                                 | description                                                                                                                                                                                               | required | default             |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------- |
-| `working-directory`                  | <p>Working directory for run commands</p>                                                                                                                                                                 | `false`  | `""`                |
-| `test`                               | <p>Whether to run tests</p>                                                                                                                                                                               | `false`  | `true`              |
-| `stack-arguments`                    | <p>Additional arguments for all top-level <code>stack</code> command invocations.</p>                                                                                                                     | `false`  | `--no-terminal`     |
-| `stack-query-arguments`              | <p>Additional arguments in <code>stack query</code> invocations.</p>                                                                                                                                      | `false`  | `""`                |
-| `stack-path-arguments`               | <p>Additional arguments in <code>stack path</code> invocations.</p>                                                                                                                                       | `false`  | `""`                |
-| `stack-setup-arguments`              | <p>Additional arguments in <code>stack setup</code> invocations.</p>                                                                                                                                      | `false`  | `""`                |
-| `stack-build-arguments`              | <p>Additional arguments for all <code>stack build</code> invocations.</p>                                                                                                                                 | `false`  | `--fast --pedantic` |
-| `stack-build-arguments-dependencies` | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <em>Dependencies</em> step.</p>                                                    | `false`  | `""`                |
-| `stack-build-arguments-build`        | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <em>Build</em> step.</p>                                                           | `false`  | `""`                |
-| `stack-build-arguments-test`         | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <em>Test</em> step.</p>                                                            | `false`  | `""`                |
-| `cache-prefix`                       | <p>Prefix applied to all cache keys. This can be any value you like, but teams often use <code>v{N}</code> and bump it to <code>v{N+1}</code> when/if they need to explicitly bust caches.</p>            | `false`  | `""`                |
-| `cache-save-always`                  | <p>Save artifacts to the cache even if the build fails. This may speed up builds in subsequent runs at the expense of slightly-longer builds when a full cache-hit occurs. Since <code>@v4.2.0</code></p> | `false`  | `false`             |
-| `upgrade-stack`                      | <p>Upgrade stack</p>                                                                                                                                                                                      | `false`  | `true`              |
-| `stack-yaml`                         | <p><strong>Deprecated</strong> use <code>env.STACK_YAML</code> or <code>stack-arguments</code> instead.</p>                                                                                               | `false`  | `""`                |
+| name                                 | description                                                                                                                                                                                                                                    | required | default             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------- |
+| `working-directory`                  | <p>Working directory for run commands</p>                                                                                                                                                                                                      | `false`  | `""`                |
+| `test`                               | <p>Whether to run tests</p>                                                                                                                                                                                                                    | `false`  | `true`              |
+| `stack-arguments`                    | <p>Additional arguments for all top-level <code>stack</code> command invocations.</p>                                                                                                                                                          | `false`  | `--no-terminal`     |
+| `stack-query-arguments`              | <p>Additional arguments in <code>stack query</code> invocations.</p>                                                                                                                                                                           | `false`  | `""`                |
+| `stack-path-arguments`               | <p>Additional arguments in <code>stack path</code> invocations.</p>                                                                                                                                                                            | `false`  | `""`                |
+| `stack-setup-arguments`              | <p>Additional arguments in <code>stack setup</code> invocations.</p>                                                                                                                                                                           | `false`  | `""`                |
+| `stack-build-arguments`              | <p>Additional arguments for all <code>stack build</code> invocations.</p>                                                                                                                                                                      | `false`  | `--fast --pedantic` |
+| `stack-build-arguments-dependencies` | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <em>Dependencies</em> step.</p>                                                                                         | `false`  | `""`                |
+| `stack-build-arguments-build`        | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <em>Build</em> step.</p>                                                                                                | `false`  | `""`                |
+| `stack-build-arguments-test`         | <p>Additional arguments passed after <code>stack-build-arguments</code> in <code>stack build</code> invocations on the <em>Test</em> step.</p>                                                                                                 | `false`  | `""`                |
+| `cache-prefix`                       | <p>Prefix applied to all cache keys. This can be any value you like, but teams often use <code>v{N}</code> and bump it to <code>v{N+1}</code> when/if they need to explicitly bust caches.</p>                                                 | `false`  | `""`                |
+| `cache-save-always`                  | <p>Save artifacts to the cache even if the build fails. This may speed up builds in subsequent runs at the expense of slightly-longer builds when a full cache-hit occurs. Since <code>@v4.2.0</code>.</p>                                     | `false`  | `false`             |
+| `upgrade-stack`                      | <p>Upgrade stack</p>                                                                                                                                                                                                                           | `false`  | `true`              |
+| `compiler-tools`                     | <p>A list of packages to install as compiler tools, one per line. This is useful to do here rather than separate <code>run</code> commands so that their installation is incorporated in the dependency cache. Since <code>@v5.2.0</code>.</p> | `false`  | `""`                |
+| `stack-yaml`                         | <p><strong>Deprecated</strong> use <code>env.STACK_YAML</code> or <code>stack-arguments</code> instead.</p>                                                                                                                                    | `false`  | `""`                |
 
 <!-- action-docs-inputs action="action.yml" -->
 
@@ -113,6 +114,32 @@ jobs:
 | `local-install-root`    | <p><code>local-install-root</code> value from <code>stack path</code></p>    |
 | `dist-dir`              | <p><code>dist-dir</code> value from <code>stack path</code></p>              |
 | `local-hpc-root`        | <p><code>local-hpc-root</code> value from <code>stack path</code></p>        |
+
+## Installing Compiler Tools
+
+The `compiler-tools` input can be used to install packages (with
+`--copy-compiler-tool`) as part of the _Dependencies_ step. The installed tools
+can be used by other parts of the build via `stack exec`, such as to reformat
+and upload coverage:
+
+```yaml
+- id: stack
+  uses: freckle/stack-action@v5
+  with:
+    compiler-tools: hpc-lcov
+    stack-build-arguments: --coverage
+
+- run: stack --no-terminal exec -- hpc-lcov --file "$HPC_ROOT"/combined/all/all.tix
+  env:
+    HPC_ROOT: ${{ steps.stack.outputs.local-hpc-root }}
+
+- uses: codecov/codecov-action@v2
+  with:
+    files: ./lcov.info
+```
+
+Doing it this way, vs a separate `run: stack install...`, means the building of
+these tools will be included in the dependencies cache.
 
 ## Generating a Build Matrix of `stack.yaml`s
 

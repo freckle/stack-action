@@ -64,6 +64,24 @@ describe("StackCLI", () => {
     );
   });
 
+  test("installCompilerTools", async () => {
+    const stackCLI = new StackCLI([], false);
+    await stackCLI.installCompilerTools(["hlint", "weeder"]);
+
+    expect(exec.exec).toHaveBeenCalledWith(
+      "stack",
+      ["install", "--copy-compiler-tool", "hlint", "weeder"],
+      undefined,
+    );
+  });
+
+  test("installCompilerTools with empty arguments", async () => {
+    const stackCLI = new StackCLI([], false);
+    await stackCLI.installCompilerTools([]);
+
+    expect(exec.exec).not.toHaveBeenCalled();
+  });
+
   test("buildDependencies", async () => {
     const stackCLI = new StackCLI([], false);
 
