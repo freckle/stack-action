@@ -137,6 +137,7 @@ function getInputs() {
         cachePrefix: core.getInput("cache-prefix"),
         cacheSaveAlways: core.getBooleanInput("cache-save-always"),
         upgradeStack: core.getBooleanInput("upgrade-stack"),
+        compilerTools: core.getMultilineInput("compiler-tools"),
         stackYaml: getInputDefault("stack-yaml", null),
     };
 }
@@ -230,6 +231,7 @@ async function run() {
             await (0, with_cache_1.withCache)([stackRoot, stackPrograms].concat(stackWorks), (0, get_cache_keys_1.getCacheKeys)([`${cachePrefix}/deps`, hashes.snapshot, hashes.package]), async () => {
                 await stack.setup(inputs.stackSetupArguments);
                 await stack.buildDependencies(inputs.stackBuildArgumentsDependencies);
+                await stack.installCompilerTools(inputs.compilerTools);
             }, {
                 ...with_cache_1.DEFAULT_CACHE_OPTIONS,
                 saveOnError: inputs.cacheSaveAlways,
@@ -431,6 +433,12 @@ class StackCLI {
     }
     async setup(args) {
         return await this.exec(["setup"].concat(args));
+    }
+    async installCompilerTools(tools) {
+        if (tools.length > 0) {
+            return await this.exec(["install", "--copy-compiler-tool"].concat(tools));
+        }
+        return 0;
     }
     async buildDependencies(args) {
         return await this.buildNoTest(["--dependencies-only"].concat(args));
