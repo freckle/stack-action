@@ -29,12 +29,16 @@ jobs:
             ghc: "9.6.4"
           - resolver: lts-12.26
             ghc: "8.4.4"
+            skip-on: macOS-latest
 
       fail-fast: false
 
     runs-on: ${{ matrix.runner }}
 
     steps:
+      # Such an old GHC is not supported on macOS-latest anymore
+      - if: ${{ !contains(matrix.skip-on, matrix.runner) }}
+
       - uses: actions/checkout@v4
       - id: stack
         uses: ./
