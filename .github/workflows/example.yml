@@ -33,7 +33,7 @@ jobs:
         exclude:
           # Binary distributions for older GHCs don't exist on macOS-latest
           - runner: macOS-latest
-            ghc: "8.4.4"
+            stack: {ghc: "8.4.4"}
 
       fail-fast: false
 
