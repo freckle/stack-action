@@ -28,6 +28,30 @@ async function run() {
 
     const stack = new StackCLI(inputs.stackArguments, core.isDebug());
 
+    await core.group("Install/upgrade stack", async () => {
+      const installed = await stack.installed();
+
+      if (installed) {
+        if (inputs.upgradeStack) {
+          core.info("Upgrading stack");
+          await stack.upgrade();
+        }
+      } else {
+        if (inputs.installStack) {
+          core.info("Installing stack");
+          await stack.install();
+        } else {
+          throw new Error(
+            [
+              "The executable stack is not present on $PATH",
+              "Make sure it is installed in a preceding step, or use",
+              "`install-stack: true` to have it installed for you.",
+            ].join("\n"),
+          );
+        }
+      }
+    });
+
     const hashes = await core.group("Calculate hashes", async () => {
       const hashes = await hashProject(stack.config);
       core.info(`Snapshot: ${hashes.snapshot}`);
@@ -35,12 +59,6 @@ async function run() {
       core.info(`Sources: ${hashes.sources}`);
       return hashes;
     });
-
-    if (inputs.upgradeStack) {
-      await core.group("Upgrade stack", async () => {
-        await stack.upgrade();
-      });
-    }
 
     const { stackYaml, stackDirectories } = await core.group(
       "Determine stack directories",
