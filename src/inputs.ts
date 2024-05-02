@@ -13,6 +13,7 @@ export type Inputs = {
   stackBuildArgumentsTest: string[];
   cachePrefix: string;
   cacheSaveAlways: boolean;
+  installStack: boolean;
   upgradeStack: boolean;
   compilerTools: string[];
 
@@ -38,6 +39,7 @@ export function getInputs(): Inputs {
     stackBuildArgumentsTest: getBuildArguments("test"),
     cachePrefix: core.getInput("cache-prefix"),
     cacheSaveAlways: core.getBooleanInput("cache-save-always"),
+    installStack: core.getBooleanInput("install-stack"),
     upgradeStack: core.getBooleanInput("upgrade-stack"),
     compilerTools: core.getMultilineInput("compiler-tools"),
     stackYaml: getInputDefault("stack-yaml", null),

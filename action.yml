@@ -48,6 +48,10 @@ inputs:
       builds in subsequent runs at the expense of slightly-longer builds when a
       full cache-hit occurs. Since `@v4.2.0`.
     default: false
+  install-stack:
+    description: |
+      Install stack, if necessary
+    default: true
   upgrade-stack:
     description: |
       Upgrade stack
