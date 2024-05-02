@@ -30,6 +30,11 @@ jobs:
           - resolver: lts-12.26
             ghc: "8.4.4"
 
+        exclude:
+          # Binary distributions for older GHCs don't exist on macOS-latest
+          - runner: macOS-latest
+            ghc: "8.4.4"
+
       fail-fast: false
 
     runs-on: ${{ matrix.runner }}
