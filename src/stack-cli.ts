@@ -48,6 +48,22 @@ export class StackCLI {
     }
   }
 
+  async installed(): Promise<boolean> {
+    const ec = await exec.exec("which", ["stack"], {
+      silent: true,
+      ignoreReturnCode: true,
+    });
+    return ec == 0;
+  }
+
+  async install(): Promise<void> {
+    const url = "https://get.haskellstack.org";
+    const tmp = "install-stack.sh";
+    await exec.exec("curl", ["-sSL", "-o", tmp, url]);
+    await exec.exec("sh", [tmp]);
+    fs.rmSync(tmp);
+  }
+
   async upgrade(): Promise<number> {
     // Avoid this.exec because we don't need/want globalArgs
     return await exec.exec("stack", ["upgrade"]);
