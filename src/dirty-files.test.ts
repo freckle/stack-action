@@ -19,6 +19,17 @@ describe("parseGitStatus", () => {
       "src/path with spaces.md",
     ]);
   });
+
+  const empties = [
+    ["empty", ""],
+    ["newline", "\n"],
+    ["spaces", " "],
+    ["spaces+newline", " \n"],
+  ];
+
+  test.each(empties)("handles %s as no paths", (_arg, str) => {
+    expect(parseGitStatus(str)).toEqual([]);
+  });
 });
 
 describe("isInterestingFile", () => {

@@ -64,6 +64,9 @@ export function parseGitStatus(stdout: string): string[] {
     .map((path) => {
       // Drop leading space, split on space, drop first column and rejoin
       return path.replace(/^\s*/, "").split(/\s+/).slice(1).join(" ");
+    })
+    .filter((path) => {
+      return path.trim() !== "";
     });
 }
 
