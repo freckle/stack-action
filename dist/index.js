@@ -1,6 +1,102 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 5644:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.isInterestingFile = exports.parseGitStatus = exports.checkDirtyFiles = exports.parseOnDirtyFiles = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const exec = __importStar(__nccwpck_require__(1514));
+function parseOnDirtyFiles(input) {
+    switch (input) {
+        case "warn":
+        case "error":
+            return input;
+        default:
+            throw new Error(`Invalid on-dirty-files, must be warn or error, saw: ${input}`);
+    }
+}
+exports.parseOnDirtyFiles = parseOnDirtyFiles;
+async function checkDirtyFiles(onDirtyFiles) {
+    const stdout = await readGitStatus();
+    const paths = parseGitStatus(stdout).filter(isInterestingFile);
+    if (paths.length === 0) {
+        return;
+    }
+    const message = `Build caused changes to ${paths.join(", ")}`;
+    switch (onDirtyFiles) {
+        case "warn":
+            core.warning(message);
+            break;
+        case "error":
+            throw new Error(message);
+    }
+}
+exports.checkDirtyFiles = checkDirtyFiles;
+async function readGitStatus() {
+    let stdout = "";
+    const options = {
+        listeners: {
+            stdout: (data) => {
+                stdout += data.toString();
+            },
+        },
+        ignoreReturnCode: true,
+    };
+    await exec.exec("git", ["status", "--porcelain"], options);
+    return stdout;
+}
+function parseGitStatus(stdout) {
+    return stdout
+        .split("\n")
+        .filter((path) => {
+        return !path.startsWith("??");
+    })
+        .map((path) => {
+        return path.replace(/^\s*/, "").split(/\s+/).slice(1).join(" ");
+    })
+        .filter((path) => {
+        return path.trim() !== "";
+    });
+}
+exports.parseGitStatus = parseGitStatus;
+const INTERESTING_EXTENSIONS = [".cabal", ".yaml.lock"];
+function isInterestingFile(path) {
+    return INTERESTING_EXTENSIONS.some((ext, _index, _array) => {
+        return path.endsWith(ext);
+    });
+}
+exports.isInterestingFile = isInterestingFile;
+
+
+/***/ }),
+
 /***/ 9778:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -121,10 +217,12 @@ exports.getInputs = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const Shellwords = __importStar(__nccwpck_require__(8519));
 const envsubst_1 = __nccwpck_require__(9778);
+const dirty_files_1 = __nccwpck_require__(5644);
 function getInputs() {
     const getBuildArguments = (step) => {
         return getShellWordsInput("stack-build-arguments").concat(getShellWordsInput(`stack-build-arguments-${step}`));
     };
+    const rawOnDirtyFiles = core.getInput("on-dirty-files", { required: true });
     return {
         workingDirectory: getInputDefault("working-directory", null),
         test: core.getBooleanInput("test"),
@@ -136,6 +234,7 @@ function getInputs() {
         stackBuildArgumentsTest: getBuildArguments("test"),
         cachePrefix: core.getInput("cache-prefix"),
         cacheSaveAlways: core.getBooleanInput("cache-save-always"),
+        onDirtyFiles: (0, dirty_files_1.parseOnDirtyFiles)(rawOnDirtyFiles),
         installStack: core.getBooleanInput("install-stack"),
         upgradeStack: core.getBooleanInput("upgrade-stack"),
         compilerTools: core.getMultilineInput("compiler-tools"),
@@ -185,6 +284,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
+const dirty_files_1 = __nccwpck_require__(5644);
 const stack_cli_1 = __nccwpck_require__(8939);
 const get_cache_keys_1 = __nccwpck_require__(1341);
 const hash_project_1 = __nccwpck_require__(4717);
@@ -268,6 +368,9 @@ async function run() {
                 skipOnHit: false,
                 saveOnError: inputs.cacheSaveAlways,
             });
+        });
+        await core.group("Check for dirty files", async () => {
+            await (0, dirty_files_1.checkDirtyFiles)(inputs.onDirtyFiles);
         });
         if (inputs.test) {
             await core.group("Test", async () => {
