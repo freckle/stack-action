@@ -1,24 +1,30 @@
 import { parseStackYaml, getStackDirectories } from "./stack-yaml";
 import { StackCLI } from "./stack-cli";
 
-function mockStackCLI(stackRoot: string = "/home/me/.stack"): StackCLI {
+const testStackRoot = "/home/me/.stack";
+const testPrograms = "/home/me/.stack/programs/x86_64-linux";
+const testStackPathYaml = `
+stack-root: ${testStackRoot}
+programs: ${testPrograms}
+`;
+
+function mockStackCLI(): StackCLI {
   const stack = new StackCLI([]);
 
   jest
     .spyOn(stack, "read")
     .mockImplementation((args: string[]): Promise<string> => {
-      if (args[0] !== "path") {
-        throw new Error("StackCLI.read() is only mocked for path");
+      // Stringify to avoid array-comparison pitfalls
+      const expected = ["path", "--stack-root", "--programs"].toString();
+      const given = args.toString();
+
+      if (given !== expected) {
+        throw new Error(
+          `StackCLI.read() is only mocked for ${expected}, saw ${given}`,
+        );
       }
 
-      switch (args[1]) {
-        case "--stack-root":
-          return Promise.resolve(stackRoot);
-        default:
-          throw new Error(
-            "StackCLI.read(path) is only mocked for --stack-root",
-          );
-      }
+      return Promise.resolve(testStackPathYaml);
     });
 
   return stack;
@@ -27,12 +33,12 @@ function mockStackCLI(stackRoot: string = "/home/me/.stack"): StackCLI {
 describe("getStackDirectories", () => {
   test("stackRoot, stackPrograms", async () => {
     const stackYaml = parseStackYaml("resolver: lts-22\n");
-    const stack = mockStackCLI("/home/me/.stack");
+    const stack = mockStackCLI();
 
     const stackDirectories = await getStackDirectories(stackYaml, stack, "");
 
-    expect(stackDirectories.stackRoot).toEqual("/home/me/.stack");
-    expect(stackDirectories.stackPrograms).toEqual("/home/me/.stack/programs");
+    expect(stackDirectories.stackRoot).toEqual(testStackRoot);
+    expect(stackDirectories.stackPrograms).toEqual(testPrograms);
   });
 
   describe("stackWorks", () => {
