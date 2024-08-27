@@ -20,7 +20,9 @@ various, distinct `stack-[*-]arguments[-*]` inputs that are used in more
 specific ways. See the _Inputs_ section, or `action.yml` for documentation of
 the new options.
 
-The `fast` and `pedantic` inputs were removed. Use a ternary operator (see [Operators](https://docs.github.com/en/actions/learn-github-actions/expressions#operators)) to pass a flag conditionally. Example:
+The `fast` and `pedantic` inputs were removed. Use a ternary operator (see
+[Operators](https://docs.github.com/en/actions/learn-github-actions/expressions#operators))
+to pass a flag conditionally. Example:
 
 ```yaml
 stack-build-arguments: ${{ github.ref_name != 'main' && '--fast' || '' }} --pedantic
@@ -34,7 +36,7 @@ use a separate `stack-cache-action` step any more.
 ## Notable Changes in v3
 
 Previous versions of this Action ran HLint and Weeder for you. We recommend
-doing that as separate actions now, so, as of `v3, those options have been
+doing that as separate actions now, so, as of `v3`, those options have been
 removed.
 
 Here is an example of running separate Actions:
