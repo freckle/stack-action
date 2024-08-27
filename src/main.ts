@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
 
+import { checkDirtyFiles } from "./dirty-files";
 import { StackCLI } from "./stack-cli";
 import { getCacheKeys } from "./get-cache-keys";
 import { hashProject } from "./hash-project";
@@ -123,6 +124,10 @@ async function run() {
           saveOnError: inputs.cacheSaveAlways,
         },
       );
+    });
+
+    await core.group("Check for dirty files", async () => {
+      await checkDirtyFiles(inputs.onDirtyFiles);
     });
 
     if (inputs.test) {

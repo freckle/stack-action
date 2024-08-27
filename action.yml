@@ -48,6 +48,11 @@ inputs:
       builds in subsequent runs at the expense of slightly-longer builds when a
       full cache-hit occurs. Since `@v4.2.0`.
     default: false
+  on-dirty-files:
+    description: |
+      What to do if we find changes to the cabal or lock file after a build.
+      Value can be `warn`, or `error`. Default is `warn`.
+    default: warn
   install-stack:
     description: |
       Install stack, if necessary

@@ -1,6 +1,7 @@
 import * as core from "@actions/core";
 import * as Shellwords from "shellwords-ts";
 import { envsubst } from "./envsubst";
+import { type OnDirtyFiles, parseOnDirtyFiles } from "./dirty-files";
 
 export type Inputs = {
   workingDirectory: string | null;
@@ -13,6 +14,7 @@ export type Inputs = {
   stackBuildArgumentsTest: string[];
   cachePrefix: string;
   cacheSaveAlways: boolean;
+  onDirtyFiles: OnDirtyFiles;
   installStack: boolean;
   upgradeStack: boolean;
   compilerTools: string[];
@@ -28,6 +30,8 @@ export function getInputs(): Inputs {
     );
   };
 
+  const rawOnDirtyFiles = core.getInput("on-dirty-files", { required: true });
+
   return {
     workingDirectory: getInputDefault("working-directory", null),
     test: core.getBooleanInput("test"),
@@ -39,6 +43,7 @@ export function getInputs(): Inputs {
     stackBuildArgumentsTest: getBuildArguments("test"),
     cachePrefix: core.getInput("cache-prefix"),
     cacheSaveAlways: core.getBooleanInput("cache-save-always"),
+    onDirtyFiles: parseOnDirtyFiles(rawOnDirtyFiles),
     installStack: core.getBooleanInput("install-stack"),
     upgradeStack: core.getBooleanInput("upgrade-stack"),
     compilerTools: core.getMultilineInput("compiler-tools"),
