@@ -25,6 +25,12 @@ export type StackDirectories = {
   stackWorks: string[];
 };
 
+// Internal type for parsing Yaml output from `stack path`
+type StackPath = {
+  "stack-root": string;
+  programs: string;
+};
+
 export async function getStackDirectories(
   stackYaml: StackYaml,
   stack: StackCLI,
@@ -32,32 +38,18 @@ export async function getStackDirectories(
 ): Promise<StackDirectories> {
   const cwd = workingDirectory ?? process.cwd();
 
-  // Only use --stack-root, which (as of stack v2.15) won't load the environment
-  // and install GHC, etc. It's the only option currently safe to make use of
-  // outside of caching.
-  const stackRoot = (await stack.read(["path", "--stack-root"])).trim();
-
-  // Avoid `stack path --programs` until
-  // https://github.com/commercialhaskell/stack/issues/6484 is fixed.
-  const stackPrograms =
-    stackYaml["local-programs-path"] ?? defaultLocalProgramsPath(stackRoot);
-
+  // Only use --stack-root and --programs, which (as of stack v2.15.3) won't
+  // load the environment and install GHC, etc. These are the only options
+  // currently safe to make use of outside of caching.
+  const output = await stack.read(["path", "--stack-root", "--programs"]);
+  const stackPath = yaml.load(output) as StackPath;
   const stackWorks = packagesStackWorks(stackYaml, cwd);
 
-  return { stackRoot, stackPrograms, stackWorks };
-}
-
-// https://docs.haskellstack.org/en/stable/yaml_configuration/#local-programs-path
-function defaultLocalProgramsPath(stackRoot: string): string {
-  if (process.platform === "win32") {
-    const localAppData = process.env.LOCALAPPDATA;
-
-    if (localAppData) {
-      return pathJoin(localAppData, "Programs", "stack");
-    }
-  }
-
-  return pathJoin(stackRoot, "programs");
+  return {
+    stackRoot: stackPath["stack-root"],
+    stackPrograms: stackPath.programs,
+    stackWorks,
+  };
 }
 
 function packagesStackWorks(stackYaml: StackYaml, cwd: string): string[] {
