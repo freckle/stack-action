@@ -1,22 +1,21 @@
 import { parseGitStatus, isInterestingFile } from "./dirty-files";
 
 describe("parseGitStatus", () => {
-  test("parse file names", () => {
+  test("parse file name, and filters untracked", () => {
     const paths = parseGitStatus(
       [
-        "A  new-file.rb",
+        "A  staged-file.rb",
         " M action.yml",
         " M src/inputs.ts",
-        "?? src/dirty-files.ts",
+        "?? src/new-file.ts",
         " M src/path with spaces.md",
       ].join("\n"),
     );
 
     expect(paths).toEqual([
-      "new-file.rb",
+      "staged-file.rb",
       "action.yml",
       "src/inputs.ts",
-      "src/dirty-files.ts",
       "src/path with spaces.md",
     ]);
   });

@@ -53,10 +53,18 @@ async function readGitStatus(): Promise<string> {
 
 // Exported for testing
 export function parseGitStatus(stdout: string): string[] {
-  return stdout.split("\n").map((path) => {
-    // Drop leading space, split on space, drop first column and rejoin
-    return path.replace(/^\s*/, "").split(/\s+/).slice(1).join(" ");
-  });
+  return stdout
+    .split("\n")
+    .filter((path) => {
+      // We don't care about untracked files because users may be choosing not
+      // to commit generated files -- in which case it showing up here is
+      // expected.
+      return !path.startsWith("??");
+    })
+    .map((path) => {
+      // Drop leading space, split on space, drop first column and rejoin
+      return path.replace(/^\s*/, "").split(/\s+/).slice(1).join(" ");
+    });
 }
 
 const INTERESTING_EXTENSIONS: string[] = [".cabal", ".yaml.lock"];
