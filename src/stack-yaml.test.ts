@@ -2,7 +2,7 @@ import { parseStackYaml, getStackDirectories } from "./stack-yaml";
 import { StackCLI } from "./stack-cli";
 
 const testStackRoot = "/home/me/.stack";
-const testPrograms = "/home/me/.stack/programs/x86_64-linux";
+const testPrograms = `${testStackRoot}/programs/x86_64-linux`;
 const testStackPathYaml = `
 stack-root: ${testStackRoot}
 programs: ${testPrograms}
