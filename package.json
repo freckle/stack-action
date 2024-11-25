@@ -27,7 +27,7 @@
   "devDependencies": {
     "@types/jest": "^27.4.0",
     "@types/js-yaml": "^4.0.5",
-    "@types/node": "^22.9.1",
+    "@types/node": "^22.9.3",
     "@vercel/ncc": "^0.38.3",
     "action-docs": "^2.5.1",
     "jest": "^27.4.7",
