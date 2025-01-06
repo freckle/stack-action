@@ -105,13 +105,12 @@ jobs:
       fail-fast: false
 
     steps:
+      - uses: actions/checkout@v4
       - run: |
           if [[ -L '${{ matrix.stack-yaml }}' ]]; then
             echo "generate-matrix incorrectly included a symlink" >&2
             exit 1
           fi
-
-      - uses: actions/checkout@v4
       - uses: ./
         with:
           working-directory: example
