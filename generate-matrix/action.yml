@@ -8,7 +8,7 @@ inputs:
   find-options:
     description: "Arguments to find(1) stack-yaml files"
     required: true
-    default: "-maxdepth 1 -name 'stack*.yaml'"
+    default: "-type f -maxdepth 1 -name 'stack*.yaml'"
 outputs:
   stack-yamls:
     description: Version-sorted list of all files matching stack*.yaml
