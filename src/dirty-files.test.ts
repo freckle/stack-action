@@ -38,6 +38,8 @@ describe("isInterestingFile", () => {
     "bar.cabal",
     "stack.yaml.lock",
     "stack-lts20.yaml.lock",
+    "hie.yaml",
+    "example/hie.yaml",
   ];
 
   test.each(interesting)("considers %p interesting", (path) => {
@@ -49,6 +51,7 @@ describe("isInterestingFile", () => {
     "other file.txt",
     "foo.cabal.lock",
     "foo.yaml.lock2",
+    "routhie.yaml",
   ];
 
   test.each(uninteresting)("considers %p uninteresting", (path) => {
