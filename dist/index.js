@@ -252,18 +252,15 @@ class GenHIE {
     path;
     stack;
     exists;
-    installed;
     constructor(stack, path) {
         this.stack = stack;
         this.path = path ? path : exports.HIE_YAML;
         this.exists = fs.existsSync(this.path);
-        this.installed = false;
     }
     async install() {
         if (this.exists) {
             try {
                 await this.stack.installCompilerTools(["implicit-hie"]);
-                this.installed = true;
             }
             catch {
                 core.warning(`Failed to install implicit-hie, ${this.path} will not be maintained`);
@@ -275,7 +272,8 @@ class GenHIE {
             core.info(`Skipping, ${this.path} does not exist`);
             return;
         }
-        if (!this.installed) {
+        const installed = await this.stack.which("gen-hie");
+        if (!installed) {
             core.info(`Skipping, implicit-hie was not successfully installed`);
             return;
         }
@@ -750,6 +748,12 @@ class StackCLI {
     }
     async query() {
         return await this.parse(["query"], parse_stack_query_1.parseStackQuery);
+    }
+    async which(cmd) {
+        const ec = await this.exec(["exec", "--", "which", cmd], {
+            ignoreReturnCode: true,
+        });
+        return ec === 0;
     }
     async parse(args, f) {
         const stdout = await this.read(args);
