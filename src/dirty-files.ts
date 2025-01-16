@@ -70,11 +70,15 @@ export function parseGitStatus(stdout: string): string[] {
     });
 }
 
-const INTERESTING_EXTENSIONS: string[] = [".cabal", ".yaml.lock"];
+const INTERESTING_REGEXPS: RegExp[] = [
+  /^.*\.cabal$/,
+  /^.*\.yaml\.lock$/,
+  /^(.*\/)?hie\.yaml$/,
+];
 
 // Exported for testing
 export function isInterestingFile(path: string): boolean {
-  return INTERESTING_EXTENSIONS.some((ext, _index, _array) => {
-    return path.endsWith(ext);
+  return INTERESTING_REGEXPS.some((re, _index, _array) => {
+    return path.match(re);
   });
 }
