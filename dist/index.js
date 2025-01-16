@@ -96,10 +96,14 @@ function parseGitStatus(stdout) {
         return path.trim() !== "";
     });
 }
-const INTERESTING_EXTENSIONS = [".cabal", ".yaml.lock"];
+const INTERESTING_REGEXPS = [
+    /^.*\.cabal$/,
+    /^.*\.yaml\.lock$/,
+    /^(.*\/)?hie\.yaml$/,
+];
 function isInterestingFile(path) {
-    return INTERESTING_EXTENSIONS.some((ext, _index, _array) => {
-        return path.endsWith(ext);
+    return INTERESTING_REGEXPS.some((re, _index, _array) => {
+        return path.match(re);
     });
 }
 
@@ -275,6 +279,7 @@ class GenHIE {
             core.info(`Skipping, implicit-hie was not successfully installed`);
             return;
         }
+        core.info(`gen-hie --stack > ${this.path}`);
         const yaml = await this.stack.read(["exec", "--", "gen-hie", "--stack"]);
         fs.writeFileSync(this.path, yaml);
     }
