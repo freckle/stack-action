@@ -106,6 +106,13 @@ export class StackCLI {
     return await this.parse(["query"], parseStackQuery);
   }
 
+  async which(cmd: string): Promise<boolean> {
+    const ec = await this.exec(["exec", "--", "which", cmd], {
+      ignoreReturnCode: true,
+    });
+    return ec === 0;
+  }
+
   async parse<A>(args: string[], f: (stdout: string) => A): Promise<A> {
     const stdout = await this.read(args);
     return f(stdout);
