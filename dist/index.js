@@ -273,6 +273,7 @@ class GenHIE {
         }
         if (!this.installed) {
             core.info(`Skipping, implicit-hie was not successfully installed`);
+            return;
         }
         const yaml = await this.stack.read(["exec", "--", "gen-hie", "--stack"]);
         fs.writeFileSync(this.path, yaml);
