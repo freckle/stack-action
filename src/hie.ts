@@ -43,6 +43,7 @@ export class GenHIE {
       return;
     }
 
+    core.info(`gen-hie --stack > ${this.path}`);
     const yaml = await this.stack.read(["exec", "--", "gen-hie", "--stack"]);
     fs.writeFileSync(this.path, yaml);
   }
