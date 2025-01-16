@@ -7,6 +7,7 @@ import { hashProject } from "./hash-project";
 import { getInputs } from "./inputs";
 import { readStackYamlSync, getStackDirectories } from "./stack-yaml";
 import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache";
+import { GenHIE } from "./hie";
 
 async function run() {
   try {
@@ -28,6 +29,7 @@ async function run() {
     }
 
     const stack = new StackCLI(inputs.stackArguments, core.isDebug());
+    const genHIE = new GenHIE(stack);
 
     await core.group("Install/upgrade stack", async () => {
       const installed = await stack.installed();
@@ -98,6 +100,7 @@ async function run() {
           await stack.setup(inputs.stackSetupArguments);
           await stack.buildDependencies(inputs.stackBuildArgumentsDependencies);
           await stack.installCompilerTools(inputs.compilerTools);
+          await genHIE.install();
         },
         {
           ...DEFAULT_CACHE_OPTIONS,
@@ -124,6 +127,10 @@ async function run() {
           saveOnError: inputs.cacheSaveAlways,
         },
       );
+    });
+
+    await core.group(`Maintain ${genHIE.path}`, async () => {
+      await genHIE.generate();
     });
 
     await core.group("Check for dirty files", async () => {
