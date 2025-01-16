@@ -10,20 +10,17 @@ export class GenHIE {
 
   private readonly stack: StackCLI;
   private readonly exists: boolean;
-  private installed: boolean;
 
   constructor(stack: StackCLI, path?: string) {
     this.stack = stack;
     this.path = path ? path : HIE_YAML;
     this.exists = fs.existsSync(this.path);
-    this.installed = false;
   }
 
   async install(): Promise<void> {
     if (this.exists) {
       try {
         await this.stack.installCompilerTools(["implicit-hie"]);
-        this.installed = true;
       } catch {
         core.warning(
           `Failed to install implicit-hie, ${this.path} will not be maintained`,
@@ -38,7 +35,9 @@ export class GenHIE {
       return;
     }
 
-    if (!this.installed) {
+    const installed = await this.stack.which("gen-hie");
+
+    if (!installed) {
       core.info(`Skipping, implicit-hie was not successfully installed`);
       return;
     }
