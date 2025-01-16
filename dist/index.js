@@ -267,15 +267,15 @@ class GenHIE {
         }
     }
     async generate() {
-        if (this.exists && this.installed) {
-            const contents = await this.stack.read([
-                "exec",
-                "--",
-                "gen-hie",
-                "--stack",
-            ]);
-            fs.writeFileSync(this.path, contents);
+        if (!this.exists) {
+            core.info(`Skipping, ${this.path} does not exist`);
+            return;
         }
+        if (!this.installed) {
+            core.info(`Skipping, implicit-hie was not successfully installed`);
+        }
+        const yaml = await this.stack.read(["exec", "--", "gen-hie", "--stack"]);
+        fs.writeFileSync(this.path, yaml);
     }
 }
 exports.GenHIE = GenHIE;
