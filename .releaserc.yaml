@@ -1,0 +1,20 @@
+plugins:
+  - "@semantic-release/commit-analyzer"
+  - "@semantic-release/release-notes-generator"
+  - - "@semantic-release/github"
+    - successCommentCondition: false
+
+  - "semantic-release-major-tag"
+
+  # Update dist, in case Dependabot PRs merged without doing so
+  - - "@semantic-release/exec"
+    - prepareCmd: "yarn install && yarn run build"
+
+  - - "@semantic-release/git"
+    - assets: "dist/index.js"
+      message: "chore(release): build dist"
+
+branches:
+  - main
+  - name: rc/*
+    prerelease: '${name.replace(/^rc\//g, "rc-")}'

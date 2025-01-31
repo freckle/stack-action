@@ -14,7 +14,27 @@ defaults:
     working-directory: example
 
 jobs:
+  # Make sure we use an updated dist/index.js in the examples, which are
+  # effectively integration tests. In the case of a Dependabot PR, index.js
+  # won't be rebuilt otherwise.
+  dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: yarn
+          node-version-file: ".nvmrc"
+      - run: yarn install
+      - run: yarn build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/index.js
+
   test:
+    needs: dist
+
     strategy:
       matrix:
         runner:
@@ -41,6 +61,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist # overwrite dist/index.js
+
       - id: stack
         uses: ./
         with:
@@ -97,7 +122,7 @@ jobs:
       stack-yamls: ${{ steps.generate.outputs.stack-yamls }}
 
   test-stack-yamls:
-    needs: test-generate
+    needs: [dist, test-generate]
     runs-on: ubuntu-latest
 
     strategy:
@@ -107,6 +132,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist # overwrite dist/index.js
+
       - run: |
           if [[ -L '${{ matrix.stack-yaml }}' ]]; then
             echo "generate-matrix incorrectly included a symlink" >&2
@@ -118,9 +148,15 @@ jobs:
           stack-arguments: --stack-yaml ${{ matrix.stack-yaml }}
 
   test-fails-on-error:
+    needs: dist
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist # overwrite dist/index.js
+
       - name: Should fail
         id: stack-action-step
         continue-on-error: true
