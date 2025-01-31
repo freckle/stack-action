@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - rc/*
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - id: token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.FRECKLE_AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.FRECKLE_AUTOMATION_PRIVATE_KEY }}
+
+      - id: release
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          extra_plugins: |
+            @semantic-release/exec
+            semantic-release-major-tag
+        env:
+          GITHUB_TOKEN: ${{ steps.token.outputs.token }}
