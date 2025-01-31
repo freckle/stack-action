@@ -179,6 +179,20 @@ jobs:
 See [generate-matrix/action.yml](./generate-matrix/action.yml) for more details.
 This has been available since version 4 of this action.
 
+## Release
+
+To trigger a release (and update the `@v{major}` tag), merge a commit to `main`
+that follows [Conventional Commits][]. In short,
+
+- `fix:` to trigger a patch release,
+- `feat:` for minor, and
+- `feat!:` and major
+
+We don't enforce conventional commits generally (though you are free do so),
+it's only required if you want to trigger release.
+
+[conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0/#summary
+
 ---
 
 [LICENSE](./LICENSE)
