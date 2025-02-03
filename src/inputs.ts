@@ -6,6 +6,7 @@ import { type OnDirtyFiles, parseOnDirtyFiles } from "./dirty-files";
 export type Inputs = {
   workingDirectory: string | null;
   test: boolean;
+  color: boolean;
   stackArguments: string[];
   stackSetupArguments: string[];
   stackQueryArguments: string[];
@@ -35,6 +36,7 @@ export function getInputs(): Inputs {
   return {
     workingDirectory: getInputDefault("working-directory", null),
     test: core.getBooleanInput("test"),
+    color: core.getBooleanInput("color"),
     stackArguments: getShellWordsInput("stack-arguments"),
     stackSetupArguments: getShellWordsInput("stack-setup-arguments"),
     stackQueryArguments: getShellWordsInput("stack-query-arguments"),
