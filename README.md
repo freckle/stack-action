@@ -191,7 +191,7 @@ that follows [Conventional Commits][]. In short,
 We don't enforce conventional commits generally (though you are free do so),
 it's only required if you want to trigger release.
 
-[conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0/#summary
+[conventional commits]: https://www.conventionalcommits.org/en/v1.0.0/#summary
 
 ---
 
