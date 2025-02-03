@@ -13,6 +13,10 @@ async function run() {
   try {
     const inputs = getInputs();
 
+    if (inputs.color) {
+      inputs.stackArguments.unshift("--color=always");
+    }
+
     if (inputs.workingDirectory) {
       core.debug(`Change directory: ${inputs.workingDirectory}`);
       process.chdir(inputs.workingDirectory);

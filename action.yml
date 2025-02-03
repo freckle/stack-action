@@ -8,10 +8,14 @@ inputs:
     description: |
       Whether to run tests
     default: true
+  color:
+    description: |
+      Whether to force `--color=always`
+    default: true
   stack-arguments:
     description: |
       Additional arguments for all top-level `stack` command invocations.
-    default: "--no-terminal"
+    default: ""
   stack-query-arguments:
     description: |
       Additional arguments in `stack query` invocations.
