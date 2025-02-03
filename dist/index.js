@@ -339,6 +339,7 @@ function getInputs() {
     return {
         workingDirectory: getInputDefault("working-directory", null),
         test: core.getBooleanInput("test"),
+        color: core.getBooleanInput("color"),
         stackArguments: getShellWordsInput("stack-arguments"),
         stackSetupArguments: getShellWordsInput("stack-setup-arguments"),
         stackQueryArguments: getShellWordsInput("stack-query-arguments"),
@@ -417,6 +418,9 @@ const hie_1 = __nccwpck_require__(5986);
 async function run() {
     try {
         const inputs = (0, inputs_1.getInputs)();
+        if (inputs.color) {
+            inputs.stackArguments.unshift("--color=always");
+        }
         if (inputs.workingDirectory) {
             core.debug(`Change directory: ${inputs.workingDirectory}`);
             process.chdir(inputs.workingDirectory);
