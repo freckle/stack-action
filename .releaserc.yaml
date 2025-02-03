@@ -17,4 +17,4 @@ plugins:
 branches:
   - main
   - name: rc/*
-    prerelease: '${name.replace(/^rc\//g, "rc-")}'
+    prerelease: '${name.replace(/^rc\//, "rc-")}'
