@@ -13,6 +13,7 @@ jobs:
   mergeabot:
     runs-on: ubuntu-latest
     steps:
+      # Use an app token so further workflows (e.g. release) are triggered
       - id: token
         uses: actions/create-github-app-token@v1
         with:

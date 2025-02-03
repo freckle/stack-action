@@ -28,4 +28,5 @@ jobs:
             @semantic-release/exec
             semantic-release-major-tag
         env:
+          FORCE_COLOR: 1
           GITHUB_TOKEN: ${{ steps.token.outputs.token }}
