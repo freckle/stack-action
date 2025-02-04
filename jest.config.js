@@ -3,9 +3,4 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   resetMocks: true,
-  globals: {
-    "ts-jest": {
-      isolatedModules: true,
-    },
-  },
 };
