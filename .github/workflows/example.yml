@@ -20,7 +20,7 @@ jobs:
   dist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           cache: yarn
@@ -60,7 +60,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/download-artifact@v5
         with:
           name: dist
@@ -113,7 +113,7 @@ jobs:
   test-generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: generate
         uses: ./generate-matrix
         with:
@@ -131,7 +131,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/download-artifact@v5
         with:
           name: dist
@@ -151,7 +151,7 @@ jobs:
     needs: dist
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/download-artifact@v5
         with:
           name: dist
