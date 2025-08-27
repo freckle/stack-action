@@ -90,7 +90,7 @@ async function run() {
     // caching. Use the resolver itself instead. This will use either --resolver
     // from stack-arguments, if given, or fall back to reading resolver from the
     // stack.yaml file in use.
-    const cachePrefix = `${inputs.cachePrefix}${process.platform}/${
+    const cachePrefix = `${inputs.cachePrefix}${process.platform}${process.arch}/${
       stack.resolver ?? stackYaml.resolver
     }`;
 
