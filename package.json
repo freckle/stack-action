@@ -30,7 +30,7 @@
     "@types/node": "^22.18.8",
     "@vercel/ncc": "^0.38.4",
     "action-docs": "^2.5.1",
-    "jest": "^30.0.0",
+    "jest": "^30.0.5",
     "prettier": "^3.5.3",
     "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
