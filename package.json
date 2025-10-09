@@ -32,7 +32,7 @@
     "action-docs": "^2.5.1",
     "jest": "^30.0.5",
     "prettier": "^3.6.2",
-    "ts-jest": "^29.3.2",
+    "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
