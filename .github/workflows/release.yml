@@ -11,22 +11,15 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - id: token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ vars.FRECKLE_AUTOMATION_APP_ID }}
-          private-key: ${{ secrets.FRECKLE_AUTOMATION_PRIVATE_KEY }}
-
       - uses: actions/checkout@v6
         with:
-          token: ${{ steps.token.outputs.token }}
+          persist-credentials: false
 
-      - id: release
-        uses: cycjimmy/semantic-release-action@v4
+      - uses: cycjimmy/semantic-release-action@v4
         with:
           extra_plugins: |
             @semantic-release/exec
             semantic-release-major-tag
         env:
           FORCE_COLOR: 1
-          GITHUB_TOKEN: ${{ steps.token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
