@@ -20,7 +20,7 @@
     "@actions/cache": "^5.0.5",
     "@actions/core": "^2.0.3",
     "@actions/exec": "^2.0.0",
-    "@actions/glob": "^0.5.0",
+    "@actions/glob": "^0.5.1",
     "js-yaml": "^4.1.1",
     "shellwords-ts": "^3.0.1"
   },
