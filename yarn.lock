@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"@actions/cache@^5.0.3":
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-5.0.3.tgz#1af13e3578b185c41b31a76ead7b3670434d7bfc"
-  integrity sha512-9joY8Oup+nIpksSBlkuf9/mltnhWx3lydk1tA2PVnXaxFLIIrKqrWDN2CZXlJ+PEErcBARKYn4mHiUCTyMh4Vg==
+"@actions/cache@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@actions/cache/-/cache-5.0.5.tgz#e2489403fc9d8a346f0a2827fbf13574fe23e935"
+  integrity sha512-jiQSg0gfd+C2KPgcmdCOq7dCuCIQQWQ4b1YfGIRaaA9w7PJbRwTOcCz4LiFEUnqZGf0ha/8OKL3BeNwetHzYsQ==
   dependencies:
     "@actions/core" "^2.0.0"
     "@actions/exec" "^2.0.0"
-    "@actions/glob" "^0.5.0"
-    "@actions/http-client" "^3.0.1"
+    "@actions/glob" "^0.5.1"
+    "@actions/http-client" "^3.0.2"
     "@actions/io" "^2.0.0"
     "@azure/abort-controller" "^1.1.0"
     "@azure/core-rest-pipeline" "^1.22.0"
@@ -42,6 +42,14 @@
     "@actions/exec" "^2.0.0"
     "@actions/http-client" "^3.0.1"
 
+"@actions/core@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@actions/core/-/core-2.0.3.tgz#b05e8cf407ab393e5d10282357a74e1ee2315eee"
+  integrity sha512-Od9Thc3T1mQJYddvVPM4QGiLUewdh+3txmDYHHxoNdkqysR1MbCT+rFOtNUxYAz+7+6RIsqipVahY2GJqGPyxA==
+  dependencies:
+    "@actions/exec" "^2.0.0"
+    "@actions/http-client" "^3.0.2"
+
 "@actions/exec@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@actions/exec/-/exec-1.1.1.tgz#2e43f28c54022537172819a7cf886c844221a611"
@@ -62,6 +70,14 @@
   integrity sha512-tST2rjPvJLRZLuT9NMUtyBjvj9Yo0MiJS3ow004slMvm8GFM+Zv9HvMJ7HWzfUyJnGrJvDsYkWBaaG3YKXRtCw==
   dependencies:
     "@actions/core" "^1.9.1"
+    minimatch "^3.0.4"
+
+"@actions/glob@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@actions/glob/-/glob-0.5.1.tgz#606d8aa6b9bd5205e50e79c3da33709d65307cb6"
+  integrity sha512-+dv/t2aKQdKp9WWSp+1yIXVJzH5Q38M0Mta26pzIbeec14EcIleMB7UU6N7sNgbEuYfyuVGpE5pOKjl6j1WXkA==
+  dependencies:
+    "@actions/core" "^2.0.3"
     minimatch "^3.0.4"
 
 "@actions/http-client@^2.0.1":
@@ -87,6 +103,14 @@
   dependencies:
     tunnel "^0.0.6"
     undici "^5.28.5"
+
+"@actions/http-client@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@actions/http-client/-/http-client-3.0.2.tgz#3db9c83af9d29d51ac8c30b45bc17f7014beb1b2"
+  integrity sha512-JP38FYYpyqvUsz+Igqlc/JG6YO9PaKuvqjM3iGvaLqFnJ7TFmcLyy2IDrY0bI0qCQug8E9K+elv5ZNfw62ZJzA==
+  dependencies:
+    tunnel "^0.0.6"
+    undici "^6.23.0"
 
 "@actions/io@^1.0.1":
   version "1.1.3"
@@ -2921,6 +2945,11 @@ undici@^5.25.4, undici@^5.28.5:
   integrity sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==
   dependencies:
     "@fastify/busboy" "^2.0.0"
+
+undici@^6.23.0:
+  version "6.23.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-6.23.0.tgz#7953087744d9095a96f115de3140ca3828aff3a4"
+  integrity sha512-VfQPToRA5FZs/qJxLIinmU59u0r7LXqoJkCzinq3ckNJp3vKEh7jTWN589YQ5+aoAC/TGRLyJLCPKcLQbM8r9g==
 
 unrs-resolver@^1.7.11:
   version "1.11.1"
