@@ -18,6 +18,7 @@ jobs:
       - uses: cycjimmy/semantic-release-action@v4
         with:
           extra_plugins: |
+            conventional-changelog-conventionalcommits
             @semantic-release/exec
             semantic-release-major-tag
         env:
