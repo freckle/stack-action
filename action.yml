@@ -74,5 +74,5 @@ inputs:
     description: |
       **Deprecated** use `env.STACK_YAML` or `stack-arguments` instead.
 runs:
-  using: "node20"
+  using: "node24"
   main: "dist/index.js"
