@@ -1,8 +1,6 @@
 import { createDefaultPreset, type JestConfigWithTsJest } from "ts-jest";
 
-const presetConfig = createDefaultPreset({
-  isolatedModules: true,
-});
+const presetConfig = createDefaultPreset();
 
 const jestConfig: JestConfigWithTsJest = {
   ...presetConfig,

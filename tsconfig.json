@@ -15,7 +15,8 @@
     "removeComments": true,
     "module": "NodeNext",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "isolatedModules": true
   },
   "include": ["./src/**/*"],
   "exclude": ["./src/**/*.test.ts"]
