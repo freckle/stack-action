@@ -1,4 +1,6 @@
-import { getCacheKeys } from "./get-cache-keys";
+import { jest } from "@jest/globals";
+
+import { getCacheKeys } from "./get-cache-keys.js";
 
 test("getCacheKeys", () => {
   const keys = getCacheKeys(["prefix-os-compiler", "package", "source"]);

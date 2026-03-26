@@ -1,6 +1,7 @@
 import * as exec from "@actions/exec";
+import { jest } from "@jest/globals";
 
-import { StackCLI } from "./stack-cli";
+import { StackCLI } from "./stack-cli.js";
 
 jest.spyOn(exec, "exec");
 

@@ -4,10 +4,10 @@ import { devNull } from "os";
 import type { ExecOptions } from "@actions/exec";
 import * as exec from "@actions/exec";
 
-import type { StackPath } from "./parse-stack-path";
-import { parseStackPath } from "./parse-stack-path";
-import type { StackQuery } from "./parse-stack-query";
-import { parseStackQuery } from "./parse-stack-query";
+import type { StackPath } from "./parse-stack-path.js"
+import { parseStackPath } from "./parse-stack-path.js"
+import type { StackQuery } from "./parse-stack-query.js"
+import { parseStackQuery } from "./parse-stack-query.js"
 
 export interface ExecDelegate {
   exec: (

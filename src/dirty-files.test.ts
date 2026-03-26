@@ -1,4 +1,6 @@
-import { parseGitStatus, isInterestingFile } from "./dirty-files";
+import { jest } from "@jest/globals";
+
+import { parseGitStatus, isInterestingFile } from "./dirty-files.js";
 
 describe("parseGitStatus", () => {
   test("parse file name, and filters untracked", () => {

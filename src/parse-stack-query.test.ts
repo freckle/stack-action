@@ -1,4 +1,6 @@
-import { parseStackQuery } from "./parse-stack-query";
+import { jest } from "@jest/globals";
+
+import { parseStackQuery } from "./parse-stack-query.js";
 
 const EXAMPLE = [
   "compiler:",

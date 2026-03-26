@@ -1,4 +1,6 @@
-import { envsubst } from "./envsubst";
+import { jest } from "@jest/globals";
+
+import { envsubst } from "./envsubst.js";
 
 const HOME = process.env.HOME;
 

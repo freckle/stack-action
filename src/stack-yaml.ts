@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { join as pathJoin } from "path";
 import * as yaml from "js-yaml";
 
-import { StackCLI } from "./stack-cli";
+import { StackCLI } from "./stack-cli.js"
 
 export type StackYaml = {
   resolver: string;

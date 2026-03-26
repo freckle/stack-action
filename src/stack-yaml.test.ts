@@ -1,5 +1,7 @@
-import { parseStackYaml, getStackDirectories } from "./stack-yaml";
-import { StackCLI } from "./stack-cli";
+import { jest } from "@jest/globals";
+
+import { parseStackYaml, getStackDirectories } from "./stack-yaml.js";
+import { StackCLI } from "./stack-cli.js";
 
 const testStackRoot = "/home/me/.stack";
 const testPrograms = `${testStackRoot}/programs/x86_64-linux`;
