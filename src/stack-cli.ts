@@ -2,12 +2,12 @@ import * as fs from "fs";
 import * as path from "path";
 import { devNull } from "os";
 import type { ExecOptions } from "@actions/exec";
-import * as exec from "@actions/exec";
+import * as realExec from "@actions/exec";
 
-import type { StackPath } from "./parse-stack-path.js"
-import { parseStackPath } from "./parse-stack-path.js"
-import type { StackQuery } from "./parse-stack-query.js"
-import { parseStackQuery } from "./parse-stack-query.js"
+import type { StackPath } from "./parse-stack-path.js";
+import { parseStackPath } from "./parse-stack-path.js";
+import type { StackQuery } from "./parse-stack-query.js";
+import { parseStackQuery } from "./parse-stack-query.js";
 
 export interface ExecDelegate {
   exec: (
@@ -23,10 +23,12 @@ export class StackCLI {
 
   private debug: boolean;
   private globalArgs: string[];
+  private execImpl: ExecDelegate;
 
-  constructor(args: string[], debug?: boolean) {
+  constructor(args: string[], debug?: boolean, exec?: ExecDelegate) {
     this.debug = debug ?? false;
     this.globalArgs = args;
+    this.execImpl = exec ?? realExec;
 
     // Capture --stack-yaml if given
     const stackYamlIdx = args.indexOf("--stack-yaml");
@@ -49,7 +51,7 @@ export class StackCLI {
   }
 
   async installed(): Promise<boolean> {
-    const ec = await exec.exec("which", ["stack"], {
+    const ec = await this.execImpl.exec("which", ["stack"], {
       silent: true,
       ignoreReturnCode: true,
     });
@@ -59,14 +61,14 @@ export class StackCLI {
   async install(): Promise<void> {
     const url = "https://get.haskellstack.org";
     const tmp = "install-stack.sh";
-    await exec.exec("curl", ["-sSL", "-o", tmp, url]);
-    await exec.exec("sh", [tmp]);
+    await this.execImpl.exec("curl", ["-sSL", "-o", tmp, url]);
+    await this.execImpl.exec("sh", [tmp]);
     fs.rmSync(tmp);
   }
 
   async upgrade(): Promise<number> {
     // Avoid this.exec because we don't need/want globalArgs
-    return await exec.exec("stack", ["upgrade"]);
+    return await this.execImpl.exec("stack", ["upgrade"]);
   }
 
   async setup(args: string[]): Promise<number> {
@@ -139,6 +141,10 @@ export class StackCLI {
   }
 
   private async exec(args: string[], options?: ExecOptions): Promise<number> {
-    return await exec.exec("stack", this.globalArgs.concat(args), options);
+    return await this.execImpl.exec(
+      "stack",
+      this.globalArgs.concat(args),
+      options,
+    );
   }
 }

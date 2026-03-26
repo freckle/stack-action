@@ -1,13 +1,17 @@
-import * as exec from "@actions/exec";
+import { ExecOptions } from "@actions/exec";
 import { jest } from "@jest/globals";
 
-import { StackCLI } from "./stack-cli.js";
+import { ExecDelegate, StackCLI } from "./stack-cli.js";
 
-jest.spyOn(exec, "exec");
+const exec: ExecDelegate = {
+  exec: jest.fn((command: string, args: string[], options?: ExecOptions) =>
+    Promise.resolve(0),
+  ),
+};
 
 describe("StackCLI", () => {
   test("Respects --resolver given", async () => {
-    const stackCLI = new StackCLI(["--resolver", "lts"], false);
+    const stackCLI = new StackCLI(["--resolver", "lts"], false, exec);
 
     await stackCLI.setup([]);
 
@@ -22,6 +26,7 @@ describe("StackCLI", () => {
     const stackCLI = new StackCLI(
       ["--stack-yaml", "sub/stack-nightly.yaml"],
       false,
+      exec,
     );
 
     await stackCLI.setup([]);
@@ -48,6 +53,7 @@ describe("StackCLI", () => {
         "nightly-20240201",
       ],
       false,
+      exec,
     );
 
     await stackCLI.setup([]);
@@ -66,7 +72,7 @@ describe("StackCLI", () => {
   });
 
   test("installCompilerTools", async () => {
-    const stackCLI = new StackCLI([], false);
+    const stackCLI = new StackCLI([], false, exec);
     await stackCLI.installCompilerTools(["hlint", "weeder"]);
 
     expect(exec.exec).toHaveBeenCalledWith(
@@ -77,14 +83,14 @@ describe("StackCLI", () => {
   });
 
   test("installCompilerTools with empty arguments", async () => {
-    const stackCLI = new StackCLI([], false);
+    const stackCLI = new StackCLI([], false, exec);
     await stackCLI.installCompilerTools([]);
 
     expect(exec.exec).not.toHaveBeenCalled();
   });
 
   test("buildDependencies", async () => {
-    const stackCLI = new StackCLI([], false);
+    const stackCLI = new StackCLI([], false, exec);
 
     await stackCLI.buildDependencies(["--coverage"]);
 
@@ -102,7 +108,7 @@ describe("StackCLI", () => {
   });
 
   test("buildNoTest", async () => {
-    const stackCLI = new StackCLI([], false);
+    const stackCLI = new StackCLI([], false, exec);
 
     await stackCLI.buildNoTest(["--coverage"]);
 
@@ -114,7 +120,7 @@ describe("StackCLI", () => {
   });
 
   test("buildTest", async () => {
-    const stackCLI = new StackCLI([], false);
+    const stackCLI = new StackCLI([], false, exec);
 
     await stackCLI.buildTest(["--coverage"]);
 
@@ -126,7 +132,7 @@ describe("StackCLI", () => {
   });
 
   test("build", async () => {
-    const stackCLI = new StackCLI([], false);
+    const stackCLI = new StackCLI([], false, exec);
 
     await stackCLI.build(["--coverage"]);
 
