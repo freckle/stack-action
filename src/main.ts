@@ -1,13 +1,13 @@
 import * as core from "@actions/core";
 
-import { checkDirtyFiles } from "./dirty-files";
-import { StackCLI } from "./stack-cli";
-import { getCacheKeys } from "./get-cache-keys";
-import { hashProject } from "./hash-project";
-import { getInputs } from "./inputs";
-import { readStackYamlSync, getStackDirectories } from "./stack-yaml";
-import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache";
-import { GenHIE } from "./hie";
+import { checkDirtyFiles } from "./dirty-files.js"
+import { StackCLI } from "./stack-cli.js"
+import { getCacheKeys } from "./get-cache-keys.js"
+import { hashProject } from "./hash-project.js"
+import { getInputs } from "./inputs.js"
+import { readStackYamlSync, getStackDirectories } from "./stack-yaml.js"
+import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache.js"
+import { GenHIE } from "./hie.js"
 
 async function run() {
   try {

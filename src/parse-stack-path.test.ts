@@ -1,4 +1,6 @@
-import { parseStackPath } from "./parse-stack-path";
+import { jest } from "@jest/globals";
+
+import { parseStackPath } from "./parse-stack-path.js";
 
 const EXAMPLE = [
   "snapshot-doc-root: /home/patrick/.stack/snapshots/x86_64-linux-tinfo6/0dd02c1d8a380045321779c4567c2aa8873910743eac342f72d56f3d26881028/9.2.7/doc",

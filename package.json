@@ -1,13 +1,14 @@
 {
   "name": "stack-action",
   "version": "0.0.0",
+  "type": "module",
   "description": "Build and test stack-based Haskell projects",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc && ncc build lib/main.js && sed -i 's/\\x0D$//' ./dist/index.js",
     "format": "prettier --write \"**/*.ts\"",
     "format-check": "prettier --check \"**/*.ts\"",
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "readme": "npx action-docs -u && prettier --write README.md"
   },
   "repository": {

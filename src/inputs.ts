@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import * as Shellwords from "shellwords-ts";
-import { envsubst } from "./envsubst";
-import { type OnDirtyFiles, parseOnDirtyFiles } from "./dirty-files";
+import { envsubst } from "./envsubst.js"
+import { type OnDirtyFiles, parseOnDirtyFiles } from "./dirty-files.js"
 
 export type Inputs = {
   workingDirectory: string | null;

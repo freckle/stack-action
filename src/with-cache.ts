@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import * as cache from "@actions/cache";
-import type { CacheKeys } from "./get-cache-keys";
+import type { CacheKeys } from "./get-cache-keys.js";
 
 export type CacheOptions = {
   skipOnHit: boolean;

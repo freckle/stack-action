@@ -1,8 +1,9 @@
 import * as core from "@actions/core";
 import * as cache from "@actions/cache";
+import { jest } from "@jest/globals";
 
-import { getCacheKeys } from "./get-cache-keys";
-import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache";
+import { getCacheKeys } from "./get-cache-keys.js";
+import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache.js";
 
 const restoreCacheMock = jest.spyOn(cache, "restoreCache");
 jest.spyOn(cache, "saveCache");

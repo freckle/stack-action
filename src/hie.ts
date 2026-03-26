@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as core from "@actions/core";
 
-import { StackCLI } from "./stack-cli";
+import { StackCLI } from "./stack-cli.js"
 
 export const HIE_YAML: string = "hie.yaml";
 
