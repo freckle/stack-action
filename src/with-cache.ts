@@ -5,11 +5,13 @@ import type { CacheKeys } from "./get-cache-keys.js";
 export type CacheOptions = {
   skipOnHit: boolean;
   saveOnError: boolean;
+  silent: boolean;
 };
 
 export const DEFAULT_CACHE_OPTIONS = {
   skipOnHit: true,
   saveOnError: false,
+  silent: false,
 };
 
 export interface CacheDelegate {
@@ -29,11 +31,13 @@ export async function withCache<T>(
   cache?: CacheDelegate,
 ): Promise<T | undefined> {
   const cacheImpl = cache ?? realCache;
-  const { skipOnHit, saveOnError } = options;
+  const { skipOnHit, saveOnError, silent } = options;
 
-  core.info(`Cached paths:\n - ${paths.join("\n - ")}`);
-  core.info(`Cache key: ${keys.primaryKey}`);
-  core.info(`Cache restore keys:\n - ${keys.restoreKeys.join("\n - ")}`);
+  if (!silent) {
+    core.info(`Cached paths:\n - ${paths.join("\n - ")}`);
+    core.info(`Cache key: ${keys.primaryKey}`);
+    core.info(`Cache restore keys:\n - ${keys.restoreKeys.join("\n - ")}`);
+  }
 
   const restoredKey = await cacheImpl.restoreCache(
     paths,
@@ -44,13 +48,17 @@ export async function withCache<T>(
   const primaryKeyHit = restoredKey == keys.primaryKey;
 
   if (restoredKey) {
-    core.info(`Cache restored from key: ${restoredKey}`);
+    if (!silent) {
+      core.info(`Cache restored from key: ${restoredKey}`);
+    }
   } else {
     core.warning("No cache found");
   }
 
   if (primaryKeyHit && skipOnHit && !saveOnError) {
-    core.info("Skipping due to primary key hit");
+    if (!silent) {
+      core.info("Skipping due to primary key hit");
+    }
     return;
   }
 

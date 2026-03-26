@@ -14,7 +14,6 @@ const cache: CacheDelegate = {
 };
 
 const restoreCacheMock = jest.spyOn(cache, "restoreCache");
-jest.spyOn(core, "info");
 
 async function testFunction(): Promise<number> {
   return 42;
@@ -49,7 +48,7 @@ test("withCache skips on primary-key hit", async () => {
     cachePaths,
     cacheKeys,
     testFunction,
-    DEFAULT_CACHE_OPTIONS,
+    { ...DEFAULT_CACHE_OPTIONS, silent: true },
     cache,
   );
 
@@ -71,7 +70,7 @@ test("withCache acts and saves if no primary-key hit", async () => {
     cachePaths,
     cacheKeys,
     testFunction,
-    DEFAULT_CACHE_OPTIONS,
+    { ...DEFAULT_CACHE_OPTIONS, silent: true },
     cache,
   );
 
@@ -99,6 +98,7 @@ test("withCache can be configured to act and save anyway", async () => {
     {
       ...DEFAULT_CACHE_OPTIONS,
       skipOnHit: false,
+      silent: true,
     },
     cache,
   );
@@ -124,7 +124,7 @@ test("withCache does not save on error", async () => {
       cachePaths,
       cacheKeys,
       testFunctionThrows,
-      DEFAULT_CACHE_OPTIONS,
+      { ...DEFAULT_CACHE_OPTIONS, silent: true },
       cache,
     );
   }).rejects.toThrow();
@@ -152,6 +152,7 @@ test("withCache can be configured to save on error", async () => {
       {
         ...DEFAULT_CACHE_OPTIONS,
         saveOnError: true,
+        silent: true,
       },
       cache,
     );
