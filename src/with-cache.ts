@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import * as cache from "@actions/cache";
+import * as realCache from "@actions/cache";
 import type { CacheKeys } from "./get-cache-keys.js";
 
 export type CacheOptions = {
@@ -12,19 +12,30 @@ export const DEFAULT_CACHE_OPTIONS = {
   saveOnError: false,
 };
 
+export interface CacheDelegate {
+  restoreCache: (
+    paths: string[],
+    primaryKey: string,
+    restoreKeys?: string[],
+  ) => Promise<string>;
+  saveCache: (paths: string[], key: string) => Promise<number>;
+}
+
 export async function withCache<T>(
   paths: string[],
   keys: CacheKeys,
   fn: () => Promise<T>,
   options: CacheOptions = DEFAULT_CACHE_OPTIONS,
+  cache?: CacheDelegate,
 ): Promise<T | undefined> {
+  const cacheImpl = cache ?? realCache;
   const { skipOnHit, saveOnError } = options;
 
   core.info(`Cached paths:\n - ${paths.join("\n - ")}`);
   core.info(`Cache key: ${keys.primaryKey}`);
   core.info(`Cache restore keys:\n - ${keys.restoreKeys.join("\n - ")}`);
 
-  const restoredKey = await cache.restoreCache(
+  const restoredKey = await cacheImpl.restoreCache(
     paths,
     keys.primaryKey,
     keys.restoreKeys,
@@ -49,11 +60,11 @@ export async function withCache<T>(
     result = await fn();
 
     if (!primaryKeyHit) {
-      await cache.saveCache(paths, keys.primaryKey);
+      await cacheImpl.saveCache(paths, keys.primaryKey);
     }
   } catch (ex) {
     if (saveOnError && !primaryKeyHit) {
-      await cache.saveCache(paths, keys.primaryKey);
+      await cacheImpl.saveCache(paths, keys.primaryKey);
     }
 
     throw ex;

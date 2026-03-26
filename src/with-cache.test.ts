@@ -1,12 +1,19 @@
 import * as core from "@actions/core";
-import * as cache from "@actions/cache";
 import { jest } from "@jest/globals";
 
 import { getCacheKeys } from "./get-cache-keys.js";
-import { DEFAULT_CACHE_OPTIONS, withCache } from "./with-cache.js";
+import {
+  CacheDelegate,
+  DEFAULT_CACHE_OPTIONS,
+  withCache,
+} from "./with-cache.js";
+
+const cache: CacheDelegate = {
+  restoreCache: jest.fn(() => Promise.resolve("")),
+  saveCache: jest.fn(() => Promise.resolve(0)),
+};
 
 const restoreCacheMock = jest.spyOn(cache, "restoreCache");
-jest.spyOn(cache, "saveCache");
 jest.spyOn(core, "info");
 
 async function testFunction(): Promise<number> {
@@ -43,6 +50,7 @@ test("withCache skips on primary-key hit", async () => {
     cacheKeys,
     testFunction,
     DEFAULT_CACHE_OPTIONS,
+    cache,
   );
 
   expect(result).toBeUndefined();
@@ -64,6 +72,7 @@ test("withCache acts and saves if no primary-key hit", async () => {
     cacheKeys,
     testFunction,
     DEFAULT_CACHE_OPTIONS,
+    cache,
   );
 
   expect(result).toEqual(42);
@@ -83,10 +92,16 @@ test("withCache can be configured to act and save anyway", async () => {
   const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
   restoreCacheMock.mockImplementation(simulateCacheHit);
 
-  const result = await withCache(cachePaths, cacheKeys, testFunction, {
-    ...DEFAULT_CACHE_OPTIONS,
-    skipOnHit: false,
-  });
+  const result = await withCache(
+    cachePaths,
+    cacheKeys,
+    testFunction,
+    {
+      ...DEFAULT_CACHE_OPTIONS,
+      skipOnHit: false,
+    },
+    cache,
+  );
 
   expect(result).toEqual(42);
   expect(cache.restoreCache).toHaveBeenCalledWith(
@@ -110,6 +125,7 @@ test("withCache does not save on error", async () => {
       cacheKeys,
       testFunctionThrows,
       DEFAULT_CACHE_OPTIONS,
+      cache,
     );
   }).rejects.toThrow();
 
@@ -129,10 +145,16 @@ test("withCache can be configured to save on error", async () => {
   restoreCacheMock.mockImplementation(simulateCacheMiss);
 
   await expect(async () => {
-    await withCache(cachePaths, cacheKeys, testFunctionThrows, {
-      ...DEFAULT_CACHE_OPTIONS,
-      saveOnError: true,
-    });
+    await withCache(
+      cachePaths,
+      cacheKeys,
+      testFunctionThrows,
+      {
+        ...DEFAULT_CACHE_OPTIONS,
+        saveOnError: true,
+      },
+      cache,
+    );
   }).rejects.toThrow();
 
   expect(cache.restoreCache).toHaveBeenCalledWith(
