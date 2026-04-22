@@ -42,6 +42,14 @@
     "@actions/exec" "^3.0.0"
     "@actions/http-client" "^4.0.0"
 
+"@actions/core@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@actions/core/-/core-3.0.1.tgz#0f4d8b14527ee51e0db061eedc24a206c9f98c23"
+  integrity sha512-a6d/Nwahm9fliVGRhdhofo40HjHQasUPusmc7vBfyky+7Z+P2A1J68zyFVaNcEclc/Se+eO595oAr5nwEIoIUA==
+  dependencies:
+    "@actions/exec" "^3.0.0"
+    "@actions/http-client" "^4.0.0"
+
 "@actions/exec@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@actions/exec/-/exec-2.0.0.tgz#35e829723389f80e362ec2cc415697ec74362ad8"
