@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "outDir": "./lib",
+    "rootDir": "./src",
     "allowJs": true,
     "target": "ES2022",
     "noImplicitAny": true,
@@ -17,7 +18,8 @@
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "strict": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "types": ["node"]
   },
   "include": ["./src/**/*"],
   "exclude": ["./src/**/*.test.ts"]
