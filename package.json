@@ -32,7 +32,7 @@
     "@vercel/ncc": "^0.44.1",
     "action-docs": "^2.5.1",
     "jest": "^30.4.2",
-    "prettier": "^3.9.5",
+    "prettier": "^3.9.6",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
