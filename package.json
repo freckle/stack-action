@@ -22,7 +22,7 @@
     "@actions/core": "^3.0.1",
     "@actions/exec": "^3.0.0",
     "@actions/glob": "^0.7.0",
-    "js-yaml": "^5.2.1",
+    "js-yaml": "^5.2.2",
     "shellwords-ts": "^3.0.1"
   },
   "devDependencies": {
