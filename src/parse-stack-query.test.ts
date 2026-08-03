@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+import { expect, test } from "bun:test";
 
 import { parseStackQuery } from "./parse-stack-query.js";
 

@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+import { describe, expect, test } from "bun:test";
 
 import { parseGitStatus, isInterestingFile } from "./dirty-files.js";
 

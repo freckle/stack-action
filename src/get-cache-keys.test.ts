@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+import { expect, test } from "bun:test";
 
 import { getCacheKeys } from "./get-cache-keys.js";
 

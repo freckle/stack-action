@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+import { describe, expect, jest, test } from "bun:test";
 
 import { parseStackYaml, getStackDirectories } from "./stack-yaml.js";
 import { StackCLI } from "./stack-cli.js";

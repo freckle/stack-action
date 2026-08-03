@@ -1,13 +1,17 @@
 import { ExecOptions } from "@actions/exec";
-import { jest } from "@jest/globals";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 
 import { ExecDelegate, StackCLI } from "./stack-cli.js";
 
 const exec: ExecDelegate = {
-  exec: jest.fn((command: string, args: string[], options?: ExecOptions) =>
+  exec: mock((command: string, args: string[], options?: ExecOptions) =>
     Promise.resolve(0),
   ),
 };
+
+beforeEach(() => {
+  mock.clearAllMocks();
+});
 
 describe("StackCLI", () => {
   test("Respects --resolver given", async () => {

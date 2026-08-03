@@ -10,7 +10,7 @@ plugins:
 
   # Update dist, in case Dependabot PRs merged without doing so
   - - "@semantic-release/exec"
-    - prepareCmd: "yarn install && yarn run build"
+    - prepareCmd: "bun install && bun run build"
 
   - - "@semantic-release/git"
     - assets: "dist/index.js"

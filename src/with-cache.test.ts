@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { jest } from "@jest/globals";
+import { beforeEach, expect, mock, spyOn, test } from "bun:test";
 
 import { getCacheKeys } from "./get-cache-keys.js";
 import {
@@ -9,11 +9,15 @@ import {
 } from "./with-cache.js";
 
 const cache: CacheDelegate = {
-  restoreCache: jest.fn(() => Promise.resolve("")),
-  saveCache: jest.fn(() => Promise.resolve(0)),
+  restoreCache: mock(() => Promise.resolve("")),
+  saveCache: mock(() => Promise.resolve(0)),
 };
 
-const restoreCacheMock = jest.spyOn(cache, "restoreCache");
+const restoreCacheMock = spyOn(cache, "restoreCache");
+
+beforeEach(() => {
+  mock.clearAllMocks();
+});
 
 async function testFunction(): Promise<number> {
   return 42;
@@ -119,15 +123,15 @@ test("withCache does not save on error", async () => {
   const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
   restoreCacheMock.mockImplementation(simulateCacheMiss);
 
-  await expect(async () => {
-    await withCache(
+  await expect(
+    withCache(
       cachePaths,
       cacheKeys,
       testFunctionThrows,
       { ...DEFAULT_CACHE_OPTIONS, silent: true },
       cache,
-    );
-  }).rejects.toThrow();
+    ),
+  ).rejects.toThrow();
 
   expect(cache.restoreCache).toHaveBeenCalledWith(
     cachePaths,
@@ -144,8 +148,8 @@ test("withCache can be configured to save on error", async () => {
   const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
   restoreCacheMock.mockImplementation(simulateCacheMiss);
 
-  await expect(async () => {
-    await withCache(
+  await expect(
+    withCache(
       cachePaths,
       cacheKeys,
       testFunctionThrows,
@@ -155,8 +159,8 @@ test("withCache can be configured to save on error", async () => {
         silent: true,
       },
       cache,
-    );
-  }).rejects.toThrow();
+    ),
+  ).rejects.toThrow();
 
   expect(cache.restoreCache).toHaveBeenCalledWith(
     cachePaths,
