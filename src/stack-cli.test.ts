@@ -1,10 +1,10 @@
 import { ExecOptions } from "@actions/exec";
-import { jest } from "@jest/globals";
+import { describe, expect, test, vi } from "vitest";
 
 import { ExecDelegate, StackCLI } from "./stack-cli.js";
 
 const exec: ExecDelegate = {
-  exec: jest.fn((command: string, args: string[], options?: ExecOptions) =>
+  exec: vi.fn((command: string, args: string[], options?: ExecOptions) =>
     Promise.resolve(0),
   ),
 };

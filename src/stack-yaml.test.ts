@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+import { describe, expect, test, vi } from "vitest";
 
 import { parseStackYaml, getStackDirectories } from "./stack-yaml.js";
 import { StackCLI } from "./stack-cli.js";
@@ -13,9 +13,8 @@ programs: ${testPrograms}
 function mockStackCLI(): StackCLI {
   const stack = new StackCLI([]);
 
-  jest
-    .spyOn(stack, "read")
-    .mockImplementation((args: string[]): Promise<string> => {
+  vi.spyOn(stack, "read").mockImplementation(
+    (args: string[]): Promise<string> => {
       // Stringify to avoid array-comparison pitfalls
       const expected = ["path", "--stack-root", "--programs"].toString();
       const given = args.toString();
@@ -27,7 +26,8 @@ function mockStackCLI(): StackCLI {
       }
 
       return Promise.resolve(testStackPathYaml);
-    });
+    },
+  );
 
   return stack;
 }

@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+import { expect, test } from "vitest";
 
 import { parseStackPath } from "./parse-stack-path.js";
 
