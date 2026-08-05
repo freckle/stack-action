@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { jest } from "@jest/globals";
+import { expect, test, vi } from "vitest";
 
 import { getCacheKeys } from "./get-cache-keys.js";
 import {
@@ -9,11 +9,11 @@ import {
 } from "./with-cache.js";
 
 const cache: CacheDelegate = {
-  restoreCache: jest.fn(() => Promise.resolve("")),
-  saveCache: jest.fn(() => Promise.resolve(0)),
+  restoreCache: vi.fn(() => Promise.resolve("")),
+  saveCache: vi.fn(() => Promise.resolve(0)),
 };
 
-const restoreCacheMock = jest.spyOn(cache, "restoreCache");
+const restoreCacheMock = vi.spyOn(cache, "restoreCache");
 
 async function testFunction(): Promise<number> {
   return 42;
