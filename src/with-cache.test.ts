@@ -1,4 +1,3 @@
-import * as core from "@actions/core";
 import { expect, test, vi } from "vitest";
 
 import { getCacheKeys } from "./get-cache-keys.js";

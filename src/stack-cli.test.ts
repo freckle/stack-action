@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from "vitest";
 import { ExecDelegate, StackCLI } from "./stack-cli.js";
 
 const exec: ExecDelegate = {
-  exec: vi.fn((command: string, args: string[], options?: ExecOptions) =>
+  exec: vi.fn((_command: string, _args: string[], _options?: ExecOptions) =>
     Promise.resolve(0),
   ),
 };

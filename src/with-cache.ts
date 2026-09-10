@@ -15,11 +15,12 @@ export const DEFAULT_CACHE_OPTIONS = {
 };
 
 export interface CacheDelegate {
+  // Mirrors @actions/cache: a miss resolves to undefined
   restoreCache: (
     paths: string[],
     primaryKey: string,
     restoreKeys?: string[],
-  ) => Promise<string>;
+  ) => Promise<string | undefined>;
   saveCache: (paths: string[], key: string) => Promise<number>;
 }
 

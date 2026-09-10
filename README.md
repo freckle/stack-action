@@ -180,6 +180,17 @@ jobs:
 See [generate-matrix/action.yml](./generate-matrix/action.yml) for more details.
 This has been available since version 4 of this action.
 
+## Development
+
+- **Package manager**: pnpm (Node version pinned in `.nvmrc`)
+- `pnpm build` — `tsc` then `ncc`, bundles to `dist/index.js`
+- `pnpm test` — Vitest
+- `pnpm coverage` — Vitest with coverage, gated at the level the suite already reaches (see `vitest.config.js`; `main.ts` excluded: it drives real `stack` invocations, covered by the `example` workflow instead)
+- `pnpm typecheck` — `tsc --noEmit`, includes test files
+- `pnpm lint` — ESLint
+- `pnpm knip` — unused files/dependencies/exports
+- CI runs all of the above on every PR; `.github/workflows/example.yml` then runs the built action end to end against `example/` across runners and resolvers
+
 ## Release
 
 To trigger a release (and update the `@v{major}` tag), merge a commit to `main`

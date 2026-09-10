@@ -2,16 +2,25 @@ name: CI
 
 on:
   pull_request:
+  push:
+    branches: main
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
-          cache: yarn
+          cache: pnpm
           node-version-file: ".nvmrc"
-      - run: yarn install
-      - run: yarn build
-      - run: yarn test
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm knip
+      - run: pnpm coverage
+      - run: pnpm build

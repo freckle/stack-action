@@ -1,8 +1,8 @@
 import * as path from "path";
 import { hashFiles } from "@actions/glob";
 
-export const ALL_SOURCES_PATTERNS = `**\n!**${path.sep}.stack-work\n!.git\n`;
-export const BUILD_FILES_PATTERNS = `**${path.sep}package.yaml\n**${path.sep}*.cabal\n`;
+const ALL_SOURCES_PATTERNS = `**\n!**${path.sep}.stack-work\n!.git\n`;
+const BUILD_FILES_PATTERNS = `**${path.sep}package.yaml\n**${path.sep}*.cabal\n`;
 
 export type Hashes = {
   snapshot: string;
