@@ -1,145 +1,108 @@
-import { ExecOptions } from "@actions/exec";
-import { describe, expect, test, vi } from "vitest";
+import {ExecOptions} from '@actions/exec'
+import {describe, expect, test, vi} from 'vitest'
 
-import { ExecDelegate, StackCLI } from "./stack-cli.js";
+import {ExecDelegate, StackCLI} from './stack-cli.js'
 
 const exec: ExecDelegate = {
-  exec: vi.fn((_command: string, _args: string[], _options?: ExecOptions) =>
-    Promise.resolve(0),
-  ),
-};
+  exec: vi.fn((_command: string, _args: string[], _options?: ExecOptions) => Promise.resolve(0))
+}
 
-describe("StackCLI", () => {
-  test("Respects --resolver given", async () => {
-    const stackCLI = new StackCLI(["--resolver", "lts"], false, exec);
+describe('StackCLI', () => {
+  test('Respects --resolver given', async () => {
+    const stackCLI = new StackCLI(['--resolver', 'lts'], false, exec)
 
-    await stackCLI.setup([]);
+    await stackCLI.setup([])
 
     expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      ["--resolver", "lts", "setup"],
-      undefined, // ExecOptions
-    );
-  });
+      'stack',
+      ['--resolver', 'lts', 'setup'],
+      undefined // ExecOptions
+    )
+  })
 
-  test("Adds --resolver nightly", async () => {
-    const stackCLI = new StackCLI(
-      ["--stack-yaml", "sub/stack-nightly.yaml"],
-      false,
-      exec,
-    );
+  test('Adds --resolver nightly', async () => {
+    const stackCLI = new StackCLI(['--stack-yaml', 'sub/stack-nightly.yaml'], false, exec)
 
-    await stackCLI.setup([]);
+    await stackCLI.setup([])
 
     expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      [
-        "--stack-yaml",
-        "sub/stack-nightly.yaml",
-        "--resolver",
-        "nightly",
-        "setup",
-      ],
-      undefined, // ExecOptions
-    );
-  });
+      'stack',
+      ['--stack-yaml', 'sub/stack-nightly.yaml', '--resolver', 'nightly', 'setup'],
+      undefined // ExecOptions
+    )
+  })
 
   test("Doesn't add --resolver nightly if given", async () => {
     const stackCLI = new StackCLI(
-      [
-        "--stack-yaml",
-        "sub/stack-nightly.yaml",
-        "--resolver",
-        "nightly-20240201",
-      ],
+      ['--stack-yaml', 'sub/stack-nightly.yaml', '--resolver', 'nightly-20240201'],
       false,
-      exec,
-    );
+      exec
+    )
 
-    await stackCLI.setup([]);
-
-    expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      [
-        "--stack-yaml",
-        "sub/stack-nightly.yaml",
-        "--resolver",
-        "nightly-20240201",
-        "setup",
-      ],
-      undefined, // ExecOptions
-    );
-  });
-
-  test("installCompilerTools", async () => {
-    const stackCLI = new StackCLI([], false, exec);
-    await stackCLI.installCompilerTools(["hlint", "weeder"]);
+    await stackCLI.setup([])
 
     expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      ["install", "--copy-compiler-tool", "hlint", "weeder"],
-      undefined,
-    );
-  });
+      'stack',
+      ['--stack-yaml', 'sub/stack-nightly.yaml', '--resolver', 'nightly-20240201', 'setup'],
+      undefined // ExecOptions
+    )
+  })
 
-  test("installCompilerTools with empty arguments", async () => {
-    const stackCLI = new StackCLI([], false, exec);
-    await stackCLI.installCompilerTools([]);
-
-    expect(exec.exec).not.toHaveBeenCalled();
-  });
-
-  test("buildDependencies", async () => {
-    const stackCLI = new StackCLI([], false, exec);
-
-    await stackCLI.buildDependencies(["--coverage"]);
+  test('installCompilerTools', async () => {
+    const stackCLI = new StackCLI([], false, exec)
+    await stackCLI.installCompilerTools(['hlint', 'weeder'])
 
     expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      [
-        "build",
-        "--test",
-        "--no-run-tests",
-        "--dependencies-only",
-        "--coverage",
-      ],
-      undefined,
-    );
-  });
+      'stack',
+      ['install', '--copy-compiler-tool', 'hlint', 'weeder'],
+      undefined
+    )
+  })
 
-  test("buildNoTest", async () => {
-    const stackCLI = new StackCLI([], false, exec);
+  test('installCompilerTools with empty arguments', async () => {
+    const stackCLI = new StackCLI([], false, exec)
+    await stackCLI.installCompilerTools([])
 
-    await stackCLI.buildNoTest(["--coverage"]);
+    expect(exec.exec).not.toHaveBeenCalled()
+  })
 
-    expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      ["build", "--test", "--no-run-tests", "--coverage"],
-      undefined,
-    );
-  });
+  test('buildDependencies', async () => {
+    const stackCLI = new StackCLI([], false, exec)
 
-  test("buildTest", async () => {
-    const stackCLI = new StackCLI([], false, exec);
-
-    await stackCLI.buildTest(["--coverage"]);
+    await stackCLI.buildDependencies(['--coverage'])
 
     expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      ["build", "--test", "--coverage"],
-      undefined,
-    );
-  });
+      'stack',
+      ['build', '--test', '--no-run-tests', '--dependencies-only', '--coverage'],
+      undefined
+    )
+  })
 
-  test("build", async () => {
-    const stackCLI = new StackCLI([], false, exec);
+  test('buildNoTest', async () => {
+    const stackCLI = new StackCLI([], false, exec)
 
-    await stackCLI.build(["--coverage"]);
+    await stackCLI.buildNoTest(['--coverage'])
 
     expect(exec.exec).toHaveBeenCalledWith(
-      "stack",
-      ["build", "--coverage"],
-      undefined,
-    );
-  });
-});
+      'stack',
+      ['build', '--test', '--no-run-tests', '--coverage'],
+      undefined
+    )
+  })
+
+  test('buildTest', async () => {
+    const stackCLI = new StackCLI([], false, exec)
+
+    await stackCLI.buildTest(['--coverage'])
+
+    expect(exec.exec).toHaveBeenCalledWith('stack', ['build', '--test', '--coverage'], undefined)
+  })
+
+  test('build', async () => {
+    const stackCLI = new StackCLI([], false, exec)
+
+    await stackCLI.build(['--coverage'])
+
+    expect(exec.exec).toHaveBeenCalledWith('stack', ['build', '--coverage'], undefined)
+  })
+})

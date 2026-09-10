@@ -1,94 +1,87 @@
-import { expect, test, vi } from "vitest";
+import {expect, test, vi} from 'vitest'
 
-import { getCacheKeys } from "./get-cache-keys.js";
-import {
-  CacheDelegate,
-  DEFAULT_CACHE_OPTIONS,
-  withCache,
-} from "./with-cache.js";
+import {getCacheKeys} from './get-cache-keys.js'
+import {CacheDelegate, DEFAULT_CACHE_OPTIONS, withCache} from './with-cache.js'
 
 const cache: CacheDelegate = {
-  restoreCache: vi.fn(() => Promise.resolve("")),
-  saveCache: vi.fn(() => Promise.resolve(0)),
-};
+  restoreCache: vi.fn(() => Promise.resolve('')),
+  saveCache: vi.fn(() => Promise.resolve(0))
+}
 
-const restoreCacheMock = vi.spyOn(cache, "restoreCache");
+const restoreCacheMock = vi.spyOn(cache, 'restoreCache')
 
 async function testFunction(): Promise<number> {
-  return 42;
+  return 42
 }
 
 async function testFunctionThrows(): Promise<number> {
-  throw new Error("Boom");
+  throw new Error('Boom')
 }
 
 function simulateCacheHit(
   _paths: string[],
   primaryKey: string,
-  _restoreKeys?: string[],
+  _restoreKeys?: string[]
 ): Promise<string | undefined> {
-  return Promise.resolve(primaryKey);
+  return Promise.resolve(primaryKey)
 }
 
 function simulateCacheMiss(
   _paths: string[],
   primaryKey: string,
-  _restoreKeys?: string[],
+  _restoreKeys?: string[]
 ): Promise<string | undefined> {
-  return Promise.resolve(primaryKey.replace(/-*$/, "-XXX"));
+  return Promise.resolve(primaryKey.replace(/-*$/, '-XXX'))
 }
 
-test("withCache skips on primary-key hit", async () => {
-  const cachePaths = ["/a", "/b"];
-  const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  restoreCacheMock.mockImplementation(simulateCacheHit);
+test('withCache skips on primary-key hit', async () => {
+  const cachePaths = ['/a', '/b']
+  const cacheKeys = getCacheKeys(['a-b', 'c', 'd'])
+  restoreCacheMock.mockImplementation(simulateCacheHit)
 
   const result = await withCache(
     cachePaths,
     cacheKeys,
     testFunction,
-    { ...DEFAULT_CACHE_OPTIONS, silent: true },
-    cache,
-  );
+    {...DEFAULT_CACHE_OPTIONS, silent: true},
+    cache
+  )
 
-  expect(result).toBeUndefined();
+  expect(result).toBeUndefined()
   expect(cache.restoreCache).toHaveBeenCalledWith(
     cachePaths,
     cacheKeys.primaryKey,
-    cacheKeys.restoreKeys,
-  );
-  expect(cache.saveCache).not.toHaveBeenCalled();
-});
+    cacheKeys.restoreKeys
+  )
+  expect(cache.saveCache).not.toHaveBeenCalled()
+})
 
-test("withCache acts and saves if no primary-key hit", async () => {
-  const cachePaths = ["/a", "/b"];
-  const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  restoreCacheMock.mockImplementation(simulateCacheMiss);
+test('withCache acts and saves if no primary-key hit', async () => {
+  const cachePaths = ['/a', '/b']
+  const cacheKeys = getCacheKeys(['a-b', 'c', 'd'])
+  restoreCacheMock.mockImplementation(simulateCacheMiss)
 
   const result = await withCache(
     cachePaths,
     cacheKeys,
     testFunction,
-    { ...DEFAULT_CACHE_OPTIONS, silent: true },
-    cache,
-  );
+    {...DEFAULT_CACHE_OPTIONS, silent: true},
+    cache
+  )
 
-  expect(result).toEqual(42);
+  expect(result).toEqual(42)
   expect(cache.restoreCache).toHaveBeenCalledWith(
     cachePaths,
     cacheKeys.primaryKey,
-    cacheKeys.restoreKeys,
-  );
-  expect(cache.saveCache).toHaveBeenCalledWith(
-    cachePaths,
-    cacheKeys.primaryKey,
-  );
-});
+    cacheKeys.restoreKeys
+  )
+  expect(cache.saveCache).toHaveBeenCalledWith(cachePaths, cacheKeys.primaryKey)
+})
 
-test("withCache can be configured to act and save anyway", async () => {
-  const cachePaths = ["/a", "/b"];
-  const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  restoreCacheMock.mockImplementation(simulateCacheHit);
+test('withCache can be configured to act and save anyway', async () => {
+  const cachePaths = ['/a', '/b']
+  const cacheKeys = getCacheKeys(['a-b', 'c', 'd'])
+  restoreCacheMock.mockImplementation(simulateCacheHit)
 
   const result = await withCache(
     cachePaths,
@@ -97,51 +90,51 @@ test("withCache can be configured to act and save anyway", async () => {
     {
       ...DEFAULT_CACHE_OPTIONS,
       skipOnHit: false,
-      silent: true,
+      silent: true
     },
-    cache,
-  );
+    cache
+  )
 
-  expect(result).toEqual(42);
+  expect(result).toEqual(42)
   expect(cache.restoreCache).toHaveBeenCalledWith(
     cachePaths,
     cacheKeys.primaryKey,
-    cacheKeys.restoreKeys,
-  );
+    cacheKeys.restoreKeys
+  )
 
   // This step is still skipped
-  expect(cache.saveCache).not.toHaveBeenCalled();
-});
+  expect(cache.saveCache).not.toHaveBeenCalled()
+})
 
-test("withCache does not save on error", async () => {
-  const cachePaths = ["/a", "/b"];
-  const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  restoreCacheMock.mockImplementation(simulateCacheMiss);
+test('withCache does not save on error', async () => {
+  const cachePaths = ['/a', '/b']
+  const cacheKeys = getCacheKeys(['a-b', 'c', 'd'])
+  restoreCacheMock.mockImplementation(simulateCacheMiss)
 
   await expect(async () => {
     await withCache(
       cachePaths,
       cacheKeys,
       testFunctionThrows,
-      { ...DEFAULT_CACHE_OPTIONS, silent: true },
-      cache,
-    );
-  }).rejects.toThrow();
+      {...DEFAULT_CACHE_OPTIONS, silent: true},
+      cache
+    )
+  }).rejects.toThrow()
 
   expect(cache.restoreCache).toHaveBeenCalledWith(
     cachePaths,
     cacheKeys.primaryKey,
-    cacheKeys.restoreKeys,
-  );
+    cacheKeys.restoreKeys
+  )
 
   // This step is skipped
-  expect(cache.saveCache).not.toHaveBeenCalled();
-});
+  expect(cache.saveCache).not.toHaveBeenCalled()
+})
 
-test("withCache can be configured to save on error", async () => {
-  const cachePaths = ["/a", "/b"];
-  const cacheKeys = getCacheKeys(["a-b", "c", "d"]);
-  restoreCacheMock.mockImplementation(simulateCacheMiss);
+test('withCache can be configured to save on error', async () => {
+  const cachePaths = ['/a', '/b']
+  const cacheKeys = getCacheKeys(['a-b', 'c', 'd'])
+  restoreCacheMock.mockImplementation(simulateCacheMiss)
 
   await expect(async () => {
     await withCache(
@@ -151,20 +144,17 @@ test("withCache can be configured to save on error", async () => {
       {
         ...DEFAULT_CACHE_OPTIONS,
         saveOnError: true,
-        silent: true,
+        silent: true
       },
-      cache,
-    );
-  }).rejects.toThrow();
+      cache
+    )
+  }).rejects.toThrow()
 
   expect(cache.restoreCache).toHaveBeenCalledWith(
     cachePaths,
     cacheKeys.primaryKey,
-    cacheKeys.restoreKeys,
-  );
+    cacheKeys.restoreKeys
+  )
 
-  expect(cache.saveCache).toHaveBeenCalledWith(
-    cachePaths,
-    cacheKeys.primaryKey,
-  );
-});
+  expect(cache.saveCache).toHaveBeenCalledWith(cachePaths, cacheKeys.primaryKey)
+})
