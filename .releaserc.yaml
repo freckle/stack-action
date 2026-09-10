@@ -8,9 +8,9 @@ plugins:
 
   - "semantic-release-major-tag"
 
-  # Update dist, in case Dependabot PRs merged without doing so
+  # Update dist, in case Renovate PRs merged without doing so
   - - "@semantic-release/exec"
-    - prepareCmd: "yarn install && yarn run build"
+    - prepareCmd: "pnpm install && pnpm run build"
 
   - - "@semantic-release/git"
     - assets: "dist/index.js"

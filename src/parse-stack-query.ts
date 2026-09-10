@@ -4,7 +4,7 @@ export type StackQuery = {
   compiler: Compiler;
 };
 
-export type Compiler = {
+type Compiler = {
   actual: string;
   wanted: string;
 };

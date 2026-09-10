@@ -13,20 +13,32 @@ defaults:
   run:
     working-directory: example
 
+permissions:
+  contents: read
+
 jobs:
   # Make sure we use an updated dist/index.js in the examples, which are
-  # effectively integration tests. In the case of a Dependabot PR, index.js
+  # effectively integration tests. In the case of a Renovate PR, index.js
   # won't be rebuilt otherwise.
   dist:
     runs-on: ubuntu-latest
+
+    # Override the workflow-level `working-directory: example`: pnpm accepts
+    # package.yaml as a manifest, and example/package.yaml is hpack's, so pnpm
+    # stops there and never reaches the root package.json.
+    defaults:
+      run:
+        working-directory: .
+
     steps:
       - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
-          cache: yarn
+          cache: pnpm
           node-version-file: ".nvmrc"
-      - run: yarn install
-      - run: yarn build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
       - uses: actions/upload-artifact@v7
         with:
           name: dist
