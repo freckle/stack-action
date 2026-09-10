@@ -19,6 +19,7 @@ jobs:
           cache: pnpm
           node-version-file: ".nvmrc"
       - run: pnpm install --frozen-lockfile
+      - run: pnpm format-check
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm knip

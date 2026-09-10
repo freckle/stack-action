@@ -188,6 +188,7 @@ This has been available since version 4 of this action.
 - `pnpm coverage` — Vitest with coverage, gated at the level the suite already reaches (see `vitest.config.js`; `main.ts` excluded: it drives real `stack` invocations, covered by the `example` workflow instead)
 - `pnpm typecheck` — `tsc --noEmit`, includes test files
 - `pnpm lint` — ESLint
+- `pnpm format` / `pnpm format-check` — Prettier
 - `pnpm knip` — unused files/dependencies/exports
 - CI runs all of the above on every PR; `.github/workflows/example.yml` then runs the built action end to end against `example/` across runners and resolvers
 

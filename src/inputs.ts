@@ -1,67 +1,64 @@
-import * as core from "@actions/core";
-import * as Shellwords from "shellwords-ts";
-import { envsubst } from "./envsubst.js"
-import { type OnDirtyFiles, parseOnDirtyFiles } from "./dirty-files.js"
+import * as core from '@actions/core'
+import * as Shellwords from 'shellwords-ts'
+import {envsubst} from './envsubst.js'
+import {type OnDirtyFiles, parseOnDirtyFiles} from './dirty-files.js'
 
 export type Inputs = {
-  workingDirectory: string | null;
-  test: boolean;
-  color: boolean;
-  stackArguments: string[];
-  stackSetupArguments: string[];
-  stackQueryArguments: string[];
-  stackBuildArgumentsDependencies: string[];
-  stackBuildArgumentsBuild: string[];
-  stackBuildArgumentsTest: string[];
-  cachePrefix: string;
-  cacheSaveAlways: boolean;
-  onDirtyFiles: OnDirtyFiles;
-  installStack: boolean;
-  upgradeStack: boolean;
-  compilerTools: string[];
+  workingDirectory: string | null
+  test: boolean
+  color: boolean
+  stackArguments: string[]
+  stackSetupArguments: string[]
+  stackQueryArguments: string[]
+  stackBuildArgumentsDependencies: string[]
+  stackBuildArgumentsBuild: string[]
+  stackBuildArgumentsTest: string[]
+  cachePrefix: string
+  cacheSaveAlways: boolean
+  onDirtyFiles: OnDirtyFiles
+  installStack: boolean
+  upgradeStack: boolean
+  compilerTools: string[]
 
   // Deprecated
-  stackYaml: string | null;
-};
+  stackYaml: string | null
+}
 
 export function getInputs(): Inputs {
   const getBuildArguments = (step: string): string[] => {
-    return getShellWordsInput("stack-build-arguments").concat(
-      getShellWordsInput(`stack-build-arguments-${step}`),
-    );
-  };
+    return getShellWordsInput('stack-build-arguments').concat(
+      getShellWordsInput(`stack-build-arguments-${step}`)
+    )
+  }
 
-  const rawOnDirtyFiles = core.getInput("on-dirty-files", { required: true });
+  const rawOnDirtyFiles = core.getInput('on-dirty-files', {required: true})
 
   return {
-    workingDirectory: getInputDefault("working-directory", null),
-    test: core.getBooleanInput("test"),
-    color: core.getBooleanInput("color"),
-    stackArguments: getShellWordsInput("stack-arguments"),
-    stackSetupArguments: getShellWordsInput("stack-setup-arguments"),
-    stackQueryArguments: getShellWordsInput("stack-query-arguments"),
-    stackBuildArgumentsDependencies: getBuildArguments("dependencies"),
-    stackBuildArgumentsBuild: getBuildArguments("build"),
-    stackBuildArgumentsTest: getBuildArguments("test"),
-    cachePrefix: core.getInput("cache-prefix"),
-    cacheSaveAlways: core.getBooleanInput("cache-save-always"),
+    workingDirectory: getInputDefault('working-directory', null),
+    test: core.getBooleanInput('test'),
+    color: core.getBooleanInput('color'),
+    stackArguments: getShellWordsInput('stack-arguments'),
+    stackSetupArguments: getShellWordsInput('stack-setup-arguments'),
+    stackQueryArguments: getShellWordsInput('stack-query-arguments'),
+    stackBuildArgumentsDependencies: getBuildArguments('dependencies'),
+    stackBuildArgumentsBuild: getBuildArguments('build'),
+    stackBuildArgumentsTest: getBuildArguments('test'),
+    cachePrefix: core.getInput('cache-prefix'),
+    cacheSaveAlways: core.getBooleanInput('cache-save-always'),
     onDirtyFiles: parseOnDirtyFiles(rawOnDirtyFiles),
-    installStack: core.getBooleanInput("install-stack"),
-    upgradeStack: core.getBooleanInput("upgrade-stack"),
-    compilerTools: core.getMultilineInput("compiler-tools"),
-    stackYaml: getInputDefault("stack-yaml", null),
-  };
+    installStack: core.getBooleanInput('install-stack'),
+    upgradeStack: core.getBooleanInput('upgrade-stack'),
+    compilerTools: core.getMultilineInput('compiler-tools'),
+    stackYaml: getInputDefault('stack-yaml', null)
+  }
 }
 
 function getInputDefault<T>(name: string, d: T): string | T {
-  const raw = core.getInput(name, { trimWhitespace: true });
-  return raw === "" ? d : raw;
+  const raw = core.getInput(name, {trimWhitespace: true})
+  return raw === '' ? d : raw
 }
 
-function getShellWordsInput(
-  name: string,
-  options?: core.InputOptions,
-): string[] {
-  const raw = core.getMultilineInput(name, options).join(" ");
-  return Shellwords.split(raw).map(envsubst);
+function getShellWordsInput(name: string, options?: core.InputOptions): string[] {
+  const raw = core.getMultilineInput(name, options).join(' ')
+  return Shellwords.split(raw).map(envsubst)
 }
