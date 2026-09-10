@@ -2,7 +2,7 @@ import {describe, expect, test} from 'vitest'
 
 import {parseGitStatus, isInterestingFile} from './dirty-files.js'
 
-describe('parseGitStatus', () => {
+describe(parseGitStatus.name, () => {
   test('parse file name, and filters untracked', () => {
     const paths = parseGitStatus(
       [
@@ -34,7 +34,7 @@ describe('parseGitStatus', () => {
   })
 })
 
-describe('isInterestingFile', () => {
+describe(isInterestingFile.name, () => {
   const interesting = [
     'foo.cabal',
     'bar.cabal',

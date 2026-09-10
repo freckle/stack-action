@@ -28,7 +28,7 @@ function mockStackCLI(): StackCLI {
   return stack
 }
 
-describe('getStackDirectories', () => {
+describe(getStackDirectories.name, () => {
   test('stackRoot, stackPrograms', async () => {
     const stackYaml = parseStackYaml('resolver: lts-22\n')
     const stack = mockStackCLI()

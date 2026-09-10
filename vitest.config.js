@@ -17,10 +17,10 @@ export default defineConfig({
       // any PR that adds tests.
       // Remove to stop enforcing coverage (also revert ci.yml's pnpm coverage -> pnpm test)
       thresholds: {
-        lines: 48,
-        branches: 62,
-        functions: 53,
-        statements: 48,
+        lines: 84,
+        branches: 84,
+        functions: 91,
+        statements: 84,
       },
     },
   },
