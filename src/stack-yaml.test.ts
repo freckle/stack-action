@@ -1,5 +1,3 @@
-import {describe, expect, test, vi} from 'vitest'
-
 import {parseStackYaml, getStackDirectories} from './stack-yaml.js'
 import {StackCLI} from './stack-cli.js'
 

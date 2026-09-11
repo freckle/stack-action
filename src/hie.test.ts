@@ -1,7 +1,6 @@
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
-import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {GenHIE} from './hie.js'
 import type {ExecDelegate} from './stack-cli.js'

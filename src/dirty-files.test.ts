@@ -1,5 +1,3 @@
-import {describe, expect, test} from 'vitest'
-
 import {parseGitStatus, isInterestingFile} from './dirty-files.js'
 
 describe(parseGitStatus.name, () => {

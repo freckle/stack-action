@@ -1,5 +1,3 @@
-import {describe, expect, test} from 'vitest'
-
 import {envsubst} from './envsubst.js'
 
 const HOME = process.env.HOME

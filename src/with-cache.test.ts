@@ -1,5 +1,3 @@
-import {expect, test, vi} from 'vitest'
-
 import {getCacheKeys} from './get-cache-keys.js'
 import {CacheDelegate, DEFAULT_CACHE_OPTIONS, withCache} from './with-cache.js'
 

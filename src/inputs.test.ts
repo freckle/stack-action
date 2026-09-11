@@ -1,5 +1,3 @@
-import {afterEach, beforeEach, describe, expect, test} from 'vitest'
-
 import {getInputs} from './inputs.js'
 
 // core.getInput() reads INPUT_{NAME}; action.yml defaults are not applied for

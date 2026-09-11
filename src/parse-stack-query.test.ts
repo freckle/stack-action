@@ -1,5 +1,3 @@
-import {expect, test} from 'vitest'
-
 import {parseStackQuery} from './parse-stack-query.js'
 
 const EXAMPLE = [
