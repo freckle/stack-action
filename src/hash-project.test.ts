@@ -1,5 +1,4 @@
 import * as path from 'path'
-import {expect, test, vi} from 'vitest'
 
 vi.mock('@actions/glob', () => ({
   hashFiles: vi.fn((patterns: string) => Promise.resolve(`hash(${patterns})`))
