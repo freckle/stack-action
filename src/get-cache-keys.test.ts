@@ -1,5 +1,3 @@
-import {expect, test} from 'vitest'
-
 import {getCacheKeys} from './get-cache-keys.js'
 
 test('getCacheKeys', () => {

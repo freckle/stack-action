@@ -1,10 +1,8 @@
-import {describe, expect, test} from 'vitest'
-
 import {envsubst} from './envsubst.js'
 
 const HOME = process.env.HOME
 
-describe('envsubst', () => {
+describe(envsubst.name, () => {
   test('known variables are replaced', () => {
     expect(envsubst('Home is $HOME.')).toEqual(`Home is ${HOME}.`)
   })
