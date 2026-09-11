@@ -13,8 +13,7 @@ export default defineConfig({
       // main.ts drives real `stack` invocations; covered by .github/workflows/example.yml
       exclude: ["src/main.ts"],
       // Floors, not goals: set to the coverage the existing suite already
-      // achieves, so the numbers cannot silently regress. Raise them alongside
-      // any PR that adds tests.
+      // achieves, so the numbers cannot silently regress.
       // Remove to stop enforcing coverage (also revert ci.yml's pnpm coverage -> pnpm test)
       thresholds: {
         lines: 84,
