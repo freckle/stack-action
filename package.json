@@ -35,7 +35,7 @@
     "@vercel/ncc": "^0.45.0",
     "@vitest/coverage-v8": "^5.0.1",
     "eslint": "^10.11.0",
-    "knip": "^6.36.0",
+    "knip": "^6.37.0",
     "prettier": "^3.9.8",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.0",
