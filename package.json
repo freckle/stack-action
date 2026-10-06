@@ -30,7 +30,7 @@
     "shellwords-ts": "^3.0.1"
   },
   "devDependencies": {
-    "@freckle/eslint-config": "^1.2.0",
+    "@freckle/eslint-config": "^1.3.1",
     "@freckle/prettier-config": "^1.2.0",
     "@freckle/tsconfig": "^1.2.0",
     "@types/node": "^24.19.1",
