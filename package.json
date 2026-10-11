@@ -33,7 +33,7 @@
     "@freckle/eslint-config": "^1.3.1",
     "@freckle/prettier-config": "^1.3.1",
     "@freckle/tsconfig": "^1.3.1",
-    "@types/node": "^24.19.1",
+    "@types/node": "^24.19.2",
     "@vercel/ncc": "^0.45.0",
     "@vitest/coverage-v8": "^5.0.3",
     "eslint": "^10.12.0",
