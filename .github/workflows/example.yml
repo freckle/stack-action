@@ -78,6 +78,11 @@ jobs:
           name: dist
           path: dist # overwrite dist/index.js
 
+      # https://github.com/freckle/stack-action/issues/489
+      - if: ${{ startsWith(matrix.runner, 'macOS-') }}
+        run: |
+          sudo xcode-select -s /Library/Developer/CommandLineTools
+
       - id: stack
         uses: ./
         with:
