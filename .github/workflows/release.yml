@@ -32,7 +32,7 @@ jobs:
           private-key: ${{ secrets.FRECKLE_AUTOMATION_PRIVATE_KEY }}
 
       - id: release
-        uses: cycjimmy/semantic-release-action@v8.0.1
+        uses: cycjimmy/semantic-release-action@v8.1.2
         # conventional-changelog-conventionalcommits is held at 9.x: v10 needs
         # conventional-changelog-writer@9, which semantic-release@25 does not ship.
         with:
