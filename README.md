@@ -180,6 +180,23 @@ jobs:
 See [generate-matrix/action.yml](./generate-matrix/action.yml) for more details.
 This has been available since version 4 of this action.
 
+## MacOS Linker Errors
+
+On certain `macOS` runners, you may encounter:
+
+```
+ld: multiple errors: tapi error: malformed file
+```
+
+To fix, add the following:
+
+```yaml
+- run: |
+    sudo xcode-select -s /Library/Developer/CommandLineTools
+```
+
+See https://github.com/freckle/stack-action/issues/489 for more details.
+
 ## Development
 
 - **Package manager**: pnpm (Node version pinned in `.nvmrc`)
