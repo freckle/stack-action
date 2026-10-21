@@ -189,8 +189,8 @@ importers:
         specifier: ^1.3.3
         version: 1.3.3(eslint@10.13.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
       '@freckle/prettier-config':
-        specifier: ^1.3.2
-        version: 1.3.2(prettier@3.9.10)
+        specifier: ^1.3.3
+        version: 1.3.3(prettier@3.9.10)
       '@freckle/tsconfig':
         specifier: ^1.3.2
         version: 1.3.2(typescript@6.0.3)
@@ -393,10 +393,10 @@ packages:
     peerDependencies:
       eslint: '>= 10.12.0'
 
-  '@freckle/prettier-config@1.3.2':
-    resolution: {integrity: sha512-9c7v3Bt4GGJbIvQVkTVJClg9wEI7O8BcUy6dG2H0DMsKPbpYqdD6B2Z9H8OJd3Y+9oI/FtKr8XEekqyJrlOPtA==}
+  '@freckle/prettier-config@1.3.3':
+    resolution: {integrity: sha512-Z0hH6b3X2c3VILscNPJGrvpGsxxe0PVLOTzsXeHuzgTopjrpS/esasLBOWcQt430cxS6NJuXGRDwpg7NK4whNA==}
     peerDependencies:
-      prettier: '>= 3.9.9'
+      prettier: '>= 3.9.10'
 
   '@freckle/tsconfig@1.3.2':
     resolution: {integrity: sha512-MKB/i/812shVzpUG9ewIVA9DtOwd+jVIWIvZEutOLtzAHsHwfsC1ZrA74pZaQoE7Snl8O1hLnElsNQPjOoD+mw==}
@@ -1847,7 +1847,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@freckle/prettier-config@1.3.2(prettier@3.9.10)':
+  '@freckle/prettier-config@1.3.3(prettier@3.9.10)':
     dependencies:
       prettier: 3.9.10
 
