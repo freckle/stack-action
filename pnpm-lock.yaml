@@ -192,8 +192,8 @@ importers:
         specifier: ^1.3.3
         version: 1.3.3(prettier@3.9.10)
       '@freckle/tsconfig':
-        specifier: ^1.3.2
-        version: 1.3.2(typescript@6.0.3)
+        specifier: ^1.3.3
+        version: 1.3.3(typescript@6.0.3)
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
@@ -398,8 +398,8 @@ packages:
     peerDependencies:
       prettier: '>= 3.9.10'
 
-  '@freckle/tsconfig@1.3.2':
-    resolution: {integrity: sha512-MKB/i/812shVzpUG9ewIVA9DtOwd+jVIWIvZEutOLtzAHsHwfsC1ZrA74pZaQoE7Snl8O1hLnElsNQPjOoD+mw==}
+  '@freckle/tsconfig@1.3.3':
+    resolution: {integrity: sha512-D4jWe7yVVhpXXaYLFI/fTgQkVviAod2qbfb9Oo/RSM+dOdO/m0PJW40J98SQsslinpnq0JslB2SdWXY5dCNvLA==}
     peerDependencies:
       typescript: '>= 6.0.3'
 
@@ -1851,7 +1851,7 @@ snapshots:
     dependencies:
       prettier: 3.9.10
 
-  '@freckle/tsconfig@1.3.2(typescript@6.0.3)':
+  '@freckle/tsconfig@1.3.3(typescript@6.0.3)':
     dependencies:
       typescript: 6.0.3
 
