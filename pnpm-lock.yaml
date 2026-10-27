@@ -186,8 +186,8 @@ importers:
         version: 3.0.1
     devDependencies:
       '@freckle/eslint-config':
-        specifier: ^1.3.3
-        version: 1.3.3(eslint@10.13.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
+        specifier: ^1.3.4
+        version: 1.3.4(eslint@10.13.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
       '@freckle/prettier-config':
         specifier: ^1.3.3
         version: 1.3.3(prettier@3.9.10)
@@ -388,10 +388,10 @@ packages:
     resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@freckle/eslint-config@1.3.3':
-    resolution: {integrity: sha512-m7qnPBzMk5iazs3jgofIk5bcqX2wLSWXJMwzhOzb4Ct8qH8KQlUlOIdW5iF7uvxBLjqOvq2wPrYMtTMwEsaxPQ==}
+  '@freckle/eslint-config@1.3.4':
+    resolution: {integrity: sha512-HE1q/G2ad8JQGnvDLTof23ozRgHhVHT94sNsYk3wsI3/QtgUS4kafS9CB/k05SGnzVW5CS7khBHzHa+A4hueFg==}
     peerDependencies:
-      eslint: '>= 10.12.0'
+      eslint: '>= 10.13.0'
 
   '@freckle/prettier-config@1.3.3':
     resolution: {integrity: sha512-Z0hH6b3X2c3VILscNPJGrvpGsxxe0PVLOTzsXeHuzgTopjrpS/esasLBOWcQt430cxS6NJuXGRDwpg7NK4whNA==}
@@ -1838,7 +1838,7 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@freckle/eslint-config@1.3.3(eslint@10.13.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)':
+  '@freckle/eslint-config@1.3.4(eslint@10.13.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)':
     dependencies:
       '@eslint/js': 10.0.1(eslint@10.13.0(jiti@2.7.0)(supports-color@7.2.0))
       eslint: 10.13.0(jiti@2.7.0)(supports-color@7.2.0)
