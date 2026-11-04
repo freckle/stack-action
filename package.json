@@ -35,12 +35,12 @@
     "@freckle/tsconfig": "^1.3.4",
     "@types/node": "^26.6.6",
     "@vercel/ncc": "^0.45.0",
-    "@vitest/coverage-v8": "^5.0.5",
+    "@vitest/coverage-v8": "^5.1.0",
     "eslint": "^10.14.0",
     "knip": "^6.44.1",
     "prettier": "^3.9.10",
     "typescript": "^6.0.3",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   },
   "packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
   "prettier": "@freckle/prettier-config"
