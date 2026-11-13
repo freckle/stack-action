@@ -86,7 +86,7 @@ jobs:
       - id: stack
         uses: ./
         with:
-          cache-prefix: v1/
+          cache-prefix: v2/
           working-directory: example
           stack-arguments: --resolver ${{ matrix.stack.resolver }}
 
@@ -161,6 +161,7 @@ jobs:
           fi
       - uses: ./
         with:
+          cache-prefix: v2/
           working-directory: example
           stack-arguments: --stack-yaml ${{ matrix.stack-yaml }}
 
